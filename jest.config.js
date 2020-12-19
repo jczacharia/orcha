@@ -1,3 +1,10 @@
 module.exports = {
-  projects: ['<rootDir>/apps/example-app', '<rootDir>/apps/api'],
+  projects: [
+    '<rootDir>/apps/example-app',
+    '<rootDir>/apps/api',
+    '<rootDir>/libs/core',
+    '<rootDir>/libs/nestjs',
+    '<rootDir>/libs/typeorm',
+    '<rootDir>/libs/angular',
+  ],
 };

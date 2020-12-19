@@ -1,0 +1,7 @@
+{
+  "name": "@kirtan/typeorm",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@kirtan/common": "^0.1.0"
+  }
+}

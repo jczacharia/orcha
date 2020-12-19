@@ -16,10 +16,7 @@
             "polyfills": "apps/example-app/src/polyfills.ts",
             "tsConfig": "apps/example-app/tsconfig.app.json",
             "aot": true,
-            "assets": [
-              "apps/example-app/src/favicon.ico",
-              "apps/example-app/src/assets"
-            ],
+            "assets": ["apps/example-app/src/favicon.ico", "apps/example-app/src/assets"],
             "styles": ["apps/example-app/src/styles.scss"],
             "scripts": []
           },
@@ -74,10 +71,7 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": [
-              "apps/example-app/src/**/*.ts",
-              "apps/example-app/src/**/*.html"
-            ]
+            "lintFilePatterns": ["apps/example-app/src/**/*.ts", "apps/example-app/src/**/*.html"]
           }
         },
         "test": {
@@ -176,6 +170,125 @@
           "builder": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": ["libs/api-interfaces/**/*.ts"]
+          }
+        }
+      }
+    },
+    "common": {
+      "root": "libs/common",
+      "sourceRoot": "libs/common/src",
+      "projectType": "library",
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/common/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/common"],
+          "options": {
+            "jestConfig": "libs/common/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "nestjs": {
+      "root": "libs/nestjs",
+      "sourceRoot": "libs/nestjs/src",
+      "projectType": "library",
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/nestjs/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/nestjs"],
+          "options": {
+            "jestConfig": "libs/nestjs/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "build": {
+          "builder": "@nrwl/node:package",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/libs/nestjs",
+            "tsConfig": "libs/nestjs/tsconfig.lib.json",
+            "packageJson": "libs/nestjs/package.json",
+            "main": "libs/nestjs/src/index.ts",
+            "assets": ["libs/nestjs/*.md"]
+          }
+        }
+      }
+    },
+    "typeorm": {
+      "root": "libs/typeorm",
+      "sourceRoot": "libs/typeorm/src",
+      "projectType": "library",
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/typeorm/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/typeorm"],
+          "options": {
+            "jestConfig": "libs/typeorm/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "build": {
+          "builder": "@nrwl/node:package",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/libs/typeorm",
+            "tsConfig": "libs/typeorm/tsconfig.lib.json",
+            "packageJson": "libs/typeorm/package.json",
+            "main": "libs/typeorm/src/index.ts",
+            "assets": ["libs/typeorm/*.md"]
+          }
+        }
+      }
+    },
+    "angular": {
+      "projectType": "library",
+      "root": "libs/angular",
+      "sourceRoot": "libs/angular/src",
+      "prefix": "kirtan",
+      "architect": {
+        "build": {
+          "builder": "@nrwl/angular:package",
+          "options": {
+            "tsConfig": "libs/angular/tsconfig.lib.json",
+            "project": "libs/angular/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "libs/angular/tsconfig.lib.prod.json"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/angular/src/**/*.ts", "libs/angular/src/**/*.html"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/angular"],
+          "options": {
+            "jestConfig": "libs/angular/jest.config.js",
+            "passWithNoTests": true
           }
         }
       }

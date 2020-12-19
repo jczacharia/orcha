@@ -1,0 +1,14 @@
+{
+  "name": "@kirtan/common",
+  "version": "0.1.0",
+  "description": "Client <-> Server Facilitator",
+  "author": "Jeremy C. Zacharia",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jczacharia/kirtan"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

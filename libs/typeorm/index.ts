@@ -1,0 +1,1 @@
+export { IKirtanRepository } from './src';
