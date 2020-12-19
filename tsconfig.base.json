@@ -17,9 +17,9 @@
     "paths": {
       "@kirtan/api-interfaces": ["libs/api-interfaces/src/index.ts"],
       "@kirtan/angular": ["libs/angular/src/index.ts"],
-      "@kirtan/common": ["libs/common/src/index.ts"],
       "@kirtan/nestjs": ["libs/nestjs/src/index.ts"],
-      "@kirtan/typeorm": ["libs/typeorm/src/index.ts"]
+      "@kirtan/typeorm": ["libs/typeorm/src/index.ts"],
+      "@kirtan/common": ["libs/common/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

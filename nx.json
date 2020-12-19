@@ -39,13 +39,13 @@
     "angular": {
       "tags": []
     },
-    "common": {
-      "tags": []
-    },
     "nestjs": {
       "tags": []
     },
     "typeorm": {
+      "tags": []
+    },
+    "common": {
       "tags": []
     }
   }

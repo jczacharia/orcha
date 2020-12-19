@@ -2,9 +2,6 @@
   "name": "@kirtan/typeorm",
   "version": "0.0.1",
   "peerDependencies": {
-    "@kirtan/common": "^0.1.0",
-    "rxjs": "~6.6.3",
-    "socket.io": "^3.0.4",
-    "typeorm": "^0.2.29"
+    "@kirtan/common": "^0.1.0"
   }
 }
