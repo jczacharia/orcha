@@ -6,5 +6,6 @@ module.exports = {
     '<rootDir>/libs/nestjs',
     '<rootDir>/libs/typeorm',
     '<rootDir>/libs/angular',
+    '<rootDir>/libs/common',
   ],
 };

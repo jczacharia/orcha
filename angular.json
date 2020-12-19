@@ -161,40 +161,6 @@
         }
       }
     },
-    "api-interfaces": {
-      "root": "libs/api-interfaces",
-      "sourceRoot": "libs/api-interfaces/src",
-      "projectType": "library",
-      "architect": {
-        "lint": {
-          "builder": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["libs/api-interfaces/**/*.ts"]
-          }
-        }
-      }
-    },
-    "common": {
-      "root": "libs/common",
-      "sourceRoot": "libs/common/src",
-      "projectType": "library",
-      "architect": {
-        "lint": {
-          "builder": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["libs/common/**/*.ts"]
-          }
-        },
-        "test": {
-          "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/libs/common"],
-          "options": {
-            "jestConfig": "libs/common/jest.config.js",
-            "passWithNoTests": true
-          }
-        }
-      }
-    },
     "nestjs": {
       "root": "libs/nestjs",
       "sourceRoot": "libs/nestjs/src",
@@ -288,6 +254,40 @@
           "outputs": ["coverage/libs/angular"],
           "options": {
             "jestConfig": "libs/angular/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "common": {
+      "projectType": "library",
+      "root": "libs/common",
+      "sourceRoot": "libs/common/src",
+      "prefix": "kirtan",
+      "architect": {
+        "build": {
+          "builder": "@nrwl/angular:ng-packagr-lite",
+          "options": {
+            "tsConfig": "libs/common/tsconfig.lib.json",
+            "project": "libs/common/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "libs/common/tsconfig.lib.prod.json"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/common/src/**/*.ts", "libs/common/src/**/*.html"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/common"],
+          "options": {
+            "jestConfig": "libs/common/jest.config.js",
             "passWithNoTests": true
           }
         }

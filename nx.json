@@ -36,9 +36,6 @@
     "api": {
       "tags": []
     },
-    "common": {
-      "tags": []
-    },
     "nestjs": {
       "tags": []
     },
@@ -46,6 +43,9 @@
       "tags": []
     },
     "angular": {
+      "tags": []
+    },
+    "common": {
       "tags": []
     }
   }
