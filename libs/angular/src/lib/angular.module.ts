@@ -15,7 +15,7 @@ import {
 import 'reflect-metadata';
 import { Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import * as io from 'socket.io-client';
+import { io } from 'socket.io-client';
 
 @NgModule({
   imports: [CommonModule],

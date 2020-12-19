@@ -161,70 +161,6 @@
         }
       }
     },
-    "nestjs": {
-      "root": "libs/nestjs",
-      "sourceRoot": "libs/nestjs/src",
-      "projectType": "library",
-      "architect": {
-        "lint": {
-          "builder": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["libs/nestjs/**/*.ts"]
-          }
-        },
-        "test": {
-          "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/libs/nestjs"],
-          "options": {
-            "jestConfig": "libs/nestjs/jest.config.js",
-            "passWithNoTests": true
-          }
-        },
-        "build": {
-          "builder": "@nrwl/node:package",
-          "outputs": ["{options.outputPath}"],
-          "options": {
-            "outputPath": "dist/libs/nestjs",
-            "tsConfig": "libs/nestjs/tsconfig.lib.json",
-            "packageJson": "libs/nestjs/package.json",
-            "main": "libs/nestjs/src/index.ts",
-            "assets": ["libs/nestjs/*.md"]
-          }
-        }
-      }
-    },
-    "typeorm": {
-      "root": "libs/typeorm",
-      "sourceRoot": "libs/typeorm/src",
-      "projectType": "library",
-      "architect": {
-        "lint": {
-          "builder": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["libs/typeorm/**/*.ts"]
-          }
-        },
-        "test": {
-          "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/libs/typeorm"],
-          "options": {
-            "jestConfig": "libs/typeorm/jest.config.js",
-            "passWithNoTests": true
-          }
-        },
-        "build": {
-          "builder": "@nrwl/node:package",
-          "outputs": ["{options.outputPath}"],
-          "options": {
-            "outputPath": "dist/libs/typeorm",
-            "tsConfig": "libs/typeorm/tsconfig.lib.json",
-            "packageJson": "libs/typeorm/package.json",
-            "main": "libs/typeorm/src/index.ts",
-            "assets": ["libs/typeorm/*.md"]
-          }
-        }
-      }
-    },
     "angular": {
       "projectType": "library",
       "root": "libs/angular",
@@ -289,6 +225,70 @@
           "options": {
             "jestConfig": "libs/common/jest.config.js",
             "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "nestjs": {
+      "root": "libs/nestjs",
+      "sourceRoot": "libs/nestjs/src",
+      "projectType": "library",
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/nestjs/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/nestjs"],
+          "options": {
+            "jestConfig": "libs/nestjs/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "build": {
+          "builder": "@nrwl/node:package",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/libs/nestjs",
+            "tsConfig": "libs/nestjs/tsconfig.lib.json",
+            "packageJson": "libs/nestjs/package.json",
+            "main": "libs/nestjs/src/index.ts",
+            "assets": ["libs/nestjs/*.md"]
+          }
+        }
+      }
+    },
+    "typeorm": {
+      "root": "libs/typeorm",
+      "sourceRoot": "libs/typeorm/src",
+      "projectType": "library",
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/typeorm/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/typeorm"],
+          "options": {
+            "jestConfig": "libs/typeorm/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "build": {
+          "builder": "@nrwl/node:package",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/libs/typeorm",
+            "tsConfig": "libs/typeorm/tsconfig.lib.json",
+            "packageJson": "libs/typeorm/package.json",
+            "main": "libs/typeorm/src/index.ts",
+            "assets": ["libs/typeorm/*.md"]
           }
         }
       }

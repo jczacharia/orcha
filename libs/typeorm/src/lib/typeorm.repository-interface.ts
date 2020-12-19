@@ -1,4 +1,4 @@
-import { IDomainModel, IPaginate, IQuery, KIRTAN_PAGINATE } from '@kirtan/common';
+import { IDomainModel, IPaginate, IQuery, KIRTAN_LIMIT, KIRTAN_PAGE, KIRTAN_PAGINATE } from '@kirtan/common';
 import { paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { Socket } from 'socket.io';
 import { FindManyOptions, Repository } from 'typeorm';
@@ -81,7 +81,7 @@ export abstract class IKirtanRepository<
     if (paginateOptions) {
       entities = await paginate(
         this.repo,
-        { page: paginateOptions.__page, limit: paginateOptions.__limit },
+        { page: paginateOptions[KIRTAN_PAGE], limit: paginateOptions[KIRTAN_LIMIT] },
         { ...options, relations }
       );
     } else {

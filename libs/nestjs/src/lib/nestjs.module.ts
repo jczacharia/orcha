@@ -2,7 +2,7 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { EntityClassOrSchema } from '@nestjs/typeorm/dist/interfaces/entity-class-or-schema.type';
 import { IOperations, ISubscriptions } from '@kirtan/common';
-import { IKirtanRepository } from '@kirtan/typeorm';
+import { IKirtanRepository } from '@kirtan/typeorm'; // TODO nestjs should not be dependant on @kirtan/typeorm
 
 @Module({})
 export class KirtanNestJSModule {

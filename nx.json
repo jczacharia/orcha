@@ -36,16 +36,16 @@
     "api": {
       "tags": []
     },
-    "nestjs": {
-      "tags": []
-    },
-    "typeorm": {
-      "tags": []
-    },
     "angular": {
       "tags": []
     },
     "common": {
+      "tags": []
+    },
+    "nestjs": {
+      "tags": []
+    },
+    "typeorm": {
       "tags": []
     }
   }

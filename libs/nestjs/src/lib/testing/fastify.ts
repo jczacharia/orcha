@@ -1,5 +1,4 @@
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
-import { ClientOperation } from '@kirtan/angular';
 import {
   IOperation,
   IOperations,
@@ -18,7 +17,6 @@ export type ITestOperation<T, Props = undefined> = <Q extends IQuery<T>>(
   props?: Props
 ) => Promise<ITestResponse<IParser<T, Q>>>;
 
-export const TestOperation = ClientOperation;
 
 export type ITestOperations<O extends IOperations> = {
   [K in keyof O]: O[K] extends IOperation<infer T, infer Props> ? ITestOperation<T, Props> : never;
