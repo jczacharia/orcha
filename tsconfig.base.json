@@ -1,6 +1,16 @@
 {
   "compileOnSave": false,
+  "angularCompilerOptions": {
+    "strictInjectionParameters": true,
+    "strictTemplates": true
+  },
   "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "strict": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": false,
+    "noErrorTruncation": true,
     "rootDir": ".",
     "sourceMap": true,
     "declaration": false,
@@ -19,7 +29,8 @@
       "@kirtan/angular": ["libs/angular/src/index.ts"],
       "@kirtan/nestjs": ["libs/nestjs/src/index.ts"],
       "@kirtan/typeorm": ["libs/typeorm/src/index.ts"],
-      "@kirtan/common": ["libs/common/src/index.ts"]
+      "@kirtan/common": ["libs/common/src/index.ts"],
+      "@kirtan/testing": ["libs/testing/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

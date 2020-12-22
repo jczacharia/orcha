@@ -9,6 +9,7 @@ import {
 
 export * from './lib/angular.module';
 export * from './lib/decorators';
+export * from './lib/kirtan.interceptor';
 
 export type IClientOperations<Operations extends IOperations> = {
   [K in keyof Operations]: Operations[K] extends IOperation<infer T, infer Props>

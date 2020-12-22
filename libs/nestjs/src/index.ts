@@ -15,6 +15,5 @@ export type IServerSubscriptions<O extends IOperations> = {
 };
 
 export * from './lib/decorators';
-export * from './lib/nestjs.module';
+export * from './lib/kirtan.module';
 export * from './lib/pipes';
-export * from './lib/testing';

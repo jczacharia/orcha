@@ -1,15 +1,10 @@
-import { Controller, Get } from '@nestjs/common';
+import { ServerOperation, ServerOperations } from '@kirtan/nestjs';
 
-import { Message } from '@kirtan/api-interfaces';
-
-import { AppService } from './app.service';
-
-@Controller()
-export class AppController {
-  constructor(private readonly appService: AppService) {}
-
-  @Get('hello')
-  getData(): Message {
-    return this.appService.getData();
+@ServerOperations()
+export class AppControllers {
+  @ServerOperation()
+  getData() {
+    //
+    return {} as any;
   }
 }

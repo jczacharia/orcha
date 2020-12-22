@@ -1,1 +1,4 @@
-export type IDomainModel<Props extends object, Relations extends object> = Props & Relations;
+export type IDomainModel<
+  Props extends Record<string, unknown>,
+  Relations extends Record<string, unknown>
+> = Props & Relations;

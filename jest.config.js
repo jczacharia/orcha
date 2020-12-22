@@ -3,9 +3,9 @@ module.exports = {
     '<rootDir>/apps/example-app',
     '<rootDir>/apps/api',
     '<rootDir>/libs/core',
-    '<rootDir>/libs/nestjs',
     '<rootDir>/libs/typeorm',
     '<rootDir>/libs/angular',
     '<rootDir>/libs/common',
+    '<rootDir>/libs/testing',
   ],
 };

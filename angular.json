@@ -142,7 +142,8 @@
         "serve": {
           "builder": "@nrwl/node:execute",
           "options": {
-            "buildTarget": "api:build"
+            "buildTarget": "api:build",
+            "port": 2323
           }
         },
         "lint": {
@@ -287,6 +288,38 @@
             "packageJson": "libs/common/package.json",
             "main": "libs/common/src/index.ts",
             "assets": ["libs/common/*.md"]
+          }
+        }
+      }
+    },
+    "testing": {
+      "root": "libs/testing",
+      "sourceRoot": "libs/testing/src",
+      "projectType": "library",
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/testing/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/testing"],
+          "options": {
+            "jestConfig": "libs/testing/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "build": {
+          "builder": "@nrwl/node:package",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/libs/testing",
+            "tsConfig": "libs/testing/tsconfig.lib.json",
+            "packageJson": "libs/testing/package.json",
+            "main": "libs/testing/src/index.ts",
+            "assets": ["libs/testing/*.md"]
           }
         }
       }

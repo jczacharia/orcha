@@ -30,17 +30,15 @@ export function createTypeormRelationsArray<T>(query: IQuery<T>) {
   const parse = (q: IQuery<T>) => {
     iter++;
     for (const k in q) {
-      if (q.hasOwnProperty(k)) {
-        const qk = q[k] as any;
-        if (Array.isArray(qk)) {
-          concat(k, iter);
-          parse((qk[0] as any) as IQuery<T>);
-          iter--;
-        } else if (typeof qk === 'object' && k !== KIRTAN_PAGINATE) {
-          concat(k, iter);
-          parse((qk as any) as IQuery<T>);
-          iter--;
-        }
+      const qk = q[k] as any;
+      if (Array.isArray(qk)) {
+        concat(k, iter);
+        parse((qk[0] as any) as IQuery<T>);
+        iter--;
+      } else if (typeof qk === 'object' && k !== KIRTAN_PAGINATE) {
+        concat(k, iter);
+        parse((qk as any) as IQuery<T>);
+        iter--;
       }
     }
   };

@@ -47,6 +47,9 @@
     },
     "common": {
       "tags": []
+    },
+    "testing": {
+      "tags": []
     }
   }
 }

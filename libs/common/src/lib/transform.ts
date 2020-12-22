@@ -2,14 +2,22 @@ import { IPagination } from './pagination';
 import { IParser } from './parser';
 import { IQuery } from './query';
 
-export function removeExtraFields<T, Q extends IQuery<T>>(entities: T | T[] | IPagination<T>, query: Q) {
-  if (!entities || !query) return {} as IParser<T, Q>;
+export function parseKirtanQuery<T, Q extends IQuery<T>>(query: Q, entities: T): IParser<T, Q>;
+export function parseKirtanQuery<T, Q extends IQuery<T>>(
+  query: Q,
+  entities: T[] | IPagination<T>
+): IParser<T[], Q>;
+export function parseKirtanQuery<T, Q extends IQuery<T>>(
+  query: Q,
+  entities: T | T[] | IPagination<T> | undefined
+) {
+  if (!entities) return undefined;
 
   // is pagination
   if ('items' in entities && 'meta' in entities) {
-    const i = removeExtraFields((entities as any).items, query);
+    const i = parseKirtanQuery(query, entities.items);
     (entities as any).items = i;
-    return entities;
+    return (entities as unknown) as IParser<T[], Q>;
   }
 
   if (Array.isArray(query)) {
@@ -26,7 +34,7 @@ export function removeExtraFields<T, Q extends IQuery<T>>(entities: T | T[] | IP
 
     for (const [k, q] of Object.entries(query)) {
       if (typeof q === 'object') {
-        removeExtraFields(e[k as keyof T], q);
+        parseKirtanQuery(q, e[k as keyof T]);
       }
     }
 
@@ -35,10 +43,9 @@ export function removeExtraFields<T, Q extends IQuery<T>>(entities: T | T[] | IP
 
   if (Array.isArray(entities)) {
     entities.map((e) => remove(e));
-    // entities = entities.filter((e) => Object.entries(e).length > 0);
+    return (entities as unknown) as IParser<T[], Q>;
   } else {
     entities = remove(entities);
+    return (entities as unknown) as IParser<T, Q>;
   }
-
-  return (entities as unknown) as IParser<T, Q>;
 }

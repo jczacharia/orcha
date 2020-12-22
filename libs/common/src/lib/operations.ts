@@ -1,11 +1,10 @@
 import { Observable } from 'rxjs';
 import { Socket } from 'socket.io';
-import { KIRTAN_DTO, KIRTAN_QUERY } from './constants';
-import { IPagination } from './pagination';
+import { KIRTAN_DTO, KIRTAN_QUERY, __KIRTAN_OPERATIONS_NAME } from './constants';
 import { IParser } from './parser';
 import { IQuery } from './query';
 
-type PromiseOrObservable<T> = Promise<T> | Observable<T>;
+type ServerOperationReturnType<T> = T | Promise<T> | Observable<T>;
 
 export interface IOperation<T, Dto = undefined> {
   [KIRTAN_QUERY]: IQuery<T>;
@@ -22,7 +21,7 @@ export type ISubscriptions = Record<keyof unknown, ISubscription<unknown, unknow
 export type IServerOperation<T, Dto = undefined> = (
   query: IQuery<T>,
   dto: Dto
-) => T extends Array<infer A> ? PromiseOrObservable<IPagination<A> | A[]> : PromiseOrObservable<T>;
+) => ServerOperationReturnType<IParser<T, IQuery<T>>>;
 export type IServerSubscription<T, Dto = undefined> = (
   socket: Socket,
   query: IQuery<T>,
@@ -33,4 +32,4 @@ export type IClientOperation<T, Dto = undefined> = <Q extends IQuery<T>>(
   query: Q,
   dto?: Dto
 ) => Observable<IParser<T, Q>>;
-export interface IClientSubscription<T, Dto = undefined> extends IClientOperation<T, Dto> {}
+export type IClientSubscription<T, Dto = undefined> = IClientOperation<T, Dto>;

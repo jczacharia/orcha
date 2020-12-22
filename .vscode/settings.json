@@ -1,8 +1,10 @@
 {
   "cSpell.words": [
+    "Fastify",
     "KIRTAN",
     "nestjs",
     "typeorm",
+    "upsert",
     "websockets"
   ],
   "typescript.tsdk": "node_modules\\typescript\\lib"

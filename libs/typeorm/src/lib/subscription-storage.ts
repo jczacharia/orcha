@@ -1,4 +1,4 @@
-import { IDomainModel, IPagination, IQuery, removeExtraFields } from '@kirtan/common';
+import { IDomainModel, IPagination, IQuery, parseKirtanQuery } from '@kirtan/common';
 import { Socket } from 'socket.io';
 
 interface ISubscription<Entity> {
@@ -19,7 +19,11 @@ interface QuerySubscription<Entity> extends ISubscription<Entity> {
 
 type Subscription<Entity, IdType> = IdsSubscription<Entity, IdType> | QuerySubscription<Entity>;
 
-export class SubscriptionStorage<Entity extends IDomainModel<{ id: IdType }, object>, IdType> {
+export class SubscriptionStorage<
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  Entity extends IDomainModel<{ id: IdType }, {}>,
+  IdType
+> {
   private readonly subscribers = new Map<string, Subscription<Entity, IdType>[]>();
 
   async provisionIdsSubscription(
@@ -49,14 +53,14 @@ export class SubscriptionStorage<Entity extends IDomainModel<{ id: IdType }, obj
       for (const s of subscription) {
         if (s.type === 'entity') {
           if (triggeredIds.some((t) => s.idsListenedTo.includes(t))) {
-            s.socket.emit(s.channel, removeExtraFields(await s.listener(), s.query));
+            s.socket.emit(s.channel, parseKirtanQuery(s.query, await s.listener()));
           }
         } else if (s.type === 'query') {
           // TODO very inefficient for many clients listening to queries.
           const res = await s.listener();
           const ids = this.getIds(res);
           if (triggeredIds.some((t) => ids.includes(t))) {
-            s.socket.emit(s.channel, removeExtraFields(res, s.query));
+            s.socket.emit(s.channel, parseKirtanQuery(s.query, res));
           }
         }
       }
@@ -73,7 +77,7 @@ export class SubscriptionStorage<Entity extends IDomainModel<{ id: IdType }, obj
     } else {
       this.subscribers.set(newSub.socket.id, [newSub]);
     }
-    newSub.socket.emit(newSub.channel, removeExtraFields(await newSub.listener(), newSub.query));
+    newSub.socket.emit(newSub.channel, parseKirtanQuery(newSub.query, await newSub.listener()));
   }
 
   private getIds(res: Entity | Entity[] | IPagination<Entity>) {

@@ -5,7 +5,7 @@ export type IQuery<Q> = Q extends Array<infer A> ? IRootQuery<A> & IPaginate : I
 type IRootQuery<Q> = Q extends Array<infer A> ? IIQuery<A> : IIQuery<Q>;
 
 type IIQuery<Q> = {
-  [K in keyof Q]?: Q[K] extends IAnyRelation<Q[K], infer _> ? true : IRootQuery<Q[K]>;
+  [K in keyof Q]?: Q[K] extends IAnyRelation<Q[K], Required<infer _>> ? true : IRootQuery<Q[K]>;
 };
 
 export interface IPaginate {
