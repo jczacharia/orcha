@@ -2,6 +2,10 @@
   "name": "@kirtan/typeorm",
   "version": "0.1.0",
   "peerDependencies": {
-    "@kirtan/common": "^0.1.0"
+    "@kirtan/common": "^0.1.0",
+    "@nestjs/typeorm": "^7.1.5",
+    "@nestjs/common": "^7.6.4",
+    "typeorm": "^0.2.29",
+    "nestjs-typeorm-paginate": "^2.2.6"
   }
 }

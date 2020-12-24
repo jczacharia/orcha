@@ -9,7 +9,7 @@ export class KirtanOperationErrorFilter implements ExceptionFilter {
     const request = ctx.getRequest();
 
     const status =
-      exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
+      exception.getStatus instanceof Function ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
 
     const operation = (request.raw.url as string).split(`${KIRTAN}/`)[1];
 

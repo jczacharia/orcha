@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-types */
-import { ClientOperation } from '@kirtan/angular';
+import { Type } from '@angular/core';
+import { ClientOperation, ClientOperations } from '@kirtan/angular';
 import {
   IOperation,
   IOperations,
@@ -10,6 +11,7 @@ import {
   KIRTAN_DTO,
   KIRTAN_QUERY,
   __KIRTAN_OPERATIONS,
+  __KIRTAN_OPERATIONS_NAME,
 } from '@kirtan/common';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { IncomingHttpHeaders } from 'http';
@@ -18,6 +20,7 @@ import { Response as HttpResponse } from 'light-my-request';
 type ITestResponse<T> = Omit<HttpResponse, 'body'> & { body: T };
 
 export const TestOperation = ClientOperation;
+export const TestOperations = ClientOperations;
 
 export type ITestOperation<T, Props = undefined> = <Q extends IQuery<T>>(
   query: Q,
@@ -37,23 +40,34 @@ function createTestResponse<T>(res: HttpResponse) {
   } as ITestResponse<T>;
 }
 
-export function createNestjsFastifyTestOperations<O extends IOperations & (new (...args: any) => object)>(
+export function createNestjsFastifyTestOperations<O extends Type<IOperations>>(
   app: NestFastifyApplication,
   operations: O
 ): ITestOperations<InstanceType<O>> {
-  const o = (operations as any).prototype[__KIRTAN_OPERATIONS];
-  for (const operation of Object.keys(o)) {
+  const name = operations.prototype[__KIRTAN_OPERATIONS_NAME];
+  const ops = operations.prototype[__KIRTAN_OPERATIONS];
+  const keys = Object.keys(ops);
+
+  if (!name) {
+    throw new Error(
+      `No operations orchestration name found for operations with names of "${keys.join(
+        ', '
+      )}"\nDid you remember to add @TestOperations(<name here>)?`
+    );
+  }
+
+  for (const operation of keys) {
     const testOperation = async (query: object, props: object, headers: IncomingHttpHeaders) => {
       const body: IOperation<object, object> = { [KIRTAN_DTO]: props, [KIRTAN_QUERY]: query };
       const res = await app.inject({
         method: 'POST',
-        url: `/${KIRTAN}/${operation}`,
+        url: `/${KIRTAN}/${name}/${operation}`,
         payload: body,
         headers,
       });
       return createTestResponse(res);
     };
-    o[operation] = testOperation;
+    ops[operation] = testOperation;
   }
-  return o;
+  return ops;
 }

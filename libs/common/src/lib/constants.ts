@@ -1,6 +1,7 @@
 export const KIRTAN = 'kirtan' as const;
-export const KIRTAN_QUERY = '__query' as const;
-export const KIRTAN_DTO = '__dto' as const;
+export const KIRTAN_QUERY = 'query' as const;
+export const KIRTAN_DTO = 'dto' as const;
+export const KIRTAN_TOKEN = 'token' as const;
 export const KIRTAN_PAGINATE = '__paginate' as const;
 export const KIRTAN_PAGE = 'page' as const;
 export const KIRTAN_LIMIT = 'limit' as const;

@@ -1,5 +1,5 @@
 export type IOneToOne<Self, Relation> = {
-  [K in keyof Relation as Relation[K] extends Required<IOneToOne<Relation, infer S>>
+  [K in keyof Relation as Relation[K] extends IOneToOne<Relation, infer S>
     ? S extends Self
       ? never
       : K
@@ -7,7 +7,7 @@ export type IOneToOne<Self, Relation> = {
 };
 
 export type IOneToMany<Self, Relation> = {
-  [K in keyof Relation as Relation[K] extends Required<IManyToOne<Relation, infer S>>
+  [K in keyof Relation as Relation[K] extends IManyToOne<Relation, infer S>
     ? S extends Self
       ? never
       : K
@@ -15,7 +15,7 @@ export type IOneToMany<Self, Relation> = {
 }[];
 
 export type IManyToOne<Self, Relation> = {
-  [K in keyof Relation as Relation[K] extends Required<IOneToMany<Relation, infer S>>
+  [K in keyof Relation as Relation[K] extends IOneToMany<Relation, infer S>
     ? S extends Self
       ? never
       : K
@@ -23,7 +23,7 @@ export type IManyToOne<Self, Relation> = {
 };
 
 export type IManyToMany<Self, Relation> = {
-  [K in keyof Relation as Relation[K] extends Required<IManyToMany<Relation, infer S>>
+  [K in keyof Relation as Relation[K] extends IManyToMany<Relation, infer S>
     ? S extends Self
       ? never
       : K

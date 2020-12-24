@@ -1,4 +1,6 @@
-import { KIRTAN, KIRTAN_DTO, KIRTAN_QUERY } from '@kirtan/common';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/ban-types */
+import { KIRTAN, KIRTAN_TOKEN, KIRTAN_DTO, KIRTAN_QUERY } from '@kirtan/common';
 import { Body, Controller, Post } from '@nestjs/common';
 import {
   ConnectedSocket,
@@ -11,6 +13,7 @@ import { ValidationPipe } from '../pipes';
 
 export function ServerOperations(name: string | number): ClassDecorator {
   return function (target: Function) {
+    if (!name) throw new Error('No orchestration name provided for @ServerOperations');
     Controller(`${KIRTAN}/${name}`)(target);
   };
 }
@@ -19,6 +22,7 @@ export function ServerOperation(): MethodDecorator {
   return function <T>(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) {
     Body(KIRTAN_QUERY)(target, propertyKey, 0);
     Body(KIRTAN_DTO)(target, propertyKey, 1);
+    Body(KIRTAN_TOKEN)(target, propertyKey, 2);
     Post(propertyKey as string)(target, propertyKey, descriptor);
   };
 }
@@ -34,6 +38,7 @@ export function ServerSubscription(): MethodDecorator {
     ConnectedSocket()(target, propertyKey, 0);
     MessageBody(KIRTAN_QUERY)(target, propertyKey, 1);
     MessageBody(KIRTAN_DTO, new ValidationPipe())(target, propertyKey, 2);
+    MessageBody(KIRTAN_TOKEN)(target, propertyKey, 3);
 
     const original = descriptor.value;
     if (original) {

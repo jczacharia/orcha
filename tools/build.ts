@@ -6,9 +6,8 @@ cp.execSync(
   { stdio: 'inherit' }
 );
 
-const dir = './node_modules/@kirtan';
-if (!fs.existsSync(dir)) {
-  fs.mkdirSync(dir);
-}
-
-cp.execSync('cp -r dist/libs/* node_modules/@kirtan', { stdio: 'inherit' });
+cp.exec('cd dist/libs/common && npm pack');
+cp.exec('cd dist/libs/nestjs && npm pack');
+cp.exec('cd dist/libs/angular && npm pack');
+cp.exec('cd dist/libs/typeorm && npm pack');
+cp.exec('cd dist/libs/testing && npm pack');
