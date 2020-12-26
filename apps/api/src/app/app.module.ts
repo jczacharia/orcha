@@ -1,7 +1,7 @@
 import { KirtanModule } from '@kirtan/nestjs';
 import { Global, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppOperations } from './app.operations';
+import { AppOrchestration } from './app.orchestration';
 import { UserEntity } from './user.entity';
 import { UserRepository } from './user.repository';
 
@@ -20,7 +20,7 @@ import { UserRepository } from './user.repository';
       ssl: false,
     }),
     TypeOrmModule.forFeature([UserEntity]),
-    KirtanModule.forFeature({ operators: [AppOperations] }),
+    KirtanModule.forFeature({ orchestrations: [AppOrchestration] }),
   ],
   providers: [UserRepository],
   exports: [UserRepository],

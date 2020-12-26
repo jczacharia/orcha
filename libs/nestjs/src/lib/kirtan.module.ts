@@ -1,4 +1,4 @@
-import { IOperations, ISubscriptions } from '@kirtan/common';
+import { IGateway, IOrchestration } from '@kirtan/common';
 import { DynamicModule, Module, Type } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
 import { KirtanOperationErrorFilter } from './kirtan.filter';
@@ -8,21 +8,21 @@ import { KirtanOperationErrorFilter } from './kirtan.filter';
 })
 export class KirtanModule {
   static forFeature({
-    operators,
-    subscriptions,
+    orchestrations,
+    gateways,
   }: {
-    operators?: Type<IOperations>[];
-    subscriptions?: Type<ISubscriptions>[];
+    orchestrations?: Type<IOrchestration>[];
+    gateways?: Type<IGateway>[];
   }): DynamicModule {
-    if (operators?.length === 0 && subscriptions?.length === 0) {
-      throw new Error('Please include at least one operation or subscription in the KirtanModule.');
+    if (orchestrations?.length === 0 && gateways?.length === 0) {
+      throw new Error('Please include at least one Orchestration or Gateway in the KirtanModule.');
     }
 
     return {
       module: KirtanModule,
-      providers: subscriptions,
-      controllers: operators,
-      exports: subscriptions,
+      providers: gateways,
+      controllers: orchestrations,
+      exports: gateways,
     };
   }
 }

@@ -71,29 +71,53 @@ export abstract class IKirtanTypeormRepository<
     protected readonly repo: Repository<Entity>
   ) {}
 
-  async findOneOrFail<Q extends IQuery<Entity>>(id: IdType, query: Q): Promise<IParser<Entity, Q>> {
-    const relations = createTypeormRelationsArray<Entity>(query);
-    const dbRes = await this.repo.findOneOrFail(id, { relations });
-    return parseKirtanQuery(query, dbRes);
+  async findOneOrFail(id: IdType): Promise<Entity>;
+  async findOneOrFail<Q extends IQuery<Entity>>(id: IdType, query: Q): Promise<IParser<Entity, Q>>;
+  async findOneOrFail<Q extends IQuery<Entity>>(id: IdType, query?: Q) {
+    if (query) {
+      const relations = createTypeormRelationsArray<Entity>(query);
+      const dbRes = await this.repo.findOneOrFail(id, { relations });
+      return query ? parseKirtanQuery(query, dbRes) : dbRes;
+    } else {
+      return this.repo.findOneOrFail(id);
+    }
   }
 
-  async findOne<Q extends IQuery<Entity>>(id: IdType, query: Q): Promise<IParser<Entity, Q> | undefined> {
-    const relations = createTypeormRelationsArray<Entity>(query);
-    const dbRes = await this.repo.findOne(id, { relations });
-    return parseKirtanQuery(query, dbRes) as IParser<Entity, Q> | undefined;
+  async findOne(id: IdType): Promise<Entity>;
+  async findOne<Q extends IQuery<Entity>>(id: IdType, query: Q): Promise<IParser<Entity, Q> | undefined>;
+  async findOne<Q extends IQuery<Entity>>(id: IdType, query?: Q) {
+    if (query) {
+      const relations = createTypeormRelationsArray<Entity>(query);
+      const dbRes = await this.repo.findOne(id, { relations });
+      return parseKirtanQuery(query, dbRes) as IParser<Entity, Q> | undefined;
+    } else {
+      return this.repo.findOne(id);
+    }
   }
 
-  async findMany<Q extends IQuery<Entity>>(ids: IdType[], query: Q): Promise<IParser<Entity[], Q>> {
+  async findMany(ids: IdType[]): Promise<Entity[]>;
+  async findMany<Q extends IQuery<Entity>>(ids: IdType[], query: Q): Promise<IParser<Entity[], Q>>;
+  async findMany<Q extends IQuery<Entity>>(ids: IdType[], query?: Q) {
     if (ids.length === 0) return ([] as unknown) as IParser<Entity[], Q>;
-    const relations = createTypeormRelationsArray<Entity>(query);
-    const dbRes = await this.repo.findByIds(ids, { relations });
-    return parseKirtanQuery(query, dbRes);
+    if (query) {
+      const relations = createTypeormRelationsArray<Entity>(query);
+      const dbRes = await this.repo.findByIds(ids, { relations });
+      return parseKirtanQuery(query, dbRes);
+    } else {
+      return this.repo.findByIds(ids);
+    }
   }
 
-  async findAll<Q extends IQuery<Entity>>(query: Q): Promise<IParser<Entity[], Q>> {
-    const relations = createTypeormRelationsArray<Entity>(query);
-    const dbRes = await this.repo.find({ relations });
-    return parseKirtanQuery(query, dbRes);
+  async findAll(): Promise<Entity[]>;
+  async findAll<Q extends IQuery<Entity>>(query: Q): Promise<IParser<Entity[], Q>>;
+  async findAll<Q extends IQuery<Entity>>(query?: Q) {
+    if (query) {
+      const relations = createTypeormRelationsArray<Entity>(query);
+      const dbRes = await this.repo.find({ relations });
+      return parseKirtanQuery(query, dbRes);
+    } else {
+      return this.repo.find();
+    }
   }
 
   async query<Q extends IQuery<Entity>>(
@@ -107,7 +131,7 @@ export abstract class IKirtanTypeormRepository<
   private async provisionQuery<Q extends IQuery<Entity>>(
     query: Q,
     options?: Omit<FindManyOptions<Entity>, 'relations'>
-  ) {
+  ): Promise<Pagination<Entity> | Entity[]> {
     let entities: Pagination<Entity> | Entity[];
     const relations = createTypeormRelationsArray<Entity>(query);
 
@@ -124,18 +148,22 @@ export abstract class IKirtanTypeormRepository<
     return entities;
   }
 
-  async upsert<Q extends IQuery<Entity>>(entity: Entity, query: Q): Promise<IParser<Entity, Q>> {
+  async upsert(entity: Entity): Promise<Entity>;
+  async upsert<Q extends IQuery<Entity>>(entity: Entity, query: Q): Promise<IParser<Entity, Q>>;
+  async upsert<Q extends IQuery<Entity>>(entity: Entity, query?: Q) {
     const res = await this.repo.save((entity as unknown) as DeepPartial<Entity>);
     this.subscriptionStorage.trigger(entity.id);
-    return this.findOneOrFail(res.id, query);
+    return query ? this.findOneOrFail(res.id, query) : this.findOneOrFail(res.id);
   }
 
-  async upsertMany<Q extends IQuery<Entity>>(entities: Entity[], query: Q): Promise<IParser<Entity[], Q>> {
+  async upsertMany(entities: Entity[]): Promise<Entity[]>;
+  async upsertMany<Q extends IQuery<Entity>>(entities: Entity[], query: Q): Promise<IParser<Entity[], Q>>;
+  async upsertMany<Q extends IQuery<Entity>>(entities: Entity[], query?: Q) {
     if (entities.length === 0) return ([] as unknown) as IParser<Entity[], Q>;
     await this.repo.save((entities as unknown) as DeepPartial<Entity>[]);
     const ids = entities.map((e) => e.id);
     this.subscriptionStorage.trigger(ids);
-    return this.findMany(ids, query);
+    return query ? this.findMany(ids, query) : this.findMany(ids);
   }
 
   async delete(id: IdType): Promise<IdType> {

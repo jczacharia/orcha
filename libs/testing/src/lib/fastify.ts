@@ -1,35 +1,34 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-types */
 import { Type } from '@angular/core';
-import { ClientOperation, ClientOperations } from '@kirtan/angular';
+import { ClientOperation, ClientOrchestration } from '@kirtan/angular';
 import {
   IOperation,
-  IOperations,
+  IOrchestration,
   IParser,
   IQuery,
   KIRTAN,
   KIRTAN_DTO,
   KIRTAN_QUERY,
+  KIRTAN_TOKEN,
   __KIRTAN_OPERATIONS,
-  __KIRTAN_OPERATIONS_NAME,
+  __KIRTAN_ORCHESTRATION_NAME,
 } from '@kirtan/common';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
-import { IncomingHttpHeaders } from 'http';
 import { Response as HttpResponse } from 'light-my-request';
 
 type ITestResponse<T> = Omit<HttpResponse, 'body'> & { body: T };
 
 export const TestOperation = ClientOperation;
-export const TestOperations = ClientOperations;
+export const TestOrchestration = ClientOrchestration;
 
 export type ITestOperation<T, Props = undefined> = <Q extends IQuery<T>>(
   query: Q,
   props: Props,
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  headers?: IncomingHttpHeaders
+  token?: string
 ) => Promise<ITestResponse<IParser<T, Q>>>;
 
-export type ITestOperations<O extends IOperations> = {
+export type ITestOrchestration<O extends IOrchestration> = {
   [K in keyof O]: O[K] extends IOperation<infer T, infer Props> ? ITestOperation<T, Props> : never;
 };
 
@@ -40,34 +39,33 @@ function createTestResponse<T>(res: HttpResponse) {
   } as ITestResponse<T>;
 }
 
-export function createNestjsFastifyTestOperations<O extends Type<IOperations>>(
+export function createNestjsFastifyTestOrchestration<O extends Type<IOrchestration>>(
   app: NestFastifyApplication,
-  operations: O
-): ITestOperations<InstanceType<O>> {
-  const name = operations.prototype[__KIRTAN_OPERATIONS_NAME];
-  const ops = operations.prototype[__KIRTAN_OPERATIONS];
-  const keys = Object.keys(ops);
+  orchestration: O
+): ITestOrchestration<InstanceType<O>> {
+  const name = orchestration.prototype[__KIRTAN_ORCHESTRATION_NAME];
+  const operations = orchestration.prototype[__KIRTAN_OPERATIONS];
+  const opsKeys = Object.keys(operations);
 
   if (!name) {
     throw new Error(
-      `No operations orchestration name found for operations with names of "${keys.join(
+      `No orchestration orchestration name found for orchestration with names of "${opsKeys.join(
         ', '
-      )}"\nDid you remember to add @TestOperations(<name here>)?`
+      )}"\nDid you remember to add @TestOrchestration(<name here>)?`
     );
   }
 
-  for (const operation of keys) {
-    const testOperation = async (query: object, props: object, headers: IncomingHttpHeaders) => {
+  for (const operation of opsKeys) {
+    const testOperation = async (query: object, props: object, token?: string) => {
       const body: IOperation<object, object> = { [KIRTAN_DTO]: props, [KIRTAN_QUERY]: query };
       const res = await app.inject({
         method: 'POST',
         url: `/${KIRTAN}/${name}/${operation}`,
-        payload: body,
-        headers,
+        payload: { ...body, [KIRTAN_TOKEN]: token },
       });
       return createTestResponse(res);
     };
-    ops[operation] = testOperation;
+    operations[operation] = testOperation;
   }
-  return ops;
+  return operations;
 }

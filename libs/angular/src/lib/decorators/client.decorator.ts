@@ -1,33 +1,33 @@
 import {
   __KIRTAN_OPERATIONS,
-  __KIRTAN_OPERATIONS_NAME,
-  __KIRTAN_OPERATIONS_PLACEHOLDER,
-  __KIRTAN_SUBSCRIPTIONS,
-  __KIRTAN_SUBSCRIPTIONS_PLACEHOLDER,
+  __KIRTAN_ORCHESTRATION_NAME,
+  __KIRTAN_ORCHESTRATION_PLACEHOLDER,
+  __KIRTAN_GATEWAY,
+  __KIRTAN_GATEWAY_PLACEHOLDER,
 } from '@kirtan/common';
 
-export function ClientOperations(name: string | number): ClassDecorator {
+export function ClientOrchestration(name: string | number): ClassDecorator {
   return function (target: Function) {
-    target.prototype[__KIRTAN_OPERATIONS_NAME] = name;
+    target.prototype[__KIRTAN_ORCHESTRATION_NAME] = name;
   };
 }
 
 export function ClientOperation(): PropertyDecorator {
   return function (target: any, propertyKey: string | symbol) {
-    const operations = target[__KIRTAN_OPERATIONS];
-    if (!operations) {
+    const orchestration = target[__KIRTAN_OPERATIONS];
+    if (!orchestration) {
       target[__KIRTAN_OPERATIONS] = {};
     }
-    target[__KIRTAN_OPERATIONS][propertyKey] = __KIRTAN_OPERATIONS_PLACEHOLDER;
+    target[__KIRTAN_OPERATIONS][propertyKey] = __KIRTAN_ORCHESTRATION_PLACEHOLDER;
   };
 }
 
 export function ClientSubscription(): PropertyDecorator {
   return function (target: any, propertyKey: string | symbol) {
-    const operations = target[__KIRTAN_SUBSCRIPTIONS];
-    if (!operations) {
-      target[__KIRTAN_SUBSCRIPTIONS] = {};
+    const orchestration = target[__KIRTAN_GATEWAY];
+    if (!orchestration) {
+      target[__KIRTAN_GATEWAY] = {};
     }
-    target[__KIRTAN_SUBSCRIPTIONS][propertyKey] = __KIRTAN_SUBSCRIPTIONS_PLACEHOLDER;
+    target[__KIRTAN_GATEWAY][propertyKey] = __KIRTAN_GATEWAY_PLACEHOLDER;
   };
 }

@@ -2,19 +2,20 @@ import { CommonModule } from '@angular/common';
 import { HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { InjectionToken, Injector, ModuleWithProviders, NgModule, Provider, Type } from '@angular/core';
 import {
+  IGateway,
   IOperation,
-  IOperations,
+  IOrchestration,
   ISubscription,
-  ISubscriptions,
   KIRTAN,
   KIRTAN_DTO,
   KIRTAN_QUERY,
+  __KIRTAN_GATEWAY,
   __KIRTAN_OPERATIONS,
-  __KIRTAN_OPERATIONS_NAME,
-  __KIRTAN_SUBSCRIPTIONS,
+  __KIRTAN_ORCHESTRATION_NAME,
 } from '@kirtan/common';
 import 'reflect-metadata';
 import { Subject } from 'rxjs';
+import { first } from 'rxjs/operators';
 import { io } from 'socket.io-client';
 import { createKirtanInterceptorFilter, KirtanInterceptor } from './kirtan.interceptor';
 
@@ -46,29 +47,29 @@ export class KirtanAngularModule {
   }
 
   static forFeature({
-    operations,
-    subscriptions,
+    orchestrations,
+    gateways,
     interceptors,
   }: {
-    operations?: Type<IOperations>[];
-    subscriptions?: Type<ISubscriptions>[];
+    orchestrations?: Type<IOrchestration>[];
+    gateways?: Type<IGateway>[];
     interceptors?: Type<KirtanInterceptor>[];
   }): ModuleWithProviders<KirtanAngularFeatureModule> {
-    const ops: Provider[] =
-      operations?.map(
+    const ors: Provider[] =
+      orchestrations?.map(
         (o): Provider => ({
           deps: [Injector],
           provide: o,
-          useFactory: (injector: Injector) => KirtanAngularModule.createOperations(injector, o),
+          useFactory: (injector: Injector) => KirtanAngularModule.createOrchestration(injector, o),
         })
       ) ?? [];
 
-    const subs =
-      subscriptions?.map(
+    const gates =
+      gateways?.map(
         (s): Provider => ({
           deps: [Injector],
           provide: s,
-          useFactory: (injector: Injector) => KirtanAngularModule.createSubscriptions(injector, s),
+          useFactory: (injector: Injector) => KirtanAngularModule.createGateway(injector, s),
         })
       ) ?? [];
 
@@ -83,39 +84,39 @@ export class KirtanAngularModule {
 
     return {
       ngModule: KirtanAngularFeatureModule,
-      providers: [...ops, ...subs, ...inters],
+      providers: [...ors, ...gates, ...inters],
     };
   }
 
-  static createOperations(injector: Injector, operations: Type<IOperations>) {
-    const name = operations.prototype[__KIRTAN_OPERATIONS_NAME];
-    const ops = operations.prototype[__KIRTAN_OPERATIONS];
-    const keys = Object.keys(ops);
+  static createOrchestration(injector: Injector, orchestration: Type<IOrchestration>) {
+    const name = orchestration.prototype[__KIRTAN_ORCHESTRATION_NAME];
+    const operations = orchestration.prototype[__KIRTAN_OPERATIONS];
+    const opsKeys = Object.keys(operations);
 
     if (!name) {
       throw new Error(
-        `No operations orchestration name found for operations with names of "${keys.join(
+        `No name found for orchestration with orchestration names of "${opsKeys.join(
           ', '
-        )}"\nDid you remember to add @ClientOperations(<name here>)?`
+        )}"\nDid you remember to add @ClientOrchestration(<name here>)?`
       );
     }
 
     const apiUrl = injector.get(KirtanApiUrl);
     const http = injector.get(HttpClient);
-    for (const funcName of keys) {
+    for (const funcName of opsKeys) {
       const clientOperation = (query: object, props: object) => {
         const body: IOperation<object, object> = { [KIRTAN_DTO]: props, [KIRTAN_QUERY]: query };
-        return http.post<any>(`${apiUrl}/${KIRTAN}/${name}/${funcName}`, body);
+        return http.post<any>(`${apiUrl}/${KIRTAN}/${name}/${funcName}`, body).pipe(first());
       };
-      ops[funcName] = clientOperation;
+      operations[funcName] = clientOperation;
     }
-    return ops;
+    return operations;
   }
 
-  static createSubscriptions(injector: Injector, subscriptions: Type<ISubscriptions>) {
+  static createGateway(injector: Injector, gateway: Type<IGateway>) {
     const apiUrl = injector.get(KirtanApiUrl);
-    const subs = subscriptions.prototype[__KIRTAN_SUBSCRIPTIONS];
-    const subKeys = Object.keys(subs);
+    const subscriptions = gateway.prototype[__KIRTAN_GATEWAY];
+    const subKeys = Object.keys(subscriptions);
 
     if (subKeys.length > 0) {
       const socket = io(apiUrl);
@@ -131,8 +132,6 @@ export class KirtanAngularModule {
           subject.next(d);
         });
 
-        // setTimeout(() => subject.error('dfe'), 5000);
-
         const clientSubscription = (query: object, props: object) => {
           const body: ISubscription<object, object> = {
             [KIRTAN_DTO]: props,
@@ -142,10 +141,10 @@ export class KirtanAngularModule {
           return subject.asObservable();
         };
 
-        subs[funcName] = clientSubscription;
+        subscriptions[funcName] = clientSubscription;
       }
     }
 
-    return subs;
+    return subscriptions;
   }
 }

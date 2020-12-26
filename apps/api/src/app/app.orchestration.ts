@@ -1,8 +1,8 @@
-import { ServerOperation, ServerOperations } from '@kirtan/nestjs';
+import { ServerOperation, ServerOrchestration } from '@kirtan/nestjs';
 import { UserRepository } from './user.repository';
 
-@ServerOperations('hello')
-export class AppOperations {
+@ServerOrchestration('hello')
+export class AppOrchestration {
   constructor(private readonly userRepo: UserRepository) {}
 
   @ServerOperation()

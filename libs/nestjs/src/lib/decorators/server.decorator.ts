@@ -11,9 +11,9 @@ import {
 } from '@nestjs/websockets';
 import { ValidationPipe } from '../pipes';
 
-export function ServerOperations(name: string | number): ClassDecorator {
+export function ServerOrchestration(name: string | number): ClassDecorator {
   return function (target: Function) {
-    if (!name) throw new Error('No orchestration name provided for @ServerOperations');
+    if (!name) throw new Error('No orchestration name provided for @ServerOrchestration');
     Controller(`${KIRTAN}/${name}`)(target);
   };
 }
@@ -27,7 +27,7 @@ export function ServerOperation(): MethodDecorator {
   };
 }
 
-export function ServerSubscriptions(): ClassDecorator {
+export function ServerGateway(): ClassDecorator {
   return function (target: Function) {
     WebSocketGateway()(target);
   };

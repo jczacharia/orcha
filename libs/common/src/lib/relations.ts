@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export type IOneToOne<Self, Relation> = {
   [K in keyof Relation as Relation[K] extends IOneToOne<Relation, infer S>
     ? S extends Self
@@ -30,7 +31,15 @@ export type IManyToMany<Self, Relation> = {
     : K]: Relation[K];
 }[];
 
-export type IAnyRelation<Self, Relation> =
+export type IArrayRelations<Self = any, Relation = any> =
+  | IOneToMany<Self, Relation>
+  | IManyToMany<Self, Relation>;
+
+export type ISingularRelations<Self = any, Relation = any> =
+  | IOneToOne<Self, Relation>
+  | IManyToOne<Self, Relation>;
+
+export type IAnyRelation<Self = any, Relation = any> =
   | IOneToOne<Self, Relation>
   | IOneToMany<Self, Relation>
   | IManyToOne<Self, Relation>

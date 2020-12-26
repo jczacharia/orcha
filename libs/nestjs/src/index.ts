@@ -1,16 +1,16 @@
 import {
   IOperation,
-  IOperations,
+  IOrchestration,
   IServerOperation,
   IServerSubscription,
   ISubscription,
 } from '@kirtan/common';
 
-export type IServerOperations<O extends IOperations> = {
+export type IServerOrchestration<O extends IOrchestration> = {
   [K in keyof O]: O[K] extends IOperation<infer T, infer Props> ? IServerOperation<T, Props> : never;
 };
 
-export type IServerSubscriptions<O extends IOperations> = {
+export type IServerGateway<O extends IOrchestration> = {
   [K in keyof O]: O[K] extends ISubscription<infer T, infer Props> ? IServerSubscription<T, Props> : never;
 };
 

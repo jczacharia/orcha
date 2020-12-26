@@ -5,6 +5,7 @@ export type IQuery<Q> = Q extends Array<infer A> ? IRootQuery<A> & IPaginate : I
 type IRootQuery<Q> = Q extends Array<infer A> ? IIQuery<A> : IIQuery<Q>;
 
 type IIQuery<Q> = {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   [K in keyof Q]?: Q[K] extends IAnyRelation<Q[K], Required<infer _>> ? true : IRootQuery<Q[K]>;
 };
 
