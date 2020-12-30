@@ -27,9 +27,9 @@ export function ServerOperation(): MethodDecorator {
   };
 }
 
-export function ServerGateway(): ClassDecorator {
+export function ServerGateway(name: string): ClassDecorator {
   return function (target: Function) {
-    WebSocketGateway()(target);
+    WebSocketGateway({ namespace: name })(target);
   };
 }
 

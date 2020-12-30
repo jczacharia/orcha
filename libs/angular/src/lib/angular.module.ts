@@ -9,7 +9,8 @@ import {
   KIRTAN,
   KIRTAN_DTO,
   KIRTAN_QUERY,
-  __KIRTAN_GATEWAY,
+  __KIRTAN_SUBSCRIPTIONS,
+  __KIRTAN_GATEWAY_NAME,
   __KIRTAN_OPERATIONS,
   __KIRTAN_ORCHESTRATION_NAME,
 } from '@kirtan/common';
@@ -115,17 +116,16 @@ export class KirtanAngularModule {
 
   static createGateway(injector: Injector, gateway: Type<IGateway>) {
     const apiUrl = injector.get(KirtanApiUrl);
-    const subscriptions = gateway.prototype[__KIRTAN_GATEWAY];
+    const gatewayName = gateway.prototype[__KIRTAN_GATEWAY_NAME];
+    const subscriptions = gateway.prototype[__KIRTAN_SUBSCRIPTIONS];
     const subKeys = Object.keys(subscriptions);
 
     if (subKeys.length > 0) {
-      const socket = io(apiUrl);
+      const socket = io(`${apiUrl}/${gatewayName}`);
 
       socket.on('exception', (d: unknown) => {
         console.error(d);
       });
-
-      socket.on('events', (data: unknown) => console.log('KWS', data));
 
       socket.on('connect', () => {
         console.log('Kirtan Websockets Connected.');
