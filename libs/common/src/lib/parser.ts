@@ -16,7 +16,7 @@ export type IParseArray<CompleteType, QueriedType> = CompleteType extends Array<
   : IParserObject<CompleteType, QueriedType>;
 
 export type IParserObject<CompleteType, QueriedType> = {
-  [K in keyof QueriedType]: K extends keyof CompleteType
+  [K in keyof QueriedType as K extends keyof CompleteType ? K : never]: K extends keyof CompleteType
     ? QueriedType[K] extends true
       ? CompleteType[K]
       : IParseUndefined<CompleteType[K], QueriedType[K]>

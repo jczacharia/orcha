@@ -6,6 +6,10 @@
     "@nestjs/typeorm": "^7.1.5",
     "@nestjs/common": "^7.6.4",
     "typeorm": "^0.2.29",
-    "nestjs-typeorm-paginate": "^2.2.6"
+    "nestjs-typeorm-paginate": "^2.2.6",
+    "@nestjs/websockets": "^7.6.3",
+    "socket.io": "^2.3.0",
+    "socket.io-client": "^2.3.1",
+    "@nestjs/platform-socket.io": "^7.6.4"
   }
 }

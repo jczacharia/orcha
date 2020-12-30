@@ -16,7 +16,8 @@ export function createTypeormRelationsArray<T>(query: IQuery<T>) {
   const parse = (q: IQuery<T>) => {
     iter++;
     for (const key in q) {
-      const qk = q[key];
+      // TODO any
+      const qk = (q as any)[key];
       if (typeof qk === 'object' && key !== KIRTAN_PAGINATE) {
         concat(key, iter);
         parse(qk as IQuery<T>);

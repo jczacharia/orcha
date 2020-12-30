@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import { IPagination } from './pagination';
 import { IParser } from './parser';
 import { IQuery } from './query';
@@ -16,6 +17,7 @@ export function parseKirtanQuery<T, Q extends IQuery<T>>(
   // is pagination
   if ('items' in entities && 'meta' in entities) {
     const i = parseKirtanQuery(query, entities.items);
+    // TODO any
     (entities as any).items = i;
     return (entities as unknown) as IParser<T[], Q>;
   }
@@ -25,14 +27,14 @@ export function parseKirtanQuery<T, Q extends IQuery<T>>(
   }
 
   const remove = (e: T) => {
-    const qKeys = Object.keys(query);
+    const qKeys = Object.keys(query as object);
     for (const k of Object.keys(e)) {
       if (!qKeys.includes(k)) {
         delete e[k as keyof T];
       }
     }
 
-    for (const [k, q] of Object.entries(query)) {
+    for (const [k, q] of Object.entries(query as object)) {
       if (typeof q === 'object') {
         parseKirtanQuery(q, e[k as keyof T]);
       }

@@ -23,7 +23,7 @@ export interface Tag {
 }
 export interface User {
   id: string;
-  name: string;
+  name?: string;
   todos: IOneToMany<User, Todo>;
   privateProfile?: IOneToOne<User, UserPrivate>;
 }
@@ -36,6 +36,7 @@ export interface UserPrivate {
 
 const UserQueryModel = createStoreModelFromQuery<User>()({
   id: true,
+  name: true,
   privateProfile: {
     birthday: true,
   },

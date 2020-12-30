@@ -19,7 +19,7 @@ interface QuerySubscription<Entity> extends ISubscription<Entity> {
 
 type Subscription<Entity, IdType> = IdsSubscription<Entity, IdType> | QuerySubscription<Entity>;
 
-export class SubscriptionStorage<
+export class GatewaysStorage<
   // eslint-disable-next-line @typescript-eslint/ban-types
   Entity extends IDomainModel<{ id: IdType }, {}>,
   IdType

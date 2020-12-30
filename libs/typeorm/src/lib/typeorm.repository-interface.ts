@@ -12,7 +12,7 @@ import { paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { Socket } from 'socket.io';
 import { DeepPartial, FindManyOptions, Repository } from 'typeorm';
 import { createTypeormRelationsArray } from './relations.transform';
-import { SubscriptionStorage } from './subscription-storage';
+import { GatewaysStorage } from './subscription-storage';
 
 /**
  * TODO
@@ -22,7 +22,7 @@ export abstract class IKirtanTypeormRepository<
   Entity extends IDomainModel<{ id: IdType }, {}>,
   IdType extends string | number = string
 > {
-  private readonly subscriptionStorage = new SubscriptionStorage<Entity, IdType>();
+  private readonly gatewaysStorage = new GatewaysStorage<Entity, IdType>();
 
   readonly subscriptions = {
     oneEntitySubscription: async <Q extends IQuery<Entity>>(
@@ -35,7 +35,7 @@ export abstract class IKirtanTypeormRepository<
         const relations = createTypeormRelationsArray<Entity>(query);
         return this.repo.findOneOrFail(id, { relations });
       };
-      return this.subscriptionStorage.provisionIdsSubscription({ socket, channel, listener, query });
+      return this.gatewaysStorage.provisionIdsSubscription({ socket, channel, listener, query });
     },
 
     manyEntitiesSubscription: async <Q extends IQuery<Entity>>(
@@ -48,7 +48,7 @@ export abstract class IKirtanTypeormRepository<
         const relations = createTypeormRelationsArray<Entity>(query);
         return this.repo.findByIds(ids, { relations });
       };
-      return this.subscriptionStorage.provisionIdsSubscription({ socket, channel, listener, query });
+      return this.gatewaysStorage.provisionIdsSubscription({ socket, channel, listener, query });
     },
 
     querySubscription: async <Q extends IQuery<Entity>>(
@@ -58,11 +58,11 @@ export abstract class IKirtanTypeormRepository<
       options?: Omit<FindManyOptions<Entity>, 'relations'>
     ) => {
       const listener = async () => this.provisionQuery(query, options);
-      return this.subscriptionStorage.provisionQuerySubscription({ socket, channel, listener, query });
+      return this.gatewaysStorage.provisionQuerySubscription({ socket, channel, listener, query });
     },
 
     onDisconnect: (socket: Socket) => {
-      return this.subscriptionStorage.removeListener(socket);
+      return this.gatewaysStorage.removeListener(socket);
     },
   };
 
@@ -152,7 +152,7 @@ export abstract class IKirtanTypeormRepository<
   async upsert<Q extends IQuery<Entity>>(entity: Entity, query: Q): Promise<IParser<Entity, Q>>;
   async upsert<Q extends IQuery<Entity>>(entity: Entity, query?: Q) {
     const res = await this.repo.save((entity as unknown) as DeepPartial<Entity>);
-    this.subscriptionStorage.trigger(entity.id);
+    this.gatewaysStorage.trigger(entity.id);
     return query ? this.findOneOrFail(res.id, query) : this.findOneOrFail(res.id);
   }
 
@@ -162,20 +162,20 @@ export abstract class IKirtanTypeormRepository<
     if (entities.length === 0) return ([] as unknown) as IParser<Entity[], Q>;
     await this.repo.save((entities as unknown) as DeepPartial<Entity>[]);
     const ids = entities.map((e) => e.id);
-    this.subscriptionStorage.trigger(ids);
+    this.gatewaysStorage.trigger(ids);
     return query ? this.findMany(ids, query) : this.findMany(ids);
   }
 
   async delete(id: IdType): Promise<IdType> {
     await this.repo.delete(id);
-    this.subscriptionStorage.trigger(id);
+    this.gatewaysStorage.trigger(id);
     return id;
   }
 
   async deleteMany(ids: IdType[]): Promise<IdType[]> {
     if (ids.length === 0) return [];
     await this.repo.delete(ids as string[]);
-    this.subscriptionStorage.trigger(ids);
+    this.gatewaysStorage.trigger(ids);
     return ids;
   }
 }

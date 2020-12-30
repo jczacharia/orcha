@@ -16,7 +16,7 @@ import {
 import 'reflect-metadata';
 import { Subject } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { io } from 'socket.io-client';
+import * as io from 'socket.io-client';
 import { createKirtanInterceptorFilter, KirtanInterceptor } from './kirtan.interceptor';
 
 const KirtanApiUrl = new InjectionToken<string>('KirtanApiUrl');
@@ -123,6 +123,12 @@ export class KirtanAngularModule {
 
       socket.on('exception', (d: unknown) => {
         console.error(d);
+      });
+
+      socket.on('events', (data: unknown) => console.log('KWS', data));
+
+      socket.on('connect', () => {
+        console.log('Kirtan Websockets Connected.');
       });
 
       for (const funcName of subKeys) {
