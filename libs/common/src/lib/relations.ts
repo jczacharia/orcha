@@ -44,3 +44,11 @@ export type IAnyRelation<Self = any, Relation = any> =
   | IOneToMany<Self, Relation>
   | IManyToOne<Self, Relation>
   | IManyToMany<Self, Relation>;
+
+export type IProps<T> = {
+  [K in keyof T as T[K] extends IAnyRelation ? never : K]: T[K];
+};
+
+export type IRelations<T> = {
+  [K in keyof T as T[K] extends IAnyRelation ? K : never]: T[K];
+};
