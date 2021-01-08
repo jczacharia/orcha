@@ -4,7 +4,9 @@ import {
   IManyToOne,
   IOneToMany,
   IOneToOne,
+  IProps,
   IStoreModel,
+  IUpdateEntity,
 } from '@kirtan/common';
 
 export interface Todo {
@@ -12,6 +14,7 @@ export interface Todo {
   title: string;
   content: string;
   dateCreated: Date;
+  photoUrls: string[];
   ownedBy: IManyToOne<Todo, User>;
   tags: IManyToMany<Todo, Tag>;
 }
@@ -34,11 +37,9 @@ export interface UserPrivate {
   publicProfile: IOneToOne<UserPrivate, User>;
 }
 
-const UserQueryModel = createStoreModelFromQuery<User>()({
-  id: true,
-  name: true,
-  privateProfile: {
-    birthday: true,
+const UserQueryModel = createStoreModelFromQuery<Todo[]>()({
+  tags: {
+    id: true,
   },
 });
 

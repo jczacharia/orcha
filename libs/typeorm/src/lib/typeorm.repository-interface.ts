@@ -2,7 +2,10 @@ import {
   IDomainModel,
   IPaginate,
   IParser,
+  IProps,
   IQuery,
+  IUpdateEntity,
+  IInsertEntity,
   KIRTAN_LIMIT,
   KIRTAN_PAGE,
   KIRTAN_PAGINATE,
@@ -11,6 +14,7 @@ import {
 import { paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { Socket } from 'socket.io';
 import { DeepPartial, FindManyOptions, Repository } from 'typeorm';
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { createTypeormRelationsArray } from './relations.transform';
 import { GatewaysStorage } from './subscription-storage';
 
@@ -71,7 +75,7 @@ export abstract class IKirtanTypeormRepository<
     protected readonly repo: Repository<Entity>
   ) {}
 
-  async findOneOrFail(id: IdType): Promise<Entity>;
+  async findOneOrFail(id: IdType): Promise<IProps<Entity>>;
   async findOneOrFail<Q extends IQuery<Entity>>(id: IdType, query: Q): Promise<IParser<Entity, Q>>;
   async findOneOrFail<Q extends IQuery<Entity>>(id: IdType, query?: Q) {
     if (query) {
@@ -79,11 +83,11 @@ export abstract class IKirtanTypeormRepository<
       const dbRes = await this.repo.findOneOrFail(id, { relations });
       return query ? parseKirtanQuery(query, dbRes) : dbRes;
     } else {
-      return this.repo.findOneOrFail(id);
+      return (this.repo.findOneOrFail(id) as unknown) as Promise<IProps<Entity>>;
     }
   }
 
-  async findOne(id: IdType): Promise<Entity>;
+  async findOne(id: IdType): Promise<IProps<Entity> | undefined>;
   async findOne<Q extends IQuery<Entity>>(id: IdType, query: Q): Promise<IParser<Entity, Q> | undefined>;
   async findOne<Q extends IQuery<Entity>>(id: IdType, query?: Q) {
     if (query) {
@@ -91,11 +95,11 @@ export abstract class IKirtanTypeormRepository<
       const dbRes = await this.repo.findOne(id, { relations });
       return parseKirtanQuery(query, dbRes) as IParser<Entity, Q> | undefined;
     } else {
-      return this.repo.findOne(id);
+      return (this.repo.findOne(id) as unknown) as Promise<IProps<Entity> | undefined>;
     }
   }
 
-  async findMany(ids: IdType[]): Promise<Entity[]>;
+  async findMany(ids: IdType[]): Promise<IProps<Entity>[]>;
   async findMany<Q extends IQuery<Entity>>(ids: IdType[], query: Q): Promise<IParser<Entity[], Q>>;
   async findMany<Q extends IQuery<Entity>>(ids: IdType[], query?: Q) {
     if (ids.length === 0) return ([] as unknown) as IParser<Entity[], Q>;
@@ -104,11 +108,11 @@ export abstract class IKirtanTypeormRepository<
       const dbRes = await this.repo.findByIds(ids, { relations });
       return parseKirtanQuery(query, dbRes);
     } else {
-      return this.repo.findByIds(ids);
+      return (this.repo.findByIds(ids) as unknown) as Promise<IProps<Entity>[]>;
     }
   }
 
-  async findAll(): Promise<Entity[]>;
+  async findAll(): Promise<IProps<Entity>[]>;
   async findAll<Q extends IQuery<Entity>>(query: Q): Promise<IParser<Entity[], Q>>;
   async findAll<Q extends IQuery<Entity>>(query?: Q) {
     if (query) {
@@ -116,7 +120,7 @@ export abstract class IKirtanTypeormRepository<
       const dbRes = await this.repo.find({ relations });
       return parseKirtanQuery(query, dbRes);
     } else {
-      return this.repo.find();
+      return (this.repo.find() as unknown) as Promise<IProps<Entity>[]>;
     }
   }
 
@@ -148,20 +152,38 @@ export abstract class IKirtanTypeormRepository<
     return entities;
   }
 
-  async upsert(entity: Entity): Promise<Entity>;
-  async upsert<Q extends IQuery<Entity>>(entity: Entity, query: Q): Promise<IParser<Entity, Q>>;
-  async upsert<Q extends IQuery<Entity>>(entity: Entity, query?: Q) {
-    const res = await this.repo.save((entity as unknown) as DeepPartial<Entity>);
-    this.gatewaysStorage.trigger(entity.id);
-    return query ? this.findOneOrFail(res.id, query) : this.findOneOrFail(res.id);
+  async update(id: IdType, entity: IUpdateEntity<Entity>): Promise<IProps<Entity>>;
+  async update<Q extends IQuery<Entity>>(
+    id: IdType,
+    entity: IUpdateEntity<Entity>,
+    query: Q
+  ): Promise<IParser<Entity, Q>>;
+  async update<Q extends IQuery<Entity>>(id: IdType, entity: IUpdateEntity<Entity>, query?: Q) {
+    await this.repo.save({ ...(entity as any), id });
+    this.gatewaysStorage.trigger(id);
+    return query ? this.findOneOrFail(id, query) : this.findOneOrFail(id);
   }
 
-  async upsertMany(entities: Entity[]): Promise<Entity[]>;
-  async upsertMany<Q extends IQuery<Entity>>(entities: Entity[], query: Q): Promise<IParser<Entity[], Q>>;
-  async upsertMany<Q extends IQuery<Entity>>(entities: Entity[], query?: Q) {
+  async insert(entity: IInsertEntity<Entity>): Promise<IProps<Entity>>;
+  async insert<Q extends IQuery<Entity>>(
+    entity: IInsertEntity<Entity>,
+    query: Q
+  ): Promise<IParser<Entity, Q>>;
+  async insert<Q extends IQuery<Entity>>(entity: IInsertEntity<Entity>, query?: Q) {
+    await this.repo.save((entity as unknown) as DeepPartial<Entity>);
+    this.gatewaysStorage.trigger(entity.id as IdType);
+    return query ? this.findOneOrFail(entity.id as IdType, query) : this.findOneOrFail(entity.id as IdType);
+  }
+
+  async upsertMany(entities: IInsertEntity<Entity>[]): Promise<IProps<Entity>[]>;
+  async upsertMany<Q extends IQuery<Entity>>(
+    entities: IInsertEntity<Entity>[],
+    query: Q
+  ): Promise<IParser<Entity[], Q>>;
+  async upsertMany<Q extends IQuery<Entity>>(entities: IInsertEntity<Entity>[], query?: Q) {
     if (entities.length === 0) return ([] as unknown) as IParser<Entity[], Q>;
     await this.repo.save((entities as unknown) as DeepPartial<Entity>[]);
-    const ids = entities.map((e) => e.id);
+    const ids = entities.map((e) => e.id) as IdType[];
     this.gatewaysStorage.trigger(ids);
     return query ? this.findMany(ids, query) : this.findMany(ids);
   }
