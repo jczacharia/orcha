@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
@@ -5,7 +6,7 @@ import { validate } from 'class-validator';
 @Injectable()
 export class ValidationPipe implements PipeTransform<unknown> {
   async transform(value: unknown, { metatype }: ArgumentMetadata): Promise<unknown> {
-    if (!value || (value instanceof Object && this.isEmpty(value))) {
+    if (value instanceof Object && this.isEmpty(value)) {
       throw new BadRequestException('Validation failed: No body submitted.');
     }
 

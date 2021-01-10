@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-types */
-import { KIRTAN, KIRTAN_TOKEN, KIRTAN_DTO, KIRTAN_QUERY } from '@kirtan/common';
+import { KIRTAN, KIRTAN_DTO, KIRTAN_QUERY, KIRTAN_TOKEN } from '@kirtan/common';
 import { Body, Controller, Post } from '@nestjs/common';
 import {
   ConnectedSocket,
@@ -21,7 +21,7 @@ export function ServerOrchestration(name: string | number): ClassDecorator {
 export function ServerOperation(): MethodDecorator {
   return function <T>(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) {
     Body(KIRTAN_QUERY)(target, propertyKey, 0);
-    Body(KIRTAN_DTO)(target, propertyKey, 1);
+    Body(KIRTAN_DTO, new ValidationPipe())(target, propertyKey, 1);
     Body(KIRTAN_TOKEN)(target, propertyKey, 2);
     Post(propertyKey as string)(target, propertyKey, descriptor);
   };
