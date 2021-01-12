@@ -36,9 +36,14 @@ export function ServerGateway(name: string): ClassDecorator {
 export function ServerSubscription(): MethodDecorator {
   return function <T>(target: any, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) {
     ConnectedSocket()(target, propertyKey, 0);
-    MessageBody(ORCHESTRA_QUERY)(target, propertyKey, 1);
-    MessageBody(ORCHESTRA_DTO, new ValidationPipe())(target, propertyKey, 2);
-    MessageBody(ORCHESTRA_TOKEN)(target, propertyKey, 3);
+    // TODO
+    // MessageBody(ORCHESTRA_QUERY)(target, propertyKey, 1);
+    // MessageBody(ORCHESTRA_DTO, new ValidationPipe())(target, propertyKey, 2);
+    // MessageBody(ORCHESTRA_TOKEN)(target, propertyKey, 3);
+    MessageBody()(target, propertyKey, 1);
+    MessageBody()(target, propertyKey, 2);
+    MessageBody()(target, propertyKey, 3);
+    
 
     const original = descriptor.value;
     if (original) {
