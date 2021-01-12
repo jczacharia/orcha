@@ -1,8 +1,8 @@
 {
-  "name": "@kirtan/testing",
+  "name": "@orchestra/testing",
   "version": "0.1.0",
   "peerDependencies": {
-    "@kirtan/common": "^0.1.0",
-    "@kirtan/angular": "^0.1.0"
+    "@orchestra/common": "^0.1.0",
+    "@orchestra/angular": "^0.1.0"
   }
 }

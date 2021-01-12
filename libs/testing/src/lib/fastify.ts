@@ -1,19 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-types */
 import { Type } from '@angular/core';
-import { ClientOperation, ClientOrchestration } from '@kirtan/angular';
+import { ClientOperation, ClientOrchestration } from '@orchestra/angular';
 import {
   IOperation,
   IOrchestration,
   IParser,
   IQuery,
-  KIRTAN,
-  KIRTAN_DTO,
-  KIRTAN_QUERY,
-  KIRTAN_TOKEN,
-  __KIRTAN_OPERATIONS,
-  __KIRTAN_ORCHESTRATION_NAME,
-} from '@kirtan/common';
+  ORCHESTRA,
+  ORCHESTRA_DTO,
+  ORCHESTRA_QUERY,
+  ORCHESTRA_TOKEN,
+  __ORCHESTRA_OPERATIONS,
+  __ORCHESTRA_ORCHESTRATION_NAME,
+} from '@orchestra/common';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { Response as HttpResponse } from 'light-my-request';
 
@@ -43,8 +43,8 @@ export function createNestjsFastifyTestOrchestration<O extends Type<IOrchestrati
   app: NestFastifyApplication,
   orchestration: O
 ): ITestOrchestration<InstanceType<O>> {
-  const name = orchestration.prototype[__KIRTAN_ORCHESTRATION_NAME];
-  const operations = orchestration.prototype[__KIRTAN_OPERATIONS];
+  const name = orchestration.prototype[__ORCHESTRA_ORCHESTRATION_NAME];
+  const operations = orchestration.prototype[__ORCHESTRA_OPERATIONS];
   const opsKeys = Object.keys(operations);
 
   if (!name) {
@@ -57,11 +57,11 @@ export function createNestjsFastifyTestOrchestration<O extends Type<IOrchestrati
 
   for (const operation of opsKeys) {
     const testOperation = async (query: object, props: object, token?: string) => {
-      const body: IOperation<object, object> = { [KIRTAN_DTO]: props, [KIRTAN_QUERY]: query };
+      const body: IOperation<object, object> = { [ORCHESTRA_DTO]: props, [ORCHESTRA_QUERY]: query };
       const res = await app.inject({
         method: 'POST',
-        url: `/${KIRTAN}/${name}/${operation}`,
-        payload: { ...body, [KIRTAN_TOKEN]: token },
+        url: `/${ORCHESTRA}/${name}/${operation}`,
+        payload: { ...body, [ORCHESTRA_TOKEN]: token },
       });
       return createTestResponse(res);
     };

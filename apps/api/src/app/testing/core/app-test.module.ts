@@ -11,7 +11,7 @@ import { AppModule } from '../../app.module';
       port: 5432,
       username: 'postgres',
       password: '1Qazxsw2',
-      database: 'e2e-kirtan',
+      database: 'e2e-orchestra',
       synchronize: true,
       autoLoadEntities: true,
       ssl: false,

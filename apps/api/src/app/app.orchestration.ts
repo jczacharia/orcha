@@ -1,4 +1,4 @@
-import { ServerOperation, ServerOrchestration } from '@kirtan/nestjs';
+import { ServerOperation, ServerOrchestration } from '@orchestra/nestjs';
 import { UserRepository } from './user.repository';
 
 @ServerOrchestration('hello')

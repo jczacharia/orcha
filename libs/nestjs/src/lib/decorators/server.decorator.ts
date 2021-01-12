@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-types */
-import { KIRTAN, KIRTAN_DTO, KIRTAN_QUERY, KIRTAN_TOKEN } from '@kirtan/common';
+import { ORCHESTRA, ORCHESTRA_DTO, ORCHESTRA_QUERY, ORCHESTRA_TOKEN } from '@orchestra/common';
 import { Body, Controller, Post } from '@nestjs/common';
 import {
   ConnectedSocket,
@@ -14,15 +14,15 @@ import { ValidationPipe } from '../pipes';
 export function ServerOrchestration(name: string | number): ClassDecorator {
   return function (target: Function) {
     if (!name) throw new Error('No orchestration name provided for @ServerOrchestration');
-    Controller(`${KIRTAN}/${name}`)(target);
+    Controller(`${ORCHESTRA}/${name}`)(target);
   };
 }
 
 export function ServerOperation(): MethodDecorator {
   return function <T>(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) {
-    Body(KIRTAN_QUERY)(target, propertyKey, 0);
-    Body(KIRTAN_DTO, new ValidationPipe())(target, propertyKey, 1);
-    Body(KIRTAN_TOKEN)(target, propertyKey, 2);
+    Body(ORCHESTRA_QUERY)(target, propertyKey, 0);
+    Body(ORCHESTRA_DTO, new ValidationPipe())(target, propertyKey, 1);
+    Body(ORCHESTRA_TOKEN)(target, propertyKey, 2);
     Post(propertyKey as string)(target, propertyKey, descriptor);
   };
 }
@@ -36,9 +36,9 @@ export function ServerGateway(name: string): ClassDecorator {
 export function ServerSubscription(): MethodDecorator {
   return function <T>(target: any, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) {
     ConnectedSocket()(target, propertyKey, 0);
-    MessageBody(KIRTAN_QUERY)(target, propertyKey, 1);
-    MessageBody(KIRTAN_DTO, new ValidationPipe())(target, propertyKey, 2);
-    MessageBody(KIRTAN_TOKEN)(target, propertyKey, 3);
+    MessageBody(ORCHESTRA_QUERY)(target, propertyKey, 1);
+    MessageBody(ORCHESTRA_DTO, new ValidationPipe())(target, propertyKey, 2);
+    MessageBody(ORCHESTRA_TOKEN)(target, propertyKey, 3);
 
     const original = descriptor.value;
     if (original) {

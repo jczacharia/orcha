@@ -6,11 +6,11 @@ import {
   IQuery,
   IUpdateEntity,
   IInsertEntity,
-  KIRTAN_LIMIT,
-  KIRTAN_PAGE,
-  KIRTAN_PAGINATE,
-  parseKirtanQuery,
-} from '@kirtan/common';
+  ORCHESTRA_LIMIT,
+  ORCHESTRA_PAGE,
+  ORCHESTRA_PAGINATE,
+  parseOrchestraQuery,
+} from '@orchestra/common';
 import { paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { Socket } from 'socket.io';
 import { DeepPartial, FindManyOptions, Repository } from 'typeorm';
@@ -21,7 +21,7 @@ import { GatewaysStorage } from './subscription-storage';
 /**
  * TODO
  */
-export abstract class IKirtanTypeormRepository<
+export abstract class IOrchestraTypeormRepository<
   // eslint-disable-next-line @typescript-eslint/ban-types
   Entity extends IDomainModel<{ id: IdType }, {}>,
   IdType extends string | number = string
@@ -81,7 +81,7 @@ export abstract class IKirtanTypeormRepository<
     if (query) {
       const relations = createTypeormRelationsArray<Entity>(query);
       const dbRes = await this.repo.findOneOrFail(id, { relations });
-      return query ? parseKirtanQuery(query, dbRes) : dbRes;
+      return query ? parseOrchestraQuery(query, dbRes) : dbRes;
     } else {
       return (this.repo.findOneOrFail(id) as unknown) as Promise<IProps<Entity>>;
     }
@@ -93,7 +93,7 @@ export abstract class IKirtanTypeormRepository<
     if (query) {
       const relations = createTypeormRelationsArray<Entity>(query);
       const dbRes = await this.repo.findOne(id, { relations });
-      return parseKirtanQuery(query, dbRes) as IParser<Entity, Q> | undefined;
+      return parseOrchestraQuery(query, dbRes) as IParser<Entity, Q> | undefined;
     } else {
       return (this.repo.findOne(id) as unknown) as Promise<IProps<Entity> | undefined>;
     }
@@ -106,7 +106,7 @@ export abstract class IKirtanTypeormRepository<
     if (query) {
       const relations = createTypeormRelationsArray<Entity>(query);
       const dbRes = await this.repo.findByIds(ids, { relations });
-      return parseKirtanQuery(query, dbRes);
+      return parseOrchestraQuery(query, dbRes);
     } else {
       return (this.repo.findByIds(ids) as unknown) as Promise<IProps<Entity>[]>;
     }
@@ -118,7 +118,7 @@ export abstract class IKirtanTypeormRepository<
     if (query) {
       const relations = createTypeormRelationsArray<Entity>(query);
       const dbRes = await this.repo.find({ relations });
-      return parseKirtanQuery(query, dbRes);
+      return parseOrchestraQuery(query, dbRes);
     } else {
       return (this.repo.find() as unknown) as Promise<IProps<Entity>[]>;
     }
@@ -129,7 +129,7 @@ export abstract class IKirtanTypeormRepository<
     options?: Omit<FindManyOptions<Entity>, 'relations'>
   ): Promise<IParser<Entity[], Q>> {
     const entities = await this.provisionQuery(query, options);
-    return parseKirtanQuery(query, entities) as IParser<Entity[], Q>;
+    return parseOrchestraQuery(query, entities) as IParser<Entity[], Q>;
   }
 
   private async provisionQuery<Q extends IQuery<Entity>>(
@@ -139,11 +139,11 @@ export abstract class IKirtanTypeormRepository<
     let entities: Pagination<Entity> | Entity[];
     const relations = createTypeormRelationsArray<Entity>(query);
 
-    const paginateOptions = (query as IPaginate)[KIRTAN_PAGINATE];
+    const paginateOptions = (query as IPaginate)[ORCHESTRA_PAGINATE];
     if (paginateOptions) {
       entities = await paginate(
         this.repo,
-        { page: paginateOptions[KIRTAN_PAGE], limit: paginateOptions[KIRTAN_LIMIT] },
+        { page: paginateOptions[ORCHESTRA_PAGE], limit: paginateOptions[ORCHESTRA_LIMIT] },
         { ...options, relations }
       );
     } else {

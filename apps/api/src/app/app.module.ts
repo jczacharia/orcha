@@ -1,4 +1,4 @@
-import { KirtanModule } from '@kirtan/nestjs';
+import { OrchestraModule } from '@orchestra/nestjs';
 import { Global, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppOrchestration } from './app.orchestration';
@@ -14,13 +14,13 @@ import { UserRepository } from './user.repository';
       port: 5432,
       username: 'postgres',
       password: '1Qazxsw2',
-      database: 'kirtan-root',
+      database: 'orchestra-root',
       synchronize: true,
       autoLoadEntities: true,
       ssl: false,
     }),
     TypeOrmModule.forFeature([UserEntity]),
-    KirtanModule.forFeature({ orchestrations: [AppOrchestration] }),
+    OrchestraModule.forFeature({ orchestrations: [AppOrchestration] }),
   ],
   providers: [UserRepository],
   exports: [UserRepository],

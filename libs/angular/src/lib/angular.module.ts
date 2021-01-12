@@ -6,41 +6,41 @@ import {
   IOperation,
   IOrchestration,
   ISubscription,
-  KIRTAN,
-  KIRTAN_DTO,
-  KIRTAN_QUERY,
-  __KIRTAN_SUBSCRIPTIONS,
-  __KIRTAN_GATEWAY_NAME,
-  __KIRTAN_OPERATIONS,
-  __KIRTAN_ORCHESTRATION_NAME,
-} from '@kirtan/common';
+  ORCHESTRA,
+  ORCHESTRA_DTO,
+  ORCHESTRA_QUERY,
+  __ORCHESTRA_SUBSCRIPTIONS,
+  __ORCHESTRA_GATEWAY_NAME,
+  __ORCHESTRA_OPERATIONS,
+  __ORCHESTRA_ORCHESTRATION_NAME,
+} from '@orchestra/common';
 import 'reflect-metadata';
 import { Subject } from 'rxjs';
 import { first } from 'rxjs/operators';
 import * as io from 'socket.io-client';
-import { createKirtanInterceptorFilter, KirtanInterceptor } from './kirtan.interceptor';
+import { createOrchestraInterceptorFilter, OrchestraInterceptor } from './orchestra.interceptor';
 
-const KirtanApiUrl = new InjectionToken<string>('KirtanApiUrl');
-
-@NgModule({})
-export class KirtanAngularRootModule {}
+const OrchestraApiUrl = new InjectionToken<string>('OrchestraApiUrl');
 
 @NgModule({})
-export class KirtanAngularFeatureModule {
+export class OrchestraAngularRootModule {}
+
+@NgModule({})
+export class OrchestraAngularFeatureModule {
   // Forces Root module to be create before feature module.
-  constructor(protected readonly root: KirtanAngularRootModule) {}
+  constructor(protected readonly root: OrchestraAngularRootModule) {}
 }
 
 @NgModule({
   imports: [CommonModule],
 })
-export class KirtanAngularModule {
-  static forRoot(apiUrl: string): ModuleWithProviders<KirtanAngularRootModule> {
+export class OrchestraAngularModule {
+  static forRoot(apiUrl: string): ModuleWithProviders<OrchestraAngularRootModule> {
     return {
-      ngModule: KirtanAngularRootModule,
+      ngModule: OrchestraAngularRootModule,
       providers: [
         {
-          provide: KirtanApiUrl,
+          provide: OrchestraApiUrl,
           useValue: apiUrl,
         },
       ],
@@ -54,14 +54,14 @@ export class KirtanAngularModule {
   }: {
     orchestrations?: Type<IOrchestration>[];
     gateways?: Type<IGateway>[];
-    interceptors?: Type<KirtanInterceptor>[];
-  }): ModuleWithProviders<KirtanAngularFeatureModule> {
+    interceptors?: Type<OrchestraInterceptor>[];
+  }): ModuleWithProviders<OrchestraAngularFeatureModule> {
     const ors: Provider[] =
       orchestrations?.map(
         (o): Provider => ({
           deps: [Injector],
           provide: o,
-          useFactory: (injector: Injector) => KirtanAngularModule.createOrchestration(injector, o),
+          useFactory: (injector: Injector) => OrchestraAngularModule.createOrchestration(injector, o),
         })
       ) ?? [];
 
@@ -70,7 +70,7 @@ export class KirtanAngularModule {
         (s): Provider => ({
           deps: [Injector],
           provide: s,
-          useFactory: (injector: Injector) => KirtanAngularModule.createGateway(injector, s),
+          useFactory: (injector: Injector) => OrchestraAngularModule.createGateway(injector, s),
         })
       ) ?? [];
 
@@ -78,20 +78,20 @@ export class KirtanAngularModule {
       interceptors?.map(
         (i): Provider => ({
           provide: HTTP_INTERCEPTORS,
-          useClass: createKirtanInterceptorFilter(i),
+          useClass: createOrchestraInterceptorFilter(i),
           multi: true,
         })
       ) ?? [];
 
     return {
-      ngModule: KirtanAngularFeatureModule,
+      ngModule: OrchestraAngularFeatureModule,
       providers: [...ors, ...gates, ...inters],
     };
   }
 
   static createOrchestration(injector: Injector, orchestration: Type<IOrchestration>) {
-    const name = orchestration.prototype[__KIRTAN_ORCHESTRATION_NAME];
-    const operations = orchestration.prototype[__KIRTAN_OPERATIONS];
+    const name = orchestration.prototype[__ORCHESTRA_ORCHESTRATION_NAME];
+    const operations = orchestration.prototype[__ORCHESTRA_OPERATIONS];
     const opsKeys = Object.keys(operations);
 
     if (!name) {
@@ -102,12 +102,12 @@ export class KirtanAngularModule {
       );
     }
 
-    const apiUrl = injector.get(KirtanApiUrl);
+    const apiUrl = injector.get(OrchestraApiUrl);
     const http = injector.get(HttpClient);
     for (const funcName of opsKeys) {
       const clientOperation = (query: object, props: object) => {
-        const body: IOperation<object, object> = { [KIRTAN_DTO]: props, [KIRTAN_QUERY]: query };
-        return http.post<any>(`${apiUrl}/${KIRTAN}/${name}/${funcName}`, body).pipe(first());
+        const body: IOperation<object, object> = { [ORCHESTRA_DTO]: props, [ORCHESTRA_QUERY]: query };
+        return http.post<any>(`${apiUrl}/${ORCHESTRA}/${name}/${funcName}`, body).pipe(first());
       };
       operations[funcName] = clientOperation;
     }
@@ -115,9 +115,9 @@ export class KirtanAngularModule {
   }
 
   static createGateway(injector: Injector, gateway: Type<IGateway>) {
-    const apiUrl = injector.get(KirtanApiUrl);
-    const gatewayName = gateway.prototype[__KIRTAN_GATEWAY_NAME];
-    const subscriptions = gateway.prototype[__KIRTAN_SUBSCRIPTIONS];
+    const apiUrl = injector.get(OrchestraApiUrl);
+    const gatewayName = gateway.prototype[__ORCHESTRA_GATEWAY_NAME];
+    const subscriptions = gateway.prototype[__ORCHESTRA_SUBSCRIPTIONS];
     const subKeys = Object.keys(subscriptions);
 
     if (subKeys.length > 0) {
@@ -128,7 +128,7 @@ export class KirtanAngularModule {
       });
 
       socket.on('connect', () => {
-        console.log('Kirtan Websockets Connected.');
+        console.log('Orchestra Websockets Connected.');
       });
 
       for (const funcName of subKeys) {
@@ -140,8 +140,8 @@ export class KirtanAngularModule {
 
         const clientSubscription = (query: object, props: object) => {
           const body: ISubscription<object, object> = {
-            [KIRTAN_DTO]: props,
-            [KIRTAN_QUERY]: query,
+            [ORCHESTRA_DTO]: props,
+            [ORCHESTRA_QUERY]: query,
           };
           socket.emit(funcName, body);
           return subject.asObservable();

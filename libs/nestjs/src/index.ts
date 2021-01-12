@@ -1,4 +1,4 @@
-import { IOperation, IOrchestration, IParser, IQuery, ISubscription } from '@kirtan/common';
+import { IOperation, IOrchestration, IParser, IQuery, ISubscription } from '@orchestra/common';
 import { Observable } from 'rxjs';
 import { Socket } from 'socket.io';
 
@@ -26,5 +26,5 @@ export type IServerGateway<O extends IOrchestration> = {
 };
 
 export * from './lib/decorators';
-export * from './lib/kirtan.module';
+export * from './lib/orchestra.module';
 export * from './lib/pipes';

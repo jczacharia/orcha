@@ -1,4 +1,4 @@
-export interface KirtanOperationError {
+export interface OrchestraOperationError {
   statusCode: number;
   /** ISO string. */
   timestamp: string;

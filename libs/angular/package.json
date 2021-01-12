@@ -1,10 +1,10 @@
 {
-  "name": "@kirtan/angular",
+  "name": "@orchestra/angular",
   "version": "0.1.0",
   "peerDependencies": {
     "@angular/common": "^11.1.0-next.3",
     "@angular/core": "^11.1.0-next.3",
-    "@kirtan/common": "^0.1.0"
+    "@orchestra/common": "^0.1.0"
   },
   "dependencies": {
     "tslib": "^2.0.0"

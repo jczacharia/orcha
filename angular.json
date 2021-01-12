@@ -5,7 +5,7 @@
       "projectType": "application",
       "root": "apps/example-app",
       "sourceRoot": "apps/example-app/src",
-      "prefix": "kirtan",
+      "prefix": "orchestra",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
@@ -166,7 +166,7 @@
       "projectType": "library",
       "root": "libs/angular",
       "sourceRoot": "libs/angular/src",
-      "prefix": "kirtan",
+      "prefix": "orchestra",
       "architect": {
         "build": {
           "builder": "@nrwl/angular:package",

@@ -1,15 +1,15 @@
 import { HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Type } from '@angular/core';
-import { KIRTAN } from '@kirtan/common';
+import { ORCHESTRA } from '@orchestra/common';
 
-export interface KirtanInterceptor extends HttpInterceptor {}
+export interface OrchestraInterceptor extends HttpInterceptor {}
 
-export function createKirtanInterceptorFilter(interceptor: Type<KirtanInterceptor>) {
+export function createOrchestraInterceptorFilter(interceptor: Type<OrchestraInterceptor>) {
   const originalFunction = interceptor.prototype.intercept;
   interceptor.prototype.intercept = function (req: HttpRequest<any>, next: HttpHandler) {
-    // Filter out non-kirtan http calls.
+    // Filter out non-orchestra http calls.
     const firstParam = req.url.replace('http://', '').split('/')[1];
-    if (firstParam !== KIRTAN) {
+    if (firstParam !== ORCHESTRA) {
       return next.handle(req);
     }
     return originalFunction.call(this, req, next);

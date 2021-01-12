@@ -7,7 +7,7 @@ import {
   IProps,
   IStoreModel,
   IUpdateEntity,
-} from '@kirtan/common';
+} from '@orchestra/common';
 
 export interface Todo {
   id: string;

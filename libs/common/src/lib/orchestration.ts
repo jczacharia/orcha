@@ -1,10 +1,10 @@
-import { KIRTAN_DTO, KIRTAN_QUERY, KIRTAN_TOKEN } from './constants';
+import { ORCHESTRA_DTO, ORCHESTRA_QUERY, ORCHESTRA_TOKEN } from './constants';
 import { IQuery } from './query';
 
 export interface IOperation<T, DTO = undefined> {
-  [KIRTAN_QUERY]: IQuery<T>;
-  [KIRTAN_DTO]?: DTO;
-  [KIRTAN_TOKEN]?: string;
+  [ORCHESTRA_QUERY]: IQuery<T>;
+  [ORCHESTRA_DTO]?: DTO;
+  [ORCHESTRA_TOKEN]?: string;
 }
 
 export type IOrchestration = Record<keyof unknown, IOperation<unknown, unknown>>;

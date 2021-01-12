@@ -1,8 +1,8 @@
 {
-  "name": "@kirtan/nestjs",
+  "name": "@orchestra/nestjs",
   "version": "0.1.0",
   "peerDependencies": {
-    "@kirtan/common": "^0.1.0",
+    "@orchestra/common": "^0.1.0",
     "@nestjs/common": "^7.6.3",
     "@nestjs/websockets": "^7.6.3",
     "@nestjs/core": "^7.6.3",

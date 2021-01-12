@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Message } from '@kirtan/api-interfaces';
+import { Message } from '@orchestra/api-interfaces';
 
 @Component({
-  selector: 'kirtan-root',
+  selector: 'orchestra-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })

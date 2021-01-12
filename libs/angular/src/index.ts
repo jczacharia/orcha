@@ -1,9 +1,9 @@
-import { IGateway, IOperation, IOrchestration, IParser, IQuery, ISubscription } from '@kirtan/common';
+import { IGateway, IOperation, IOrchestration, IParser, IQuery, ISubscription } from '@orchestra/common';
 import { Observable } from 'rxjs';
 
 export * from './lib/angular.module';
 export * from './lib/decorators';
-export * from './lib/kirtan.interceptor';
+export * from './lib/orchestra.interceptor';
 
 export type IClientOperation<T, Dto = undefined> = <Q extends IQuery<T>>(
   query: Q,

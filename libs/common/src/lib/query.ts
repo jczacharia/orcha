@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { KIRTAN_LIMIT, KIRTAN_PAGE, KIRTAN_PAGINATE } from './constants';
+import { ORCHESTRA_LIMIT, ORCHESTRA_PAGE, ORCHESTRA_PAGINATE } from './constants';
 import { IAnyRelation } from './relations';
 
 export type IQuery<Q> = Q extends Array<infer A> ? IQueryArray<A> & IPaginate : IQueryArray<Q>;
@@ -23,8 +23,8 @@ export type IQueryObject<Q> = {
 // Q[K] extends IAnyRelation<Q[K], Required<infer _>> ? true : IQueryArray<Q[K]>;
 
 export interface IPaginate {
-  [KIRTAN_PAGINATE]?: {
-    [KIRTAN_PAGE]: number;
-    [KIRTAN_LIMIT]: number;
+  [ORCHESTRA_PAGINATE]?: {
+    [ORCHESTRA_PAGE]: number;
+    [ORCHESTRA_LIMIT]: number;
   };
 }

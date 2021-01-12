@@ -1,8 +1,8 @@
-import { KIRTAN, KirtanOperationError } from '@kirtan/common';
+import { ORCHESTRA, OrchestraOperationError } from '@orchestra/common';
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger } from '@nestjs/common';
 
 @Catch()
-export class KirtanOperationErrorFilter implements ExceptionFilter {
+export class OrchestraOperationErrorFilter implements ExceptionFilter {
   catch(exception: HttpException, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
@@ -11,9 +11,9 @@ export class KirtanOperationErrorFilter implements ExceptionFilter {
     const status =
       exception.getStatus instanceof Function ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    const operation = (request.raw.url as string).split(`${KIRTAN}/`)[1];
+    const operation = (request.raw.url as string).split(`${ORCHESTRA}/`)[1];
 
-    const errorResponse: KirtanOperationError = {
+    const errorResponse: OrchestraOperationError = {
       statusCode: status,
       timestamp: new Date().toISOString(),
       operation,
@@ -23,7 +23,7 @@ export class KirtanOperationErrorFilter implements ExceptionFilter {
     Logger.error(
       `\nOperation:\t\t${operation}\nResponse:\t${JSON.stringify(errorResponse)}`,
       exception.stack,
-      'KirtanErrorFilter'
+      'OrchestraErrorFilter'
     );
 
     response.status(status).send(errorResponse);

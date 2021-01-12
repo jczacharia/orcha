@@ -1,10 +1,10 @@
-import { KIRTAN_DTO, KIRTAN_QUERY, KIRTAN_TOKEN } from './constants';
+import { ORCHESTRA_DTO, ORCHESTRA_QUERY, ORCHESTRA_TOKEN } from './constants';
 import { IQuery } from './query';
 
 export interface ISubscription<T, Dto = undefined> {
-  [KIRTAN_QUERY]: IQuery<T>;
-  [KIRTAN_DTO]?: Dto;
-  [KIRTAN_TOKEN]?: string;
+  [ORCHESTRA_QUERY]: IQuery<T>;
+  [ORCHESTRA_DTO]?: Dto;
+  [ORCHESTRA_TOKEN]?: string;
 }
 
 export type IGateway = Record<keyof unknown, ISubscription<unknown, unknown>>;
