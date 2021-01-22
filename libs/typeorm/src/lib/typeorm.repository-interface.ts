@@ -1,20 +1,20 @@
 import {
   IDomainModel,
+  IExactQuery,
+  IInsertEntity,
   IPaginate,
   IParser,
   IProps,
   IQuery,
   IUpdateEntity,
-  IInsertEntity,
   ORCHESTRA_LIMIT,
   ORCHESTRA_PAGE,
   ORCHESTRA_PAGINATE,
-  parseOrchestraQuery,
-} from '@orchestra/common';
+  parseOrchaQuery,
+} from '@orcha/common';
 import { paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { Socket } from 'socket.io';
 import { DeepPartial, FindManyOptions, Repository } from 'typeorm';
-import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { createTypeormRelationsArray } from './relations.transform';
 import { GatewaysStorage } from './subscription-storage';
 
@@ -33,10 +33,10 @@ export abstract class IOrchestraTypeormRepository<
       socket: Socket,
       channel: string,
       id: IdType,
-      query: Q
+      query: IExactQuery<Entity, Q>
     ) => {
       const listener = () => {
-        const relations = createTypeormRelationsArray<Entity>(query);
+        const relations = createTypeormRelationsArray(query);
         return this.repo.findOneOrFail(id, { relations });
       };
       return this.gatewaysStorage.provisionIdsSubscription({ socket, channel, listener, query });
@@ -46,10 +46,10 @@ export abstract class IOrchestraTypeormRepository<
       socket: Socket,
       channel: string,
       ids: IdType[],
-      query: Q
+      query: IExactQuery<Entity, Q>
     ) => {
       const listener = () => {
-        const relations = createTypeormRelationsArray<Entity>(query);
+        const relations = createTypeormRelationsArray(query);
         return this.repo.findByIds(ids, { relations });
       };
       return this.gatewaysStorage.provisionIdsSubscription({ socket, channel, listener, query });
@@ -58,7 +58,7 @@ export abstract class IOrchestraTypeormRepository<
     querySubscription: async <Q extends IQuery<Entity>>(
       socket: Socket,
       channel: string,
-      query: Q,
+      query: IExactQuery<Entity, Q>,
       options?: Omit<FindManyOptions<Entity>, 'relations'>
     ) => {
       const listener = async () => this.provisionQuery(query, options);
@@ -76,68 +76,77 @@ export abstract class IOrchestraTypeormRepository<
   ) {}
 
   async findOneOrFail(id: IdType): Promise<IProps<Entity>>;
-  async findOneOrFail<Q extends IQuery<Entity>>(id: IdType, query: Q): Promise<IParser<Entity, Q>>;
-  async findOneOrFail<Q extends IQuery<Entity>>(id: IdType, query?: Q) {
+  async findOneOrFail<Q extends IQuery<Entity>>(
+    id: IdType,
+    query: IExactQuery<Entity, Q>
+  ): Promise<IParser<Entity, Q>>;
+  async findOneOrFail<Q extends IQuery<Entity>>(id: IdType, query?: IExactQuery<Entity, Q>) {
     if (query) {
-      const relations = createTypeormRelationsArray<Entity>(query);
+      const relations = createTypeormRelationsArray(query);
       const dbRes = await this.repo.findOneOrFail(id, { relations });
-      return query ? parseOrchestraQuery(query, dbRes) : dbRes;
+      return parseOrchaQuery(query, dbRes);
     } else {
       return (this.repo.findOneOrFail(id) as unknown) as Promise<IProps<Entity>>;
     }
   }
 
   async findOne(id: IdType): Promise<IProps<Entity> | undefined>;
-  async findOne<Q extends IQuery<Entity>>(id: IdType, query: Q): Promise<IParser<Entity, Q> | undefined>;
-  async findOne<Q extends IQuery<Entity>>(id: IdType, query?: Q) {
+  async findOne<Q extends IQuery<Entity>>(
+    id: IdType,
+    query: IExactQuery<Entity, Q>
+  ): Promise<IParser<Entity, Q> | undefined>;
+  async findOne<Q extends IQuery<Entity>>(id: IdType, query?: IExactQuery<Entity, Q>) {
     if (query) {
-      const relations = createTypeormRelationsArray<Entity>(query);
+      const relations = createTypeormRelationsArray(query);
       const dbRes = await this.repo.findOne(id, { relations });
-      return parseOrchestraQuery(query, dbRes) as IParser<Entity, Q> | undefined;
+      return parseOrchaQuery(query, dbRes);
     } else {
       return (this.repo.findOne(id) as unknown) as Promise<IProps<Entity> | undefined>;
     }
   }
 
   async findMany(ids: IdType[]): Promise<IProps<Entity>[]>;
-  async findMany<Q extends IQuery<Entity>>(ids: IdType[], query: Q): Promise<IParser<Entity[], Q>>;
-  async findMany<Q extends IQuery<Entity>>(ids: IdType[], query?: Q) {
+  async findMany<Q extends IQuery<Entity>>(
+    ids: IdType[],
+    query: IExactQuery<Entity, Q>
+  ): Promise<IParser<Entity[], Q>>;
+  async findMany<Q extends IQuery<Entity>>(ids: IdType[], query?: IExactQuery<Entity, Q>) {
     if (ids.length === 0) return ([] as unknown) as IParser<Entity[], Q>;
     if (query) {
-      const relations = createTypeormRelationsArray<Entity>(query);
+      const relations = createTypeormRelationsArray(query);
       const dbRes = await this.repo.findByIds(ids, { relations });
-      return parseOrchestraQuery(query, dbRes);
+      return parseOrchaQuery(query, dbRes);
     } else {
       return (this.repo.findByIds(ids) as unknown) as Promise<IProps<Entity>[]>;
     }
   }
 
   async findAll(): Promise<IProps<Entity>[]>;
-  async findAll<Q extends IQuery<Entity>>(query: Q): Promise<IParser<Entity[], Q>>;
-  async findAll<Q extends IQuery<Entity>>(query?: Q) {
+  async findAll<Q extends IQuery<Entity>>(query: IExactQuery<Entity, Q>): Promise<IParser<Entity[], Q>>;
+  async findAll<Q extends IQuery<Entity>>(query?: IExactQuery<Entity, Q>) {
     if (query) {
-      const relations = createTypeormRelationsArray<Entity>(query);
+      const relations = createTypeormRelationsArray(query);
       const dbRes = await this.repo.find({ relations });
-      return parseOrchestraQuery(query, dbRes);
+      return parseOrchaQuery(query, dbRes);
     } else {
       return (this.repo.find() as unknown) as Promise<IProps<Entity>[]>;
     }
   }
 
   async query<Q extends IQuery<Entity>>(
-    query: Q,
+    query: IExactQuery<Entity, Q>,
     options?: Omit<FindManyOptions<Entity>, 'relations'>
   ): Promise<IParser<Entity[], Q>> {
     const entities = await this.provisionQuery(query, options);
-    return parseOrchestraQuery(query, entities) as IParser<Entity[], Q>;
+    return parseOrchaQuery(query, entities) as IParser<Entity[], Q>;
   }
 
   private async provisionQuery<Q extends IQuery<Entity>>(
-    query: Q,
+    query: IExactQuery<Entity, Q>,
     options?: Omit<FindManyOptions<Entity>, 'relations'>
   ): Promise<Pagination<Entity> | Entity[]> {
     let entities: Pagination<Entity> | Entity[];
-    const relations = createTypeormRelationsArray<Entity>(query);
+    const relations = createTypeormRelationsArray(query);
 
     const paginateOptions = (query as IPaginate)[ORCHESTRA_PAGINATE];
     if (paginateOptions) {
@@ -156,10 +165,14 @@ export abstract class IOrchestraTypeormRepository<
   async update<Q extends IQuery<Entity>>(
     id: IdType,
     entity: IUpdateEntity<Entity>,
-    query: Q
+    query: IExactQuery<Entity, Q>
   ): Promise<IParser<Entity, Q>>;
-  async update<Q extends IQuery<Entity>>(id: IdType, entity: IUpdateEntity<Entity>, query?: Q) {
-    await this.repo.save({ ...(entity as any), id });
+  async update<Q extends IQuery<Entity>>(
+    id: IdType,
+    entity: IUpdateEntity<Entity>,
+    query?: IExactQuery<Entity, Q>
+  ) {
+    await this.repo.save({ ...((entity as unknown) as DeepPartial<Entity>), id });
     this.gatewaysStorage.trigger(id);
     return query ? this.findOneOrFail(id, query) : this.findOneOrFail(id);
   }
@@ -167,9 +180,9 @@ export abstract class IOrchestraTypeormRepository<
   async insert(entity: IInsertEntity<Entity>): Promise<IProps<Entity>>;
   async insert<Q extends IQuery<Entity>>(
     entity: IInsertEntity<Entity>,
-    query: Q
+    query: IExactQuery<Entity, Q>
   ): Promise<IParser<Entity, Q>>;
-  async insert<Q extends IQuery<Entity>>(entity: IInsertEntity<Entity>, query?: Q) {
+  async insert<Q extends IQuery<Entity>>(entity: IInsertEntity<Entity>, query?: IExactQuery<Entity, Q>) {
     await this.repo.save((entity as unknown) as DeepPartial<Entity>);
     this.gatewaysStorage.trigger(entity.id as IdType);
     return query ? this.findOneOrFail(entity.id as IdType, query) : this.findOneOrFail(entity.id as IdType);
@@ -178,9 +191,12 @@ export abstract class IOrchestraTypeormRepository<
   async upsertMany(entities: IInsertEntity<Entity>[]): Promise<IProps<Entity>[]>;
   async upsertMany<Q extends IQuery<Entity>>(
     entities: IInsertEntity<Entity>[],
-    query: Q
+    query: IExactQuery<Entity, Q>
   ): Promise<IParser<Entity[], Q>>;
-  async upsertMany<Q extends IQuery<Entity>>(entities: IInsertEntity<Entity>[], query?: Q) {
+  async upsertMany<Q extends IQuery<Entity>>(
+    entities: IInsertEntity<Entity>[],
+    query?: IExactQuery<Entity, Q>
+  ) {
     if (entities.length === 0) return ([] as unknown) as IParser<Entity[], Q>;
     await this.repo.save((entities as unknown) as DeepPartial<Entity>[]);
     const ids = entities.map((e) => e.id) as IdType[];

@@ -47,22 +47,18 @@ export type IAnyRelation<Self = any, Relation = any> =
   | IManyToMany<Self, Relation>;
 
 export type IProps<T> = {
-  [K in keyof T as T[K] extends IAnyRelation<T[K], Required<infer _>> ? K : never]: T[K];
+  [K in keyof T as NonNullable<T[K]> extends IAnyRelation<T[K], Required<infer _>> ? K : never]: T[K];
 };
 
 export type IRelations<T> = {
-  [K in keyof T as T[K] extends IAnyRelation<T[K], Required<infer _>> ? never : K]: T[K];
+  [K in keyof T as NonNullable<T[K]> extends IAnyRelation<T[K], Required<infer _>> ? never : K]: T[K];
 };
 
-// export type IInsertEntity<T> = {
-//   [K in keyof T]: T[K] extends IAnyRelation<T[K], Required<infer _>> ? T[K] : IUpdateEntity<T[K]> | string;
-// };
-
 export type IInsertEntity<T> = {
-  [K in keyof T]: T[K] extends IAnyRelation<T[K], Required<infer _>>
+  [K in keyof T]: NonNullable<T[K]> extends IAnyRelation<T[K], Required<infer _>>
     ? T[K]
     : T[K] extends Array<infer A>
-    ? IInsertEntity<A>[] | string[]
+    ? (IInsertEntity<A> | string)[]
     : IInsertEntity<T[K]> | string;
 };
 

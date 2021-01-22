@@ -1,6 +1,21 @@
 import { IParser } from './parser';
-import { IQuery } from './query';
+import { IExactQuery, IQuery } from './query';
 
-export const createStoreModelFromQuery = <T>() => <Q extends IQuery<T>>(q: Q) => q;
+/**
+ * Creates a type-safe query model. Note this is a curried function to get around Typescript limitations.
+ *
+ * @example
+ * ```typescript
+ * export const UserQueryModel = createQueryModel<User>()({
+ *   id: true,
+ *   name: true,
+ *   items: {
+ *     id: true,
+ *     title: true,
+ *   }
+ * });
+ * ```
+ */
+export const createQueryModel = <T>() => <Q extends IQuery<T>>(query: IExactQuery<T, Q>) => query as Q;
 
-export type IStoreModel<T, Q> = T extends Array<infer A> ? IParser<A, Q> : IParser<T, Q>;
+export type IStoreModel<T, Q extends IQuery<T>> = IParser<T, Q>;

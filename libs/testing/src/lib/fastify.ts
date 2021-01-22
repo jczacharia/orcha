@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-types */
 import { Type } from '@angular/core';
-import { ClientOperation, ClientOrchestration } from '@orchestra/angular';
+import { ClientOperation, ClientOrchestration } from '@orcha/angular';
 import {
   IOperation,
   IOrchestration,
@@ -13,7 +13,7 @@ import {
   ORCHESTRA_TOKEN,
   __ORCHESTRA_OPERATIONS,
   __ORCHESTRA_ORCHESTRATION_NAME,
-} from '@orchestra/common';
+} from '@orcha/common';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { Response as HttpResponse } from 'light-my-request';
 
@@ -57,7 +57,11 @@ export function createNestjsFastifyTestOrchestration<O extends Type<IOrchestrati
 
   for (const operation of opsKeys) {
     const testOperation = async (query: object, props: object, token?: string) => {
-      const body: IOperation<object, object> = { [ORCHESTRA_DTO]: props, [ORCHESTRA_QUERY]: query };
+      const body: IOperation<object, object> = {
+        [ORCHESTRA_DTO]: props,
+        [ORCHESTRA_QUERY]: query,
+        token: '',
+      };
       const res = await app.inject({
         method: 'POST',
         url: `/${ORCHESTRA}/${name}/${operation}`,

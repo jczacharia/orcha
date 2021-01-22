@@ -3,6 +3,7 @@
     "Fastify",
     "ORCHESTRA",
     "nestjs",
+    "orcha",
     "typeorm",
     "upsert",
     "websockets"

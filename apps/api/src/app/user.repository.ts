@@ -1,4 +1,4 @@
-import { IOrchestraTypeormRepository } from '@orchestra/typeorm';
+import { IOrchestraTypeormRepository } from '@orcha/typeorm';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';

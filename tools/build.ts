@@ -1,5 +1,4 @@
 import * as cp from 'child_process';
-import * as fs from 'fs';
 
 cp.execSync(
   `nx run-many --with-deps --target build --prod --projects common,nestjs,angular,typeorm,testing --parallel --maxParallel=5`,

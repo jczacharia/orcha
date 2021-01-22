@@ -1,4 +1,4 @@
-import { ORCHESTRA, OrchestraOperationError } from '@orchestra/common';
+import { ORCHESTRA, OrchestraOperationError } from '@orcha/common';
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger } from '@nestjs/common';
 
 @Catch()
@@ -11,7 +11,7 @@ export class OrchestraOperationErrorFilter implements ExceptionFilter {
     const status =
       exception.getStatus instanceof Function ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    const operation = (request.raw.url as string).split(`${ORCHESTRA}/`)[1];
+    const operation = (request.url as string).split(`${ORCHESTRA}/`)[1];
 
     const errorResponse: OrchestraOperationError = {
       statusCode: status,

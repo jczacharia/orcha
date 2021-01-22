@@ -5,4 +5,5 @@
     src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png"
   />
 </div>
-<div>Message: {{ hello$ | async | json }}</div>
+<input type="file" (change)="changeProfilePic($event)" #profilePicInp />
+<button (click)="changeProfilePicButtonClick()">upload file</button>

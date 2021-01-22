@@ -1,6 +1,6 @@
 import { HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Type } from '@angular/core';
-import { ORCHESTRA } from '@orchestra/common';
+import { ORCHESTRA } from '@orcha/common';
 
 export interface OrchestraInterceptor extends HttpInterceptor {}
 
@@ -8,7 +8,7 @@ export function createOrchestraInterceptorFilter(interceptor: Type<OrchestraInte
   const originalFunction = interceptor.prototype.intercept;
   interceptor.prototype.intercept = function (req: HttpRequest<any>, next: HttpHandler) {
     // Filter out non-orchestra http calls.
-    const firstParam = req.url.replace('http://', '').split('/')[1];
+    const firstParam = req.url.replace(/(https:\/\/)|(http:\/\/)/g, '').split('/')[1];
     if (firstParam !== ORCHESTRA) {
       return next.handle(req);
     }

@@ -1,8 +1,8 @@
 {
-  "name": "@orchestra/testing",
-  "version": "0.1.0",
+  "name": "@orcha/testing",
+  "version": "0.1.8",
   "peerDependencies": {
-    "@orchestra/common": "^0.1.0",
-    "@orchestra/angular": "^0.1.0"
+    "@orcha/common": "^0.1.8",
+    "@orcha/angular": "^0.1.8"
   }
 }

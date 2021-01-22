@@ -1,12 +1,13 @@
-import { ServerOperation, ServerOrchestration } from '@orchestra/nestjs';
-import { UserRepository } from './user.repository';
+import { IQuery } from '@orcha/common';
+import { IServerOrchestration, ServerOperation, ServerOrchestration } from '@orcha/nestjs';
+// eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
+import { ExDto, IExOrchestration } from '../../../example-app/src/app/ex';
 
-@ServerOrchestration('hello')
-export class AppOrchestration {
-  constructor(private readonly userRepo: UserRepository) {}
-
+@ServerOrchestration('ex')
+export class AppOrchestration implements IServerOrchestration<IExOrchestration> {
   @ServerOperation()
-  getData(q: any) {
-    return this.userRepo.query(q);
+  fileUpload(query: IQuery<{ res: string }>, token: string, dto: ExDto, files: Express.Multer.File[]) {
+    console.log(query, dto, token, files);
+    return { res: 'dfd' } as any;
   }
 }

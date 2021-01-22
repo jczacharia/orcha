@@ -25,12 +25,12 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@orchestra/api-interfaces": ["libs/api-interfaces/src/index.ts"],
-      "@orchestra/angular": ["libs/angular/src/index.ts"],
-      "@orchestra/nestjs": ["libs/nestjs/src/index.ts"],
-      "@orchestra/typeorm": ["libs/typeorm/src/index.ts"],
-      "@orchestra/common": ["libs/common/src/index.ts"],
-      "@orchestra/testing": ["libs/testing/src/index.ts"]
+      "@orcha/api-interfaces": ["libs/api-interfaces/src/index.ts"],
+      "@orcha/angular": ["libs/angular/src/index.ts"],
+      "@orcha/nestjs": ["libs/nestjs/src/index.ts"],
+      "@orcha/typeorm": ["libs/typeorm/src/index.ts"],
+      "@orcha/common": ["libs/common/src/index.ts"],
+      "@orcha/testing": ["libs/testing/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

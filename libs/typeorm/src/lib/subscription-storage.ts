@@ -1,11 +1,11 @@
-import { IDomainModel, IPagination, IQuery, parseOrchestraQuery } from '@orchestra/common';
+import { IDomainModel, IExactQuery, IPagination, parseOrchaQuery } from '@orcha/common';
 import { Socket } from 'socket.io';
 
 interface ISubscription<Entity> {
   channel: string;
   socket: Socket;
   listener: () => Promise<Entity | Entity[] | IPagination<Entity>>;
-  query: IQuery<Entity>;
+  query: IExactQuery<Entity, unknown>;
 }
 
 interface IdsSubscription<Entity, IdType> extends ISubscription<Entity> {
@@ -53,14 +53,14 @@ export class GatewaysStorage<
       for (const s of subscription) {
         if (s.type === 'entity') {
           if (triggeredIds.some((t) => s.idsListenedTo.includes(t))) {
-            s.socket.emit(s.channel, parseOrchestraQuery(s.query, await s.listener()));
+            s.socket.emit(s.channel, parseOrchaQuery(s.query as any, await s.listener()));
           }
         } else if (s.type === 'query') {
           // TODO very inefficient for many clients listening to queries.
           const res = await s.listener();
           const ids = this.getIds(res);
           if (triggeredIds.some((t) => ids.includes(t))) {
-            s.socket.emit(s.channel, parseOrchestraQuery(s.query, res));
+            s.socket.emit(s.channel, parseOrchaQuery(s.query as any, res));
           }
         }
       }
@@ -77,7 +77,7 @@ export class GatewaysStorage<
     } else {
       this.subscribers.set(newSub.socket.id, [newSub]);
     }
-    newSub.socket.emit(newSub.channel, parseOrchestraQuery(newSub.query, await newSub.listener()));
+    newSub.socket.emit(newSub.channel, parseOrchaQuery(newSub.query as any, await newSub.listener()));
   }
 
   private getIds(res: Entity | Entity[] | IPagination<Entity>) {

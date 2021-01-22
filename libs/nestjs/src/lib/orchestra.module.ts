@@ -1,4 +1,4 @@
-import { IGateway, IOrchestration } from '@orchestra/common';
+import { IGateway, IOrchestration } from '@orcha/common';
 import { DynamicModule, Module, Type } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
 import { OrchestraOperationErrorFilter } from './orchestra.filter';

@@ -1,11 +1,11 @@
-import { IOperation } from '@orchestra/common';
+import { IOperation } from '@orcha/common';
 import {
   createNestjsFastifyTestOrchestration,
   ITestOperation,
   ITestOrchestration,
   TestOperation,
   TestOrchestration,
-} from '@orchestra/testing';
+} from '@orcha/testing';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { Test } from '@nestjs/testing';
 import { AppTestModule } from '../core/app-test.module';

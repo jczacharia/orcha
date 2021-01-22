@@ -1,24 +1,37 @@
-import { IOperation, IOrchestration, IParser, IQuery, ISubscription } from '@orchestra/common';
+import { IExactQuery, IOperation, IOrchestration, IParser, IQuery, ISubscription } from '@orcha/common';
+import 'multer';
 import { Observable } from 'rxjs';
 import { Socket } from 'socket.io';
 
-type ServerOperationReturnType<T> = T | Promise<T> | Observable<T>;
+/** Server Return Type */
+type SRT<T> = T | Promise<T> | Observable<T>;
 
-export type IServerOperation<T, Dto = undefined> = (
-  query: IQuery<T>,
-  dto: Dto,
-  auth?: string
-) => ServerOperationReturnType<IParser<T, IQuery<T>>>;
+export type IServerOperation<
+  T,
+  DTO extends Record<string, any> | undefined = undefined,
+  F extends File | File[] | undefined = undefined
+> = DTO extends undefined
+  ? <Q extends IQuery<T>>(query: IExactQuery<T, Q>, token: string) => SRT<IParser<T, IQuery<T>>>
+  : F extends undefined
+  ? <Q extends IQuery<T>>(query: IExactQuery<T, Q>, token: string, dto: DTO) => SRT<IParser<T, IQuery<T>>>
+  : <Q extends IQuery<T>>(
+      query: IExactQuery<T, Q>,
+      token: string,
+      dto: DTO,
+      files: F extends File[] ? Express.Multer.File[] : Express.Multer.File
+    ) => SRT<IParser<T, IQuery<T>>>;
 
 export type IServerOrchestration<O extends IOrchestration> = {
-  [K in keyof O]: O[K] extends IOperation<infer T, infer Props> ? IServerOperation<T, Props> : never;
+  [K in keyof O]: O[K] extends IOperation<infer T, infer Props, infer F>
+    ? IServerOperation<T, Props, F>
+    : never;
 };
 
-export type IServerSubscription<T, Dto = undefined> = (
+export type IServerSubscription<T, Dto> = (
   socket: Socket,
   query: IQuery<T>,
   dto: Dto,
-  auth?: string
+  token: string
 ) => Promise<void>;
 
 export type IServerGateway<O extends IOrchestration> = {

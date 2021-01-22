@@ -1,22 +1,25 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import { IPagination } from './pagination';
 import { IParser } from './parser';
-import { IQuery } from './query';
+import { IExactQuery, IQuery } from './query';
 
-export function parseOrchestraQuery<T, Q extends IQuery<T>>(query: Q, entities: T): IParser<T, Q>;
-export function parseOrchestraQuery<T, Q extends IQuery<T>>(
-  query: Q,
+export function parseOrchaQuery<T, Q extends IQuery<T>>(
+  query: IExactQuery<T, Q>,
+  entities: T
+): IParser<T, Q>;
+export function parseOrchaQuery<T, Q extends IQuery<T>>(
+  query: IExactQuery<T, Q>,
   entities: T[] | IPagination<T>
 ): IParser<T[], Q>;
-export function parseOrchestraQuery<T, Q extends IQuery<T>>(
-  query: Q,
+export function parseOrchaQuery<T, Q extends IQuery<T>>(
+  query: IExactQuery<T, Q>,
   entities: T | T[] | IPagination<T> | undefined
 ) {
   if (!entities) return undefined;
 
   // is pagination
   if ('items' in entities && 'meta' in entities) {
-    const i = parseOrchestraQuery(query, entities.items);
+    const i = parseOrchaQuery(query, entities.items);
     // TODO any
     (entities as any).items = i;
     return (entities as unknown) as IParser<T[], Q>;
@@ -36,7 +39,7 @@ export function parseOrchestraQuery<T, Q extends IQuery<T>>(
 
     for (const [k, q] of Object.entries(query as object)) {
       if (typeof q === 'object') {
-        parseOrchestraQuery(q, e[k as keyof T]);
+        parseOrchaQuery(q, e[k as keyof T]);
       }
     }
 

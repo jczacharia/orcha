@@ -1,11 +1,11 @@
 import {
-  __ORCHESTRA_SUBSCRIPTIONS,
   __ORCHESTRA_GATEWAY_NAME,
   __ORCHESTRA_GATEWAY_PLACEHOLDER,
   __ORCHESTRA_OPERATIONS,
   __ORCHESTRA_ORCHESTRATION_NAME,
   __ORCHESTRA_ORCHESTRATION_PLACEHOLDER,
-} from '@orchestra/common';
+  __ORCHESTRA_SUBSCRIPTIONS,
+} from '@orcha/common';
 
 export function ClientOrchestration(name: string): ClassDecorator {
   return function (target: Function) {

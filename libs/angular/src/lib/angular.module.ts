@@ -1,22 +1,22 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClient, HttpEventType, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { InjectionToken, Injector, ModuleWithProviders, NgModule, Provider, Type } from '@angular/core';
 import {
   IGateway,
-  IOperation,
   IOrchestration,
   ISubscription,
   ORCHESTRA,
   ORCHESTRA_DTO,
+  ORCHESTRA_FILES,
   ORCHESTRA_QUERY,
-  __ORCHESTRA_SUBSCRIPTIONS,
   __ORCHESTRA_GATEWAY_NAME,
   __ORCHESTRA_OPERATIONS,
   __ORCHESTRA_ORCHESTRATION_NAME,
-} from '@orchestra/common';
+  __ORCHESTRA_SUBSCRIPTIONS,
+} from '@orcha/common';
 import 'reflect-metadata';
 import { Subject } from 'rxjs';
-import { first } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
 import * as io from 'socket.io-client';
 import { createOrchestraInterceptorFilter, OrchestraInterceptor } from './orchestra.interceptor';
 
@@ -105,9 +105,44 @@ export class OrchestraAngularModule {
     const apiUrl = injector.get(OrchestraApiUrl);
     const http = injector.get(HttpClient);
     for (const funcName of opsKeys) {
-      const clientOperation = (query: object, props: object) => {
-        const body: IOperation<object, object> = { [ORCHESTRA_DTO]: props, [ORCHESTRA_QUERY]: query };
-        return http.post<any>(`${apiUrl}/${ORCHESTRA}/${name}/${funcName}`, body).pipe(first());
+      const clientOperation = (query: object, dto: object, files?: File | File[]) => {
+        const body = new FormData();
+
+        body.set(ORCHESTRA_QUERY, JSON.stringify(query));
+        body.set(ORCHESTRA_DTO, JSON.stringify(dto));
+
+        if (Array.isArray(files)) {
+          files?.forEach((file) => body.append(ORCHESTRA_FILES, file, file.name));
+        } else if (files) {
+          body.set(ORCHESTRA_FILES, files, files.name);
+        }
+
+        return http
+          .post<any>(`${apiUrl}/${ORCHESTRA}/${name}/${funcName}`, body, {
+            reportProgress: true,
+            observe: 'events',
+          })
+          .pipe(
+            filter((event) => {
+              if (files) {
+                return true;
+              }
+              return event.type === HttpEventType.Response;
+            }),
+            map((event) => {
+              switch (event.type) {
+                case HttpEventType.UploadProgress:
+                  return { ...event, progress: Math.round((100 * event.loaded) / (event.total ?? 1)) };
+
+                case HttpEventType.Response:
+                  if (files) {
+                    return event;
+                  }
+                  return event.body;
+              }
+            }),
+            filter((e) => !!e)
+          );
       };
       operations[funcName] = clientOperation;
     }

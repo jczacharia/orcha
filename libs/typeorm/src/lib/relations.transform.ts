@@ -1,6 +1,6 @@
-import { IQuery, ORCHESTRA_PAGINATE } from '@orchestra/common';
+import { IExactQuery, IQuery, ORCHESTRA_PAGINATE } from '@orcha/common';
 
-export function createTypeormRelationsArray<T>(query: IQuery<T>) {
+export function createTypeormRelationsArray<T, Q extends IQuery<T>>(query: IExactQuery<T, Q>) {
   const arr: string[] = [];
 
   const parse = (q: any, root: string) => {

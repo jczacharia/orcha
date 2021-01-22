@@ -1,13 +1,32 @@
+import { ClientOperation, ClientOrchestration, IClientOrchestration } from '@orcha/angular';
 import {
-  createStoreModelFromQuery,
+  createQueryModel,
   IManyToMany,
   IManyToOne,
   IOneToMany,
   IOneToOne,
-  IProps,
+  IOperation,
   IStoreModel,
-  IUpdateEntity,
-} from '@orchestra/common';
+} from '@orcha/common';
+import { IsString } from 'class-validator';
+
+export abstract class ExDto {
+  @IsString()
+  name!: string;
+}
+
+export interface IExOrchestration {
+  fileUpload: IOperation<{ res: string }, ExDto>;
+}
+
+@ClientOrchestration('ex')
+export class ExOrchestration implements IClientOrchestration<IExOrchestration> {
+  @ClientOperation()
+  fileUpload!: IClientOrchestration<IExOrchestration>['fileUpload'];
+}
+
+const e = new ExOrchestration();
+// e.fileUpload({res: true},{name: ''} ).subscribe(s => s.)
 
 export interface Todo {
   id: string;
@@ -37,7 +56,8 @@ export interface UserPrivate {
   publicProfile: IOneToOne<UserPrivate, User>;
 }
 
-const UserQueryModel = createStoreModelFromQuery<Todo[]>()({
+const UserQueryModel = createQueryModel<Todo>()({
+  id: true,
   tags: {
     id: true,
   },

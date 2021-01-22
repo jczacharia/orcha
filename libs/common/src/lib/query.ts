@@ -14,7 +14,7 @@ export type IQueryObject<Q> = {
   [K in keyof Q]?: NonNullable<Q[K]> extends object
     ? // `Required<infer _>` seems to work, but idk why.
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      Q[K] extends IAnyRelation<Q[K], Required<infer _>>
+      NonNullable<Q[K]> extends IAnyRelation<Q[K], Required<infer _>>
       ? true
       : IQueryArray<Q[K]>
     : true;
@@ -28,3 +28,14 @@ export interface IPaginate {
     [ORCHESTRA_LIMIT]: number;
   };
 }
+
+export type IExactQuery<T, Q> = T extends Array<infer A> ? IExactQueryObject<A, Q> : IExactQueryObject<T, Q>;
+
+export type IExactQueryObject<T, Q> = Q &
+  {
+    [K in keyof Q]: K extends typeof ORCHESTRA_PAGINATE
+      ? Q[K]
+      : K extends keyof T
+      ? IExactQuery<T[K], Q[K]>
+      : never;
+  };
