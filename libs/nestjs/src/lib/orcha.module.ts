@@ -1,12 +1,12 @@
 import { IGateway, IOrchestration } from '@orcha/common';
 import { DynamicModule, Module, Type } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
-import { OrchestraOperationErrorFilter } from './orchestra.filter';
+import { OrchaOperationErrorFilter } from './orcha.filter';
 
 @Module({
-  providers: [{ provide: APP_FILTER, useClass: OrchestraOperationErrorFilter }],
+  providers: [{ provide: APP_FILTER, useClass: OrchaOperationErrorFilter }],
 })
-export class OrchestraModule {
+export class OrchaModule {
   static forFeature({
     orchestrations,
     gateways,
@@ -15,11 +15,11 @@ export class OrchestraModule {
     gateways?: Type<IGateway>[];
   }): DynamicModule {
     if (orchestrations?.length === 0 && gateways?.length === 0) {
-      throw new Error('Please include at least one Orchestration or Gateway in the OrchestraModule.');
+      throw new Error('Please include at least one Orchestration or Gateway in the OrchaModule.');
     }
 
     return {
-      module: OrchestraModule,
+      module: OrchaModule,
       providers: gateways,
       controllers: orchestrations,
       exports: gateways,

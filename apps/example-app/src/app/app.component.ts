@@ -16,7 +16,7 @@ function parseOneFile(event: Event) {
 }
 
 @Component({
-  selector: 'orchestra-root',
+  selector: 'orcha-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })

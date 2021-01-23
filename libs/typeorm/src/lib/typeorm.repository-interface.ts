@@ -7,9 +7,9 @@ import {
   IProps,
   IQuery,
   IUpdateEntity,
-  ORCHESTRA_LIMIT,
-  ORCHESTRA_PAGE,
-  ORCHESTRA_PAGINATE,
+  ORCHA_LIMIT,
+  ORCHA_PAGE,
+  ORCHA_PAGINATE,
   parseOrchaQuery,
 } from '@orcha/common';
 import { paginate, Pagination } from 'nestjs-typeorm-paginate';
@@ -21,7 +21,7 @@ import { GatewaysStorage } from './subscription-storage';
 /**
  * TODO
  */
-export abstract class IOrchestraTypeormRepository<
+export abstract class IOrchaTypeormRepository<
   // eslint-disable-next-line @typescript-eslint/ban-types
   Entity extends IDomainModel<{ id: IdType }, {}>,
   IdType extends string | number = string
@@ -148,11 +148,11 @@ export abstract class IOrchestraTypeormRepository<
     let entities: Pagination<Entity> | Entity[];
     const relations = createTypeormRelationsArray(query);
 
-    const paginateOptions = (query as IPaginate)[ORCHESTRA_PAGINATE];
+    const paginateOptions = (query as IPaginate)[ORCHA_PAGINATE];
     if (paginateOptions) {
       entities = await paginate(
         this.repo,
-        { page: paginateOptions[ORCHESTRA_PAGE], limit: paginateOptions[ORCHESTRA_LIMIT] },
+        { page: paginateOptions[ORCHA_PAGE], limit: paginateOptions[ORCHA_LIMIT] },
         { ...options, relations }
       );
     } else {

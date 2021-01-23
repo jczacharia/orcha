@@ -1,8 +1,8 @@
-import { ORCHESTRA, OrchestraOperationError } from '@orcha/common';
+import { ORCHA, OrchaOperationError } from '@orcha/common';
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger } from '@nestjs/common';
 
 @Catch()
-export class OrchestraOperationErrorFilter implements ExceptionFilter {
+export class OrchaOperationErrorFilter implements ExceptionFilter {
   catch(exception: HttpException, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
@@ -11,9 +11,9 @@ export class OrchestraOperationErrorFilter implements ExceptionFilter {
     const status =
       exception.getStatus instanceof Function ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    const operation = (request.url as string).split(`${ORCHESTRA}/`)[1];
+    const operation = (request.url as string).split(`${ORCHA}/`)[1];
 
-    const errorResponse: OrchestraOperationError = {
+    const errorResponse: OrchaOperationError = {
       statusCode: status,
       timestamp: new Date().toISOString(),
       operation,
@@ -23,7 +23,7 @@ export class OrchestraOperationErrorFilter implements ExceptionFilter {
     Logger.error(
       `\nOperation:\t\t${operation}\nResponse:\t${JSON.stringify(errorResponse)}`,
       exception.stack,
-      'OrchestraErrorFilter'
+      'OrchaErrorFilter'
     );
 
     response.status(status).send(errorResponse);

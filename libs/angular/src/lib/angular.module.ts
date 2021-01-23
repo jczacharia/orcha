@@ -5,42 +5,42 @@ import {
   IGateway,
   IOrchestration,
   ISubscription,
-  ORCHESTRA,
-  ORCHESTRA_DTO,
-  ORCHESTRA_FILES,
-  ORCHESTRA_QUERY,
-  __ORCHESTRA_GATEWAY_NAME,
-  __ORCHESTRA_OPERATIONS,
-  __ORCHESTRA_ORCHESTRATION_NAME,
-  __ORCHESTRA_SUBSCRIPTIONS,
+  ORCHA,
+  ORCHA_DTO,
+  ORCHA_FILES,
+  ORCHA_QUERY,
+  __ORCHA_GATEWAY_NAME,
+  __ORCHA_OPERATIONS,
+  __ORCHA_ORCHESTRATION_NAME,
+  __ORCHA_SUBSCRIPTIONS,
 } from '@orcha/common';
 import 'reflect-metadata';
 import { Subject } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import * as io from 'socket.io-client';
-import { createOrchestraInterceptorFilter, OrchestraInterceptor } from './orchestra.interceptor';
+import { createOrchaInterceptorFilter, OrchaInterceptor } from './orcha.interceptor';
 
-const OrchestraApiUrl = new InjectionToken<string>('OrchestraApiUrl');
-
-@NgModule({})
-export class OrchestraAngularRootModule {}
+const OrchaApiUrl = new InjectionToken<string>('OrchaApiUrl');
 
 @NgModule({})
-export class OrchestraAngularFeatureModule {
+export class OrchaAngularRootModule {}
+
+@NgModule({})
+export class OrchaAngularFeatureModule {
   // Forces Root module to be create before feature module.
-  constructor(protected readonly root: OrchestraAngularRootModule) {}
+  constructor(protected readonly root: OrchaAngularRootModule) {}
 }
 
 @NgModule({
   imports: [CommonModule],
 })
-export class OrchestraAngularModule {
-  static forRoot(apiUrl: string): ModuleWithProviders<OrchestraAngularRootModule> {
+export class OrchaAngularModule {
+  static forRoot(apiUrl: string): ModuleWithProviders<OrchaAngularRootModule> {
     return {
-      ngModule: OrchestraAngularRootModule,
+      ngModule: OrchaAngularRootModule,
       providers: [
         {
-          provide: OrchestraApiUrl,
+          provide: OrchaApiUrl,
           useValue: apiUrl,
         },
       ],
@@ -54,14 +54,14 @@ export class OrchestraAngularModule {
   }: {
     orchestrations?: Type<IOrchestration>[];
     gateways?: Type<IGateway>[];
-    interceptors?: Type<OrchestraInterceptor>[];
-  }): ModuleWithProviders<OrchestraAngularFeatureModule> {
+    interceptors?: Type<OrchaInterceptor>[];
+  }): ModuleWithProviders<OrchaAngularFeatureModule> {
     const ors: Provider[] =
       orchestrations?.map(
         (o): Provider => ({
           deps: [Injector],
           provide: o,
-          useFactory: (injector: Injector) => OrchestraAngularModule.createOrchestration(injector, o),
+          useFactory: (injector: Injector) => OrchaAngularModule.createOrchestration(injector, o),
         })
       ) ?? [];
 
@@ -70,7 +70,7 @@ export class OrchestraAngularModule {
         (s): Provider => ({
           deps: [Injector],
           provide: s,
-          useFactory: (injector: Injector) => OrchestraAngularModule.createGateway(injector, s),
+          useFactory: (injector: Injector) => OrchaAngularModule.createGateway(injector, s),
         })
       ) ?? [];
 
@@ -78,20 +78,20 @@ export class OrchestraAngularModule {
       interceptors?.map(
         (i): Provider => ({
           provide: HTTP_INTERCEPTORS,
-          useClass: createOrchestraInterceptorFilter(i),
+          useClass: createOrchaInterceptorFilter(i),
           multi: true,
         })
       ) ?? [];
 
     return {
-      ngModule: OrchestraAngularFeatureModule,
+      ngModule: OrchaAngularFeatureModule,
       providers: [...ors, ...gates, ...inters],
     };
   }
 
   static createOrchestration(injector: Injector, orchestration: Type<IOrchestration>) {
-    const name = orchestration.prototype[__ORCHESTRA_ORCHESTRATION_NAME];
-    const operations = orchestration.prototype[__ORCHESTRA_OPERATIONS];
+    const name = orchestration.prototype[__ORCHA_ORCHESTRATION_NAME];
+    const operations = orchestration.prototype[__ORCHA_OPERATIONS];
     const opsKeys = Object.keys(operations);
 
     if (!name) {
@@ -102,23 +102,23 @@ export class OrchestraAngularModule {
       );
     }
 
-    const apiUrl = injector.get(OrchestraApiUrl);
+    const apiUrl = injector.get(OrchaApiUrl);
     const http = injector.get(HttpClient);
     for (const funcName of opsKeys) {
       const clientOperation = (query: object, dto: object, files?: File | File[]) => {
         const body = new FormData();
 
-        body.set(ORCHESTRA_QUERY, JSON.stringify(query));
-        body.set(ORCHESTRA_DTO, JSON.stringify(dto));
+        body.set(ORCHA_QUERY, JSON.stringify(query));
+        body.set(ORCHA_DTO, JSON.stringify(dto));
 
         if (Array.isArray(files)) {
-          files?.forEach((file) => body.append(ORCHESTRA_FILES, file, file.name));
+          files?.forEach((file) => body.append(ORCHA_FILES, file, file.name));
         } else if (files) {
-          body.set(ORCHESTRA_FILES, files, files.name);
+          body.set(ORCHA_FILES, files, files.name);
         }
 
         return http
-          .post<any>(`${apiUrl}/${ORCHESTRA}/${name}/${funcName}`, body, {
+          .post<any>(`${apiUrl}/${ORCHA}/${name}/${funcName}`, body, {
             reportProgress: true,
             observe: 'events',
           })
@@ -150,9 +150,9 @@ export class OrchestraAngularModule {
   }
 
   static createGateway(injector: Injector, gateway: Type<IGateway>) {
-    const apiUrl = injector.get(OrchestraApiUrl);
-    const gatewayName = gateway.prototype[__ORCHESTRA_GATEWAY_NAME];
-    const subscriptions = gateway.prototype[__ORCHESTRA_SUBSCRIPTIONS];
+    const apiUrl = injector.get(OrchaApiUrl);
+    const gatewayName = gateway.prototype[__ORCHA_GATEWAY_NAME];
+    const subscriptions = gateway.prototype[__ORCHA_SUBSCRIPTIONS];
     const subKeys = Object.keys(subscriptions);
 
     if (subKeys.length > 0) {
@@ -163,7 +163,7 @@ export class OrchestraAngularModule {
       });
 
       socket.on('connect', () => {
-        console.log('Orchestra Websockets Connected.');
+        console.log('Orcha Websockets Connected.');
       });
 
       for (const funcName of subKeys) {
@@ -175,8 +175,8 @@ export class OrchestraAngularModule {
 
         const clientSubscription = (query: object, props: object) => {
           const body: ISubscription<object, object> = {
-            [ORCHESTRA_DTO]: props,
-            [ORCHESTRA_QUERY]: query,
+            [ORCHA_DTO]: props,
+            [ORCHA_QUERY]: query,
           };
           socket.emit(funcName, body);
           return subject.asObservable();

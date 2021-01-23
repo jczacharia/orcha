@@ -1,1 +1,1 @@
-export * from './lib/fastify';
+export * from './lib/express';

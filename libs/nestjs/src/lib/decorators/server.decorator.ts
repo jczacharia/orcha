@@ -9,13 +9,13 @@ import {
   WebSocketGateway,
   WsException,
 } from '@nestjs/websockets';
-import { ORCHESTRA, ORCHESTRA_DTO, ORCHESTRA_FILES, ORCHESTRA_QUERY, ORCHESTRA_TOKEN } from '@orcha/common';
+import { ORCHA, ORCHA_DTO, ORCHA_FILES, ORCHA_QUERY, ORCHA_TOKEN } from '@orcha/common';
 import { ValidationPipe } from '../pipes';
 
 export function ServerOrchestration(name: string | number): ClassDecorator {
   return function (target: Function) {
     if (!name) throw new Error('No orchestration name provided for @ServerOrchestration');
-    Controller(`${ORCHESTRA}/${name}`)(target);
+    Controller(`${ORCHA}/${name}`)(target);
   };
 }
 
@@ -34,16 +34,16 @@ export function ServerOperation(
   } = { fileUpload: 'singular' }
 ): MethodDecorator {
   return function <T>(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) {
-    Body(ORCHESTRA_QUERY, { transform })(target, propertyKey, 0);
-    Body(ORCHESTRA_TOKEN)(target, propertyKey, 1);
-    Body(ORCHESTRA_DTO, { transform }, new ValidationPipe())(target, propertyKey, 2);
+    Body(ORCHA_QUERY, { transform })(target, propertyKey, 0);
+    Body(ORCHA_TOKEN)(target, propertyKey, 1);
+    Body(ORCHA_DTO, { transform }, new ValidationPipe())(target, propertyKey, 2);
 
     if (options?.fileUpload === 'singular') {
       UploadedFile()(target, propertyKey, 3);
-      UseInterceptors(FileInterceptor(ORCHESTRA_FILES))(target, propertyKey, descriptor);
+      UseInterceptors(FileInterceptor(ORCHA_FILES))(target, propertyKey, descriptor);
     } else {
       UploadedFiles()(target, propertyKey, 3);
-      UseInterceptors(FilesInterceptor(ORCHESTRA_FILES))(target, propertyKey, descriptor);
+      UseInterceptors(FilesInterceptor(ORCHA_FILES))(target, propertyKey, descriptor);
     }
 
     Post(propertyKey as string)(target, propertyKey, descriptor);
@@ -60,9 +60,9 @@ export function ServerSubscription(): MethodDecorator {
   return function <T>(target: any, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) {
     ConnectedSocket()(target, propertyKey, 0);
     // TODO
-    // MessageBody(ORCHESTRA_QUERY)(target, propertyKey, 1);
-    // MessageBody(ORCHESTRA_DTO, new ValidationPipe())(target, propertyKey, 2);
-    // MessageBody(ORCHESTRA_TOKEN)(target, propertyKey, 3);
+    // MessageBody(ORCHA_QUERY)(target, propertyKey, 1);
+    // MessageBody(ORCHA_DTO, new ValidationPipe())(target, propertyKey, 2);
+    // MessageBody(ORCHA_TOKEN)(target, propertyKey, 3);
     MessageBody()(target, propertyKey, 1);
     MessageBody()(target, propertyKey, 2);
     MessageBody()(target, propertyKey, 3);

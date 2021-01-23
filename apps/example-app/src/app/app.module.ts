@@ -1,7 +1,7 @@
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { OrchestraAngularModule,  } from '@orcha/angular';
+import { OrchaAngularModule,  } from '@orcha/angular';
 import { AppComponent } from './app.component';
 import { ExOrchestration } from './ex';
 
@@ -10,8 +10,8 @@ import { ExOrchestration } from './ex';
   imports: [
     BrowserModule,
     HttpClientModule,
-    OrchestraAngularModule.forRoot('http://localhost:3333'),
-    OrchestraAngularModule.forFeature({
+    OrchaAngularModule.forRoot('http://localhost:3333'),
+    OrchaAngularModule.forFeature({
       orchestrations: [ExOrchestration],
     }),
   ],

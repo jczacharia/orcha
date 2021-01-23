@@ -1,10 +1,10 @@
-import { ORCHESTRA_DTO, ORCHESTRA_QUERY, ORCHESTRA_TOKEN } from './constants';
+import { ORCHA_DTO, ORCHA_QUERY, ORCHA_TOKEN } from './constants';
 import { IQuery } from './query';
 
 export interface ISubscription<T, Dto = undefined> {
-  [ORCHESTRA_QUERY]: IQuery<T>;
-  [ORCHESTRA_DTO]?: Dto;
-  [ORCHESTRA_TOKEN]?: string;
+  [ORCHA_QUERY]: IQuery<T>;
+  [ORCHA_DTO]?: Dto;
+  [ORCHA_TOKEN]?: string;
 }
 
 export type IGateway = Record<keyof unknown, ISubscription<unknown, unknown>>;

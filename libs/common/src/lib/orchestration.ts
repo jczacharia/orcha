@@ -1,4 +1,4 @@
-import { ORCHESTRA_DTO, ORCHESTRA_FILES, ORCHESTRA_QUERY, ORCHESTRA_TOKEN } from './constants';
+import { ORCHA_DTO, ORCHA_FILES, ORCHA_QUERY, ORCHA_TOKEN } from './constants';
 import { IQuery } from './query';
 
 export interface IOperation<
@@ -6,10 +6,10 @@ export interface IOperation<
   DTO extends Record<string, any> | undefined = undefined,
   F extends File | File[] | undefined = undefined
 > {
-  [ORCHESTRA_QUERY]: IQuery<T>;
-  [ORCHESTRA_DTO]: DTO;
-  [ORCHESTRA_TOKEN]: string;
-  [ORCHESTRA_FILES]?: F;
+  [ORCHA_QUERY]: IQuery<T>;
+  [ORCHA_DTO]: DTO;
+  [ORCHA_TOKEN]: string;
+  [ORCHA_FILES]?: F;
 }
 
 export type IOrchestration = Record<keyof unknown, IOperation<unknown>>;

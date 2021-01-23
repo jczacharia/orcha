@@ -12,7 +12,7 @@ import { Observable } from 'rxjs';
 
 export * from './lib/angular.module';
 export * from './lib/decorators';
-export * from './lib/orchestra.interceptor';
+export * from './lib/orcha.interceptor';
 
 export type IClientOperation<
   T,
@@ -28,8 +28,8 @@ export type IClientOperation<
       files: F
     ) => Observable<HttpEvent<IParser<T, Q>>>;
 
-export type IClientOrchestration<Orchestration extends IOrchestration> = {
-  [K in keyof Orchestration]: Orchestration[K] extends IOperation<infer T, infer Props, infer F>
+export type IClientOrchestration<O extends IOrchestration> = {
+  [K in keyof O]: O[K] extends IOperation<infer T, infer Props, infer F>
     ? IClientOperation<T, Props, F>
     : never;
 };

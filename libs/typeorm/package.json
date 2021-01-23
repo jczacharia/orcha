@@ -1,15 +1,14 @@
 {
   "name": "@orcha/typeorm",
-  "version": "0.1.9",
+  "version": "0.1.11",
   "peerDependencies": {
-    "@orcha/common": "^0.1.9",
+    "@orcha/common": "^0.1.11",
     "@nestjs/typeorm": "^7.1.5",
-    "@nestjs/common": "^7.6.4",
-    "typeorm": "^0.2.29",
-    "nestjs-typeorm-paginate": "^2.2.6",
-    "@nestjs/websockets": "^7.6.3",
+    "@nestjs/common": "^7.6.5",
+    "typeorm": "^0.2.30",
+    "nestjs-typeorm-paginate": "^2.3.0",
+    "@nestjs/websockets": "^7.6.5",
     "socket.io": "^2.3.0",
-    "socket.io-client": "^2.3.1",
-    "@nestjs/platform-socket.io": "^7.6.4"
+    "socket.io-client": "^2.3.1"
   }
 }

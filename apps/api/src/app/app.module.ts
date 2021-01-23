@@ -1,4 +1,4 @@
-import { OrchestraModule } from '@orcha/nestjs';
+import { OrchaModule } from '@orcha/nestjs';
 import { Global, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppOrchestration } from './app.orchestration';
@@ -8,7 +8,7 @@ import { UserRepository } from './user.repository';
 @Global()
 @Module({
   imports: [
-    OrchestraModule.forFeature({ orchestrations: [AppOrchestration] }),
+    OrchaModule.forFeature({ orchestrations: [AppOrchestration] }),
   ],
 })
 export class AppModule {}

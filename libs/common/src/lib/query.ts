@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { ORCHESTRA_LIMIT, ORCHESTRA_PAGE, ORCHESTRA_PAGINATE } from './constants';
+import { ORCHA_LIMIT, ORCHA_PAGE, ORCHA_PAGINATE } from './constants';
 import { IAnyRelation } from './relations';
 
 export type IQuery<Q> = Q extends Array<infer A> ? IQueryArray<A> & IPaginate : IQueryArray<Q>;
@@ -23,9 +23,9 @@ export type IQueryObject<Q> = {
 // Q[K] extends IAnyRelation<Q[K], Required<infer _>> ? true : IQueryArray<Q[K]>;
 
 export interface IPaginate {
-  [ORCHESTRA_PAGINATE]?: {
-    [ORCHESTRA_PAGE]: number;
-    [ORCHESTRA_LIMIT]: number;
+  [ORCHA_PAGINATE]?: {
+    [ORCHA_PAGE]: number;
+    [ORCHA_LIMIT]: number;
   };
 }
 
@@ -33,7 +33,7 @@ export type IExactQuery<T, Q> = T extends Array<infer A> ? IExactQueryObject<A, 
 
 export type IExactQueryObject<T, Q> = Q &
   {
-    [K in keyof Q]: K extends typeof ORCHESTRA_PAGINATE
+    [K in keyof Q]: K extends typeof ORCHA_PAGINATE
       ? Q[K]
       : K extends keyof T
       ? IExactQuery<T[K], Q[K]>

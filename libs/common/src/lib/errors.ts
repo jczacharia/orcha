@@ -1,4 +1,4 @@
-export interface OrchestraOperationError {
+export interface OrchaOperationError {
   statusCode: number;
   /** ISO string. */
   timestamp: string;

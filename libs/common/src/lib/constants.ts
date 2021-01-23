@@ -1,16 +1,16 @@
-export const ORCHESTRA = 'orchestra' as const;
-export const ORCHESTRA_QUERY = 'query' as const;
-export const ORCHESTRA_DTO = 'dto' as const;
-export const ORCHESTRA_TOKEN = 'token' as const;
-export const ORCHESTRA_FILES = 'files' as const;
-export const ORCHESTRA_PAGINATE = '__paginate' as const;
-export const ORCHESTRA_PAGE = 'page' as const;
-export const ORCHESTRA_LIMIT = 'limit' as const;
+export const ORCHA = 'orcha' as const;
+export const ORCHA_QUERY = 'query' as const;
+export const ORCHA_DTO = 'dto' as const;
+export const ORCHA_TOKEN = 'token' as const;
+export const ORCHA_FILES = 'files' as const;
+export const ORCHA_PAGINATE = '__paginate' as const;
+export const ORCHA_PAGE = 'page' as const;
+export const ORCHA_LIMIT = 'limit' as const;
 
 // Decorator metadata.
-export const __ORCHESTRA_ORCHESTRATION_NAME = '__orchestra_orchestration_name__';
-export const __ORCHESTRA_OPERATIONS = '__orchestra_operations__';
-export const __ORCHESTRA_ORCHESTRATION_PLACEHOLDER = '__orchestra_orchestration_placeholder__';
-export const __ORCHESTRA_GATEWAY_NAME = '__orchestra_gateway_name__';
-export const __ORCHESTRA_SUBSCRIPTIONS = '__orchestra_subscriptions__';
-export const __ORCHESTRA_GATEWAY_PLACEHOLDER = '__orchestra_gateway_placeholder__';
+export const __ORCHA_ORCHESTRATION_NAME = '__orcha_orchestration_name__';
+export const __ORCHA_OPERATIONS = '__orcha_operations__';
+export const __ORCHA_ORCHESTRATION_PLACEHOLDER = '__orcha_orchestration_placeholder__';
+export const __ORCHA_GATEWAY_NAME = '__orcha_gateway_name__';
+export const __ORCHA_SUBSCRIPTIONS = '__orcha_subscriptions__';
+export const __ORCHA_GATEWAY_PLACEHOLDER = '__orcha_gateway_placeholder__';
