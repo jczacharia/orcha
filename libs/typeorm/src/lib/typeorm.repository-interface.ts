@@ -177,12 +177,12 @@ export abstract class IOrchaTypeormRepository<
     return query ? this.findOneOrFail(id, query) : this.findOneOrFail(id);
   }
 
-  async insert(entity: IInsertEntity<Entity>): Promise<IProps<Entity>>;
-  async insert<Q extends IQuery<Entity>>(
+  async upsert(entity: IInsertEntity<Entity>): Promise<IProps<Entity>>;
+  async upsert<Q extends IQuery<Entity>>(
     entity: IInsertEntity<Entity>,
     query: IExactQuery<Entity, Q>
   ): Promise<IParser<Entity, Q>>;
-  async insert<Q extends IQuery<Entity>>(entity: IInsertEntity<Entity>, query?: IExactQuery<Entity, Q>) {
+  async upsert<Q extends IQuery<Entity>>(entity: IInsertEntity<Entity>, query?: IExactQuery<Entity, Q>) {
     await this.repo.save((entity as unknown) as DeepPartial<Entity>);
     this.gatewaysStorage.trigger(entity.id as IdType);
     return query ? this.findOneOrFail(entity.id as IdType, query) : this.findOneOrFail(entity.id as IdType);
