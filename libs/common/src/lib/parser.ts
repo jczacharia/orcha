@@ -8,7 +8,7 @@ export type IParser<CompleteType, QueriedType> = CompleteType extends Array<infe
   : IParseUndefined<CompleteType, QueriedType>;
 
 export type IParseUndefined<CompleteType, QueriedType> = CompleteType extends undefined
-  ? IParseArray<NonNullable<CompleteType>, QueriedType> | undefined
+  ? IParseArray<NonNullable<CompleteType>, QueriedType> | undefined | null
   : IParseArray<CompleteType, QueriedType>;
 
 export type IParseArray<CompleteType, QueriedType> = CompleteType extends Array<infer A>

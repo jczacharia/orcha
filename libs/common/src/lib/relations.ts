@@ -59,7 +59,7 @@ export type IInsertEntity<T> = {
     ? T[K]
     : T[K] extends Array<infer A>
     ? (IInsertEntity<A> | string)[]
-    : IInsertEntity<T[K]> | string;
+    : IInsertEntity<T[K]> | string | null | { id: string };
 };
 
 export type IUpdateEntity<T> = Partial<IInsertEntity<T>>;
