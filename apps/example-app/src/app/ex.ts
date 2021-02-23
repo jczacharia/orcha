@@ -56,11 +56,8 @@ export interface UserPrivate {
   publicProfile: IOneToOne<UserPrivate, User>;
 }
 
-const UserQueryModel = createQueryModel<Todo>()({
-  id: true,
-  tags: {
-    id: true,
-  },
-});
+const UserQueryModel = createQueryModel<User>()({});
 
 export type UserStoreModel = IStoreModel<User, typeof UserQueryModel>;
+
+let user!: UserStoreModel;

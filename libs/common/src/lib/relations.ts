@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type IOneToOne<Self, Relation> = {
   [K in keyof Relation as Relation[K] extends IOneToOne<Relation, infer S>
-    ? S extends Self
+    ? Required<S> extends Required<Self>
       ? never
       : K
     : K]: Relation[K];
@@ -10,7 +10,7 @@ export type IOneToOne<Self, Relation> = {
 
 export type IOneToMany<Self, Relation> = {
   [K in keyof Relation as Relation[K] extends IManyToOne<Relation, infer S>
-    ? S extends Self
+    ? Required<S> extends Required<Self>
       ? never
       : K
     : K]: Relation[K];
@@ -18,7 +18,7 @@ export type IOneToMany<Self, Relation> = {
 
 export type IManyToOne<Self, Relation> = {
   [K in keyof Relation as Relation[K] extends IOneToMany<Relation, infer S>
-    ? S extends Self
+    ? Required<S> extends Required<Self>
       ? never
       : K
     : K]: Relation[K];
@@ -26,7 +26,7 @@ export type IManyToOne<Self, Relation> = {
 
 export type IManyToMany<Self, Relation> = {
   [K in keyof Relation as Relation[K] extends IManyToMany<Relation, infer S>
-    ? S extends Self
+    ? Required<S> extends Required<Self>
       ? never
       : K
     : K]: Relation[K];

@@ -4,6 +4,7 @@
     "ORCHA",
     "nestjs",
     "orcha",
+    "todos",
     "typeorm",
     "upsert",
     "websockets"
