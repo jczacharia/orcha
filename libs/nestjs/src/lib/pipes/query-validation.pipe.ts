@@ -13,10 +13,12 @@ export class QueryValidationPipe<T, Q extends IQuery<T>> implements PipeTransfor
   async transform(value: unknown): Promise<unknown> {
     const recurse = (val: any, query: any) => {
       for (const k of Object.keys(val)) {
-        if (typeof val[k] === 'object') {
-          recurse(val[k], query[k]);
-        } else if (!!val[k] !== !!query[k]) {
+        const incoming = val[k];
+        const comparison = query[k];
+        if (!!comparison !== !!incoming) {
           throw new UnauthorizedException(`Unauthorized query key "${k}".`);
+        } else if (typeof incoming === 'object') {
+          recurse(incoming, comparison);
         }
       }
     };
