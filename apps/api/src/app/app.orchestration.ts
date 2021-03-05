@@ -5,9 +5,9 @@ import { ExDto, IExOrchestration } from '../../../example-app/src/app/ex';
 
 @ServerOrchestration('ex')
 export class AppOrchestration implements IServerOrchestration<IExOrchestration> {
-  @ServerOperation()
-  fileUpload(query: IQuery<{ res: string }>, token: string, dto: ExDto, files: Express.Multer.File[]) {
-    console.log(query, dto, token, files);
+  @ServerOperation({ validateQuery: { res: true } })
+  fileUpload(query: IQuery<{ res: string }>, token: string, dto: ExDto) {
+    console.log(query, dto, token);
     return { res: 'dfd' } as any;
   }
 }

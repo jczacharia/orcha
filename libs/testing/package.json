@@ -1,9 +1,9 @@
 {
   "name": "@orcha/testing",
-  "version": "0.1.15",
+  "version": "0.1.17",
   "peerDependencies": {
-    "@orcha/common": "^0.1.15",
-    "@orcha/angular": "^0.1.15"
+    "@orcha/common": "^0.1.17",
+    "@orcha/angular": "^0.1.17"
   },
   "dependencies": {
     "supertest": "^6.1.3"

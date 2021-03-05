@@ -9,8 +9,9 @@ import {
   WebSocketGateway,
   WsException,
 } from '@nestjs/websockets';
-import { ORCHA, ORCHA_DTO, ORCHA_FILES, ORCHA_QUERY, ORCHA_TOKEN } from '@orcha/common';
+import { IQuery, ORCHA, ORCHA_DTO, ORCHA_FILES, ORCHA_QUERY, ORCHA_TOKEN } from '@orcha/common';
 import { ValidationPipe } from '../pipes';
+import { QueryValidationPipe } from '../pipes/query-validation.pipe';
 
 export function ServerOrchestration(name: string | number): ClassDecorator {
   return function (target: Function) {
@@ -27,23 +28,40 @@ function transform(val: string) {
   }
 }
 
-export function ServerOperation(
-  options: {
-    /** File(s) to upload. Defaults to `singular`. */
-    fileUpload?: 'singular' | 'multiple';
-  } = { fileUpload: 'singular' }
-): MethodDecorator {
-  return function <T>(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) {
-    Body(ORCHA_QUERY, { transform })(target, propertyKey, 0);
+export function ServerOperation<T, Q extends IQuery<T>>(options?: {
+  /**
+   * Whether the operation has singular or multiple file upload. Defaults to `singular`.
+   */
+  fileUpload?: 'singular' | 'multiple';
+  /**
+   * Validates the query object. If query object has extra fields in any of its objects,
+   * compared to `validateQuery`, an unauthorized exception will be thrown.
+   *
+   * @remarks
+   * It is highly recommended that you use this feature to prevent unauthorized access to data.
+   */
+  validateQuery?: Q;
+}): MethodDecorator {
+  return function <F>(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<F>) {
+    if (options?.validateQuery) {
+      Body(ORCHA_QUERY, { transform }, new QueryValidationPipe<T, Q>(options?.validateQuery))(
+        target,
+        propertyKey,
+        0
+      );
+    } else {
+      Body(ORCHA_QUERY, { transform })(target, propertyKey, 0);
+    }
+
     Body(ORCHA_TOKEN)(target, propertyKey, 1);
     Body(ORCHA_DTO, { transform }, new ValidationPipe())(target, propertyKey, 2);
 
-    if (options?.fileUpload === 'singular') {
-      UploadedFile()(target, propertyKey, 3);
-      UseInterceptors(FileInterceptor(ORCHA_FILES))(target, propertyKey, descriptor);
-    } else {
+    if (options?.fileUpload === 'multiple') {
       UploadedFiles()(target, propertyKey, 3);
       UseInterceptors(FilesInterceptor(ORCHA_FILES))(target, propertyKey, descriptor);
+    } else {
+      UploadedFile()(target, propertyKey, 3);
+      UseInterceptors(FileInterceptor(ORCHA_FILES))(target, propertyKey, descriptor);
     }
 
     Post(propertyKey as string)(target, propertyKey, descriptor);

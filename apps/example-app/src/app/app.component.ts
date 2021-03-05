@@ -1,4 +1,3 @@
-import { HttpEventType } from '@angular/common/http';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { ExOrchestration } from './ex';
 
@@ -37,30 +36,8 @@ export class AppComponent {
 
     if (!file) return;
 
-    this.ex
-      .fileUpload(
-        {
-          res: true,
-          s: true,
-        },
-        { name: 'sd' },
-        [file, file]
-      )
-      .subscribe((event) => {
-        switch (event.type) {
-          case HttpEventType.UploadProgress:
-            const progress = Math.round((100 * event.loaded) / (event.total ?? 1));
-            console.log('progress', progress);
-            break;
-
-          case HttpEventType.Response:
-            console.log('done', event.body);
-            break;
-
-          default:
-            console.log(`Unhandled event: ${event.type}`);
-            break;
-        }
-      });
+    this.ex.fileUpload({ res: true, derp: true }, { name: 'sd' }).subscribe((event) => {
+      console.log(event);
+    });
   }
 }

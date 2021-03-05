@@ -16,7 +16,7 @@ export abstract class ExDto {
 }
 
 export interface IExOrchestration {
-  fileUpload: IOperation<{ res: string }, ExDto>;
+  fileUpload: IOperation<{ res: string; derp: string }, ExDto>;
 }
 
 @ClientOrchestration('ex')
