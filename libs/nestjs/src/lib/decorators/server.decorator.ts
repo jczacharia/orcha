@@ -9,7 +9,7 @@ import {
   WebSocketGateway,
   WsException,
 } from '@nestjs/websockets';
-import { IQuery, ORCHA, ORCHA_DTO, ORCHA_FILES, ORCHA_QUERY, ORCHA_TOKEN } from '@orcha/common';
+import { IQueryModel, ORCHA, ORCHA_DTO, ORCHA_FILES, ORCHA_QUERY, ORCHA_TOKEN } from '@orcha/common';
 import { ValidationPipe } from '../pipes';
 import { QueryValidationPipe } from '../pipes/query-validation.pipe';
 
@@ -28,19 +28,19 @@ function transform(val: string) {
   }
 }
 
-export function ServerOperation<T, Q extends IQuery<T>>(options?: {
+export function ServerOperation(options?: {
   /**
    * Whether the operation has singular or multiple file upload. Defaults to `singular`.
    */
   fileUpload?: 'singular' | 'multiple';
   /**
    * Validates the query object. If query object has extra fields in any of its objects,
-   * compared to `validateQuery`, an unauthorized exception will be thrown.
+   * compared to `validateQuery`, an unauthorized exception will be thrown. `__paginate` is ignored.
    *
    * @remarks
    * It is highly recommended that you use this feature to prevent unauthorized access to data.
    */
-  validateQuery?: Q;
+  validateQuery?: IQueryModel;
 }): MethodDecorator {
   return function <F>(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<F>) {
     if (options?.validateQuery) {

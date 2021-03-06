@@ -2,7 +2,7 @@
 import { ORCHA_LIMIT, ORCHA_PAGE, ORCHA_PAGINATE } from './constants';
 import { IAnyRelation } from './relations';
 
-export type IQueryModel = { [k: string]: true | IQueryModel };
+export type IQueryModel = { [k: string]: true | IQueryModel } | IPaginate;
 
 export type IQuery<Q> = Q extends Array<infer A> ? IQueryArray<A> & IPaginate : IQueryArray<Q>;
 

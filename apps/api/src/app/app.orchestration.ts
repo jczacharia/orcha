@@ -5,7 +5,16 @@ import { ExDto, IExOrchestration } from '../../../example-app/src/app/ex';
 
 @ServerOrchestration('ex')
 export class AppOrchestration implements IServerOrchestration<IExOrchestration> {
-  @ServerOperation({ validateQuery: { res: true } })
+  @ServerOperation({
+    validateQuery: {
+      fd: true,
+      gr: {},
+      __paginate: {
+        limit: 10,
+        page: 1,
+      },
+    },
+  })
   fileUpload(query: IQuery<{ res: string }>, token: string, dto: ExDto) {
     console.log(query, dto, token);
     return { res: 'dfd' } as any;
