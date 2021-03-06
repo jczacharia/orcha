@@ -1,8 +1,8 @@
 {
   "name": "@orcha/typeorm",
-  "version": "0.1.18",
+  "version": "0.1.19",
   "peerDependencies": {
-    "@orcha/common": "^0.1.18",
+    "@orcha/common": "^0.1.19",
     "@nestjs/typeorm": "^7.1.5",
     "@nestjs/common": "^7.6.6",
     "typeorm": "^0.2.30",
