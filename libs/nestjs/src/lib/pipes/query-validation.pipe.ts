@@ -1,33 +1,33 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import { Injectable, PipeTransform, UnauthorizedException } from '@nestjs/common';
-import { IQuery, ORCHA_PAGINATE } from '@orcha/common';
+import { IQueryModel, ORCHA_PAGINATE } from '@orcha/common';
 
 @Injectable()
-export class QueryValidationPipe<T, Q extends IQuery<T>> implements PipeTransform<unknown> {
-  query: Q;
+export class QueryValidationPipe implements PipeTransform<unknown> {
+  query: IQueryModel;
 
-  constructor(query: Q) {
+  constructor(query: IQueryModel) {
     this.query = query;
   }
 
   async transform(value: unknown): Promise<unknown> {
-    const recurse = (val: any, query: any) => {
+    const recurse = (val: IQueryModel, query: IQueryModel) => {
       for (const k of Object.keys(val)) {
         if (k === ORCHA_PAGINATE) {
           continue;
         }
 
-        const incoming = val[k];
-        const comparison = query[k];
+        const incoming = val[k as keyof IQueryModel];
+        const comparison = query[k as keyof IQueryModel];
         if (!!comparison !== !!incoming) {
           throw new UnauthorizedException(`Unauthorized query key "${k}".`);
         } else if (typeof incoming === 'object') {
-          recurse(incoming, comparison);
+          recurse(incoming as IQueryModel, comparison as IQueryModel);
         }
       }
     };
 
-    recurse(value, this.query);
+    recurse(value as IQueryModel, this.query);
 
     return value;
   }

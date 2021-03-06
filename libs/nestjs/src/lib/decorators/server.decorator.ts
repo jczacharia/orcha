@@ -42,9 +42,9 @@ export function ServerOperation(options?: {
    */
   validateQuery?: IQueryModel;
 }): MethodDecorator {
-  return function <F>(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<F>) {
+  return function <T>(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) {
     if (options?.validateQuery) {
-      Body(ORCHA_QUERY, { transform }, new QueryValidationPipe<T, Q>(options?.validateQuery))(
+      Body(ORCHA_QUERY, { transform }, new QueryValidationPipe(options?.validateQuery))(
         target,
         propertyKey,
         0
