@@ -156,7 +156,7 @@ export class OrchaAngularModule {
     const subKeys = Object.keys(subscriptions);
 
     if (subKeys.length > 0) {
-      const socket = io(`${apiUrl}/${gatewayName}`);
+      const socket = io.io(`${apiUrl}/${gatewayName}`);
 
       socket.on('exception', (d: unknown) => {
         console.error(d);
