@@ -1,8 +1,8 @@
 {
   "name": "@orcha/nestjs",
-  "version": "0.1.19",
+  "version": "0.1.21",
   "peerDependencies": {
-    "@orcha/common": "^0.1.19",
+    "@orcha/common": "^0.1.21",
     "@nestjs/common": "^7.6.7",
     "@nestjs/websockets": "^7.6.7",
     "@nestjs/core": "^7.6.7",

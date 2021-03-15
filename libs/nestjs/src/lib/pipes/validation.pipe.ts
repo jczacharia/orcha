@@ -1,23 +1,20 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { ArgumentMetadata, BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
+import { ArgumentMetadata, HttpException, HttpStatus, Injectable, PipeTransform } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
 
 @Injectable()
 export class ValidationPipe implements PipeTransform<unknown> {
   async transform(value: unknown, { metatype }: ArgumentMetadata): Promise<unknown> {
-    if (value instanceof Object && this.isEmpty(value)) {
-      throw new BadRequestException('Validation failed: No body submitted.');
-    }
-
     if (!metatype || !this.toValidate(metatype)) {
       return value;
     }
     const object = plainToClass(metatype, value);
     const errors = await validate(object);
     if (errors.length > 0) {
-      throw new BadRequestException(
-        `Validation failed: ${this.formatErrors(errors as { constraints: {} }[])}`
+      throw new HttpException(
+        `Validation failed: ${this.formatErrors(errors as { constraints: {} }[])}`,
+        HttpStatus.BAD_REQUEST
       );
     }
     return value;
@@ -36,12 +33,5 @@ export class ValidationPipe implements PipeTransform<unknown> {
         }
       })
       .join(', ');
-  }
-
-  private isEmpty(value: Object): boolean {
-    if (Object.keys(value).length > 0) {
-      return false;
-    }
-    return true;
   }
 }

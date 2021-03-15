@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-types */
 import { Type } from '@angular/core';
-import { INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { ClientOperation, ClientOrchestration } from '@orcha/angular';
 import {
   IExactQuery,
@@ -20,7 +20,7 @@ import {
 import 'multer';
 import * as request from 'supertest';
 
-type ITestResponse<T> = Omit<request.Response, 'body'> & { body: T };
+type ITestResponse<T> = Omit<request.Response, 'body'> & { body: T; statusCode: HttpStatus };
 
 export const TestOperation = ClientOperation;
 export const TestOrchestration = ClientOrchestration;
