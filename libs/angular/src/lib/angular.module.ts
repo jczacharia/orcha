@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpEventType, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { InjectionToken, Injector, ModuleWithProviders, NgModule, Provider, Type } from '@angular/core';
@@ -118,7 +119,7 @@ export class OrchaAngularModule {
         }
 
         return http
-          .post<any>(`${apiUrl}/${ORCHA}/${name}/${funcName}`, body, {
+          .post<unknown>(`${apiUrl}/${ORCHA}/${name}/${funcName}`, body, {
             reportProgress: true,
             observe: 'events',
           })
@@ -167,7 +168,7 @@ export class OrchaAngularModule {
       });
 
       for (const funcName of subKeys) {
-        const subject = new Subject<any>();
+        const subject = new Subject<unknown>();
 
         socket.on(funcName, (d: unknown) => {
           subject.next(d);

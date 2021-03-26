@@ -13,6 +13,17 @@ import { IQueryModel, ORCHA, ORCHA_DTO, ORCHA_FILES, ORCHA_QUERY, ORCHA_TOKEN } 
 import { ValidationPipe } from '../pipes';
 import { QueryValidationPipe } from '../pipes/query-validation.pipe';
 
+/**
+ * Creates an Orchestration of endpoints to receive inbound requests and produce responses.
+ *
+ * Example endpoint using the Orchestration name `user`:
+ * ```
+ * /orcha/user/*
+ * ```
+ * Where `*` is the name of any class method who has a `ServerOperation` decorator.
+ *
+ * @param name Name of orchestration class.
+ */
 export function ServerOrchestration(name: string | number): ClassDecorator {
   return function (target: Function) {
     if (!name) throw new Error('No orchestration name provided for @ServerOrchestration');
@@ -28,6 +39,16 @@ function transform(val: string) {
   }
 }
 
+/**
+ * Maps a function to an Orchestration endpoint.
+ *
+ * ! Note: It is highly advised to use the `validateQuery` option in `options` for endpoint security.
+ *
+ * Example endpoint using the Orchestration name `user` and method name `login`:
+ * ```
+ * /orcha/user/login
+ * ```
+ */
 export function ServerOperation(options?: {
   /**
    * Whether the operation has singular or multiple file upload. Defaults to `singular`.
@@ -44,7 +65,7 @@ export function ServerOperation(options?: {
 }): MethodDecorator {
   return function <T>(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) {
     if (options?.validateQuery) {
-      Body(ORCHA_QUERY, { transform }, new QueryValidationPipe(options?.validateQuery))(
+      Body(ORCHA_QUERY, { transform }, new QueryValidationPipe(options.validateQuery))(
         target,
         propertyKey,
         0
