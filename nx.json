@@ -1,14 +1,9 @@
 {
   "npmScope": "orcha",
-  "affected": {
-    "defaultBase": "master"
-  },
+  "affected": { "defaultBase": "master" },
   "implicitDependencies": {
     "angular.json": "*",
-    "package.json": {
-      "dependencies": "*",
-      "devDependencies": "*"
-    },
+    "package.json": { "dependencies": "*", "devDependencies": "*" },
     "tsconfig.base.json": "*",
     "tslint.json": "*",
     ".eslintrc.json": "*",
@@ -26,30 +21,20 @@
     }
   },
   "projects": {
-    "example-app": {
-      "tags": []
-    },
-    "example-app-e2e": {
-      "tags": [],
-      "implicitDependencies": ["example-app"]
-    },
-    "api": {
-      "tags": []
-    },
-    "angular": {
-      "tags": []
-    },
-    "nestjs": {
-      "tags": []
-    },
-    "typeorm": {
-      "tags": []
-    },
-    "common": {
-      "tags": []
-    },
-    "testing": {
-      "tags": []
-    }
+    "api": { "tags": [] },
+    "angular": { "tags": [] },
+    "nestjs": { "tags": [] },
+    "typeorm": { "tags": [] },
+    "common": { "tags": [] },
+    "testing": { "tags": [] },
+    "todo-example-app": { "tags": [] },
+    "server-core-services": { "tags": [] },
+    "server-core-domain": { "tags": [] },
+    "server-orcha": { "tags": [] },
+    "client-shared-data-access": { "tags": [] },
+    "client-shell": { "tags": [] },
+    "shared-domain": { "tags": [] },
+    "shared-util": { "tags": [] },
+    "client-shared-util": { "tags": [] }
   }
 }

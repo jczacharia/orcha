@@ -1,14 +1,9 @@
-import { OrchaModule } from '@orcha/nestjs';
-import { Global, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppOrchestration } from './app.orchestration';
-import { UserEntity } from './user.entity';
-import { UserRepository } from './user.repository';
+import { ServerOrchaModule } from '@orcha-todo-example-app/server/orcha';
+import { environment } from '@orcha-todo-example-app/shared/domain';
 
-@Global()
 @Module({
-  imports: [
-    OrchaModule.forFeature({ orchestrations: [AppOrchestration] }),
-  ],
+  imports: [ServerOrchaModule, TypeOrmModule.forRoot(environment.typeOrmConfig)],
 })
 export class AppModule {}

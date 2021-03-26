@@ -1,0 +1,11 @@
+.cont {
+  display: grid;
+  place-content: center;
+  padding: 1rem;
+}
+
+.buttons {
+  display: grid;
+  grid-auto-flow: column;
+  justify-content: space-between;
+}

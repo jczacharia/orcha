@@ -1,0 +1,11 @@
+<ng-container *ngIf="state$ | async as state">
+  <p [style.color]="'red'">{{ state.error }}</p>
+  <div [formGroup]="loginForm" class="cont">
+    <h2>Login</h2>
+    <input formControlName="id" placeholder="Email" />
+    <input formControlName="password" placeholder="Password" type="password" />
+    <button [disabled]="loginForm.invalid" (click)="login()">Login</button>
+    <br />
+    <button (click)="signUpPage()">No account? Sign Up</button>
+  </div>
+</ng-container>

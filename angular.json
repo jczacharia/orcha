@@ -1,115 +1,6 @@
 {
   "version": 1,
   "projects": {
-    "example-app": {
-      "projectType": "application",
-      "root": "apps/example-app",
-      "sourceRoot": "apps/example-app/src",
-      "prefix": "orcha",
-      "architect": {
-        "build": {
-          "builder": "@angular-devkit/build-angular:browser",
-          "options": {
-            "outputPath": "dist/apps/example-app",
-            "index": "apps/example-app/src/index.html",
-            "main": "apps/example-app/src/main.ts",
-            "polyfills": "apps/example-app/src/polyfills.ts",
-            "tsConfig": "apps/example-app/tsconfig.app.json",
-            "aot": true,
-            "assets": ["apps/example-app/src/favicon.ico", "apps/example-app/src/assets"],
-            "styles": ["apps/example-app/src/styles.scss"],
-            "scripts": []
-          },
-          "configurations": {
-            "production": {
-              "fileReplacements": [
-                {
-                  "replace": "apps/example-app/src/environments/environment.ts",
-                  "with": "apps/example-app/src/environments/environment.prod.ts"
-                }
-              ],
-              "optimization": true,
-              "outputHashing": "all",
-              "sourceMap": false,
-              "namedChunks": false,
-              "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
-              "budgets": [
-                {
-                  "type": "initial",
-                  "maximumWarning": "2mb",
-                  "maximumError": "5mb"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "6kb",
-                  "maximumError": "10kb"
-                }
-              ]
-            }
-          }
-        },
-        "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
-          "options": {
-            "browserTarget": "example-app:build",
-            "proxyConfig": "apps/example-app/proxy.conf.json"
-          },
-          "configurations": {
-            "production": {
-              "browserTarget": "example-app:build:production"
-            }
-          }
-        },
-        "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
-          "options": {
-            "browserTarget": "example-app:build"
-          }
-        },
-        "lint": {
-          "builder": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["apps/example-app/src/**/*.ts", "apps/example-app/src/**/*.html"]
-          }
-        },
-        "test": {
-          "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/apps/example-app"],
-          "options": {
-            "jestConfig": "apps/example-app/jest.config.js",
-            "passWithNoTests": true
-          }
-        }
-      }
-    },
-    "example-app-e2e": {
-      "root": "apps/example-app-e2e",
-      "sourceRoot": "apps/example-app-e2e/src",
-      "projectType": "application",
-      "architect": {
-        "e2e": {
-          "builder": "@nrwl/cypress:cypress",
-          "options": {
-            "cypressConfig": "apps/example-app-e2e/cypress.json",
-            "tsConfig": "apps/example-app-e2e/tsconfig.e2e.json",
-            "devServerTarget": "example-app:serve"
-          },
-          "configurations": {
-            "production": {
-              "devServerTarget": "example-app:serve:production"
-            }
-          }
-        },
-        "lint": {
-          "builder": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["apps/example-app-e2e/**/*.{js,ts}"]
-          }
-        }
-      }
-    },
     "api": {
       "root": "apps/api",
       "sourceRoot": "apps/api/src",
@@ -323,6 +214,268 @@
           }
         }
       }
+    },
+    "todo-example-app": {
+      "projectType": "application",
+      "root": "apps/todo-example-app",
+      "sourceRoot": "apps/todo-example-app/src",
+      "prefix": "orcha",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/apps/todo-example-app",
+            "index": "apps/todo-example-app/src/index.html",
+            "main": "apps/todo-example-app/src/main.ts",
+            "polyfills": "apps/todo-example-app/src/polyfills.ts",
+            "tsConfig": "apps/todo-example-app/tsconfig.app.json",
+            "aot": true,
+            "assets": ["apps/todo-example-app/src/favicon.ico", "apps/todo-example-app/src/assets"],
+            "styles": ["apps/todo-example-app/src/styles.scss"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/todo-example-app/src/environments/environment.ts",
+                  "with": "apps/todo-example-app/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "todo-example-app:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "todo-example-app:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "todo-example-app:build"
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/todo-example-app/src/**/*.ts", "apps/todo-example-app/src/**/*.html"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/todo-example-app"],
+          "options": {
+            "jestConfig": "apps/todo-example-app/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "server-core-services": {
+      "root": "libs/todo-example-app/server/core/services",
+      "sourceRoot": "libs/todo-example-app/server/core/services/src",
+      "projectType": "library",
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/todo-example-app/server/core/services/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/todo-example-app/server/core/services"],
+          "options": {
+            "jestConfig": "libs/todo-example-app/server/core/services/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "server-core-domain": {
+      "root": "libs/todo-example-app/server/core/domain",
+      "sourceRoot": "libs/todo-example-app/server/core/domain/src",
+      "projectType": "library",
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/todo-example-app/server/core/domain/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/todo-example-app/server/core/domain"],
+          "options": {
+            "jestConfig": "libs/todo-example-app/server/core/domain/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "server-orcha": {
+      "root": "libs/todo-example-app/server/orcha",
+      "sourceRoot": "libs/todo-example-app/server/orcha/src",
+      "projectType": "library",
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/todo-example-app/server/orcha/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/todo-example-app/server/orcha"],
+          "options": {
+            "jestConfig": "libs/todo-example-app/server/orcha/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "client-shared-data-access": {
+      "projectType": "library",
+      "root": "libs/todo-example-app/client/shared/data-access",
+      "sourceRoot": "libs/todo-example-app/client/shared/data-access/src",
+      "prefix": "orcha-todo-example-app",
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "libs/todo-example-app/client/shared/data-access/src/**/*.ts",
+              "libs/todo-example-app/client/shared/data-access/src/**/*.html"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/todo-example-app/client/shared/data-access"],
+          "options": {
+            "jestConfig": "libs/todo-example-app/client/shared/data-access/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "client-shell": {
+      "projectType": "library",
+      "root": "libs/todo-example-app/client/shell",
+      "sourceRoot": "libs/todo-example-app/client/shell/src",
+      "prefix": "orcha-todo-example-app",
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "libs/todo-example-app/client/shell/src/**/*.ts",
+              "libs/todo-example-app/client/shell/src/**/*.html"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/todo-example-app/client/shell"],
+          "options": {
+            "jestConfig": "libs/todo-example-app/client/shell/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "shared-domain": {
+      "root": "libs/todo-example-app/shared/domain",
+      "sourceRoot": "libs/todo-example-app/shared/domain/src",
+      "projectType": "library",
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/todo-example-app/shared/domain/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/todo-example-app/shared/domain"],
+          "options": {
+            "jestConfig": "libs/todo-example-app/shared/domain/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "shared-util": {
+      "root": "libs/todo-example-app/shared/util",
+      "sourceRoot": "libs/todo-example-app/shared/util/src",
+      "projectType": "library",
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/todo-example-app/shared/util/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/todo-example-app/shared/util"],
+          "options": {
+            "jestConfig": "libs/todo-example-app/shared/util/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "client-shared-util": {
+      "projectType": "library",
+      "root": "libs/todo-example-app/client/shared/util",
+      "sourceRoot": "libs/todo-example-app/client/shared/util/src",
+      "prefix": "orcha-todo-example-app",
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "libs/todo-example-app/client/shared/util/src/**/*.ts",
+              "libs/todo-example-app/client/shared/util/src/**/*.html"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/todo-example-app/client/shared/util"],
+          "options": {
+            "jestConfig": "libs/todo-example-app/client/shared/util/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
     }
   },
   "cli": {
@@ -341,15 +494,19 @@
       }
     },
     "@nrwl/angular:application": {
+      "style": "scss",
+      "linter": "eslint",
       "unitTestRunner": "jest",
       "e2eTestRunner": "cypress"
     },
     "@nrwl/angular:library": {
+      "style": "scss",
+      "linter": "eslint",
       "unitTestRunner": "jest"
     },
     "@nrwl/angular:component": {
       "style": "scss"
     }
   },
-  "defaultProject": "example-app"
+  "defaultProject": "todo-example-app"
 }
