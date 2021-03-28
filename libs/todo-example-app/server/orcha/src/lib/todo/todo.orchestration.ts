@@ -5,7 +5,6 @@ import {
   DeleteTodoQueryModel,
   ITodoOrchestration,
   OrchaTodoExampleAppOrchestrations,
-  ReadTodosDto,
   Todo,
   TodoQueryModel,
   UpdateTodoDto,
@@ -23,8 +22,8 @@ export class TodoOrchestration implements IServerOrchestration<ITodoOrchestratio
   }
 
   @ServerOperation({ validateQuery: TodoQueryModel })
-  read(query: IQuery<Todo[]>, token: string, dto: ReadTodosDto) {
-    return this.todo.read(query, token, dto);
+  read(query: IQuery<Todo[]>, token: string) {
+    return this.todo.read(query, token);
   }
 
   @ServerOperation({ validateQuery: TodoQueryModel })

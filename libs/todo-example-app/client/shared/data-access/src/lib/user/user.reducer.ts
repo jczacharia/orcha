@@ -1,11 +1,11 @@
 import { createReducer, on } from '@ngrx/store';
 import { User, UserQueryModel } from '@orcha-todo-example-app/shared/domain';
-import { IStoreModel } from '@orcha/common';
+import { IParser } from '@orcha/common';
 import * as UserActions from './user.actions';
 
 export const USER_KEY = 'user';
 
-export type UserStoreModel = IStoreModel<User, typeof UserQueryModel>;
+export type UserStoreModel = IParser<User, typeof UserQueryModel>;
 
 export interface UserState extends UserStoreModel {
   loaded: boolean;

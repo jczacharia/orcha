@@ -8,11 +8,6 @@ export abstract class CreateTodoDto {
   userId!: string;
 }
 
-export abstract class ReadTodosDto {
-  @IsString()
-  userId!: string;
-}
-
 export abstract class UpdateTodoDto {
   @IsOptional()
   @IsString()

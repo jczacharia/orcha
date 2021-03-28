@@ -1,24 +1,38 @@
 import { IPagination } from './pagination';
 import { IPaginate } from './query';
 
-export type IParser<CompleteType, QueriedType> = CompleteType extends Array<infer A>
-  ? QueriedType extends Required<IPaginate>
-    ? IPagination<IParseUndefined<A, QueriedType>>
-    : IParseUndefined<A, QueriedType>[]
-  : IParseUndefined<CompleteType, QueriedType>;
+/**
+ * Creates a parsed model type based on an Orcha Query type.
+ *
+ * @example
+ * ```typescript
+ * export const UserQueryModel = createQueryModel<User>()({
+ *   id: true,
+ *   name: true,
+ *   items: {
+ *     id: true,
+ *     title: true,
+ *   }
+ * });
+ * export type IUserStoreModel = IParser<User, typeof UserQueryModel>;
+ * ```
+ */
+export type IParser<T, Q> = T extends Array<infer A>
+  ? Q extends Required<IPaginate>
+    ? IPagination<IParseUndefined<A, Q>>
+    : IParseUndefined<A, Q>[]
+  : IParseUndefined<T, Q>;
 
-export type IParseUndefined<CompleteType, QueriedType> = CompleteType extends undefined
-  ? IParseArray<NonNullable<CompleteType>, QueriedType> | undefined | null
-  : IParseArray<CompleteType, QueriedType>;
+export type IParseUndefined<T, Q> = T extends undefined
+  ? IParseArray<NonNullable<T>, Q> | undefined | null
+  : IParseArray<T, Q>;
 
-export type IParseArray<CompleteType, QueriedType> = CompleteType extends Array<infer A>
-  ? IParserObject<A, QueriedType>[]
-  : IParserObject<CompleteType, QueriedType>;
+export type IParseArray<T, Q> = T extends Array<infer A> ? IParserObject<A, Q>[] : IParserObject<T, Q>;
 
-export type IParserObject<CompleteType, QueriedType> = {
-  [K in keyof QueriedType as K extends keyof CompleteType ? K : never]: K extends keyof CompleteType
-    ? QueriedType[K] extends true
-      ? CompleteType[K]
-      : IParseUndefined<CompleteType[K], QueriedType[K]>
+export type IParserObject<C, Q> = {
+  [K in keyof Q as K extends keyof C ? K : never]: K extends keyof C
+    ? Q[K] extends true
+      ? C[K]
+      : IParseUndefined<C[K], Q[K]>
     : never;
 };

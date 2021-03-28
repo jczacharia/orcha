@@ -16,8 +16,8 @@ export class TodoEffects {
         run: () =>
           this.app.user.selectors.state$.pipe(
             take(1),
-            switchMap(({ id }) =>
-              this.todo.read(TodoQueryModel, { userId: id }).pipe(
+            switchMap(() =>
+              this.todo.read(TodoQueryModel).pipe(
                 map((todos) => {
                   return TodoActions.readTodosSuccess({ todos });
                 })
@@ -25,6 +25,7 @@ export class TodoEffects {
             )
           ),
         onError: (action, { error }) => {
+          alert(error.message);
           return TodoActions.readTodosError({ error });
         },
       })
@@ -47,6 +48,7 @@ export class TodoEffects {
             )
           ),
         onError: (action, { error }) => {
+          alert(error.message);
           return TodoActions.createTodoError({ error });
         },
       })
@@ -64,6 +66,7 @@ export class TodoEffects {
             })
           ),
         onError: (action, { error }) => {
+          alert(error.message);
           return TodoActions.deleteTodoError({ error });
         },
       })
@@ -81,6 +84,7 @@ export class TodoEffects {
             })
           ),
         onError: (action, { error }) => {
+          alert(error.message);
           return TodoActions.updateTodoError({ error });
         },
       })

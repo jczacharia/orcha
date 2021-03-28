@@ -1,12 +1,12 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
 import { Todo, TodoQueryModel } from '@orcha-todo-example-app/shared/domain';
-import { IStoreModel } from '@orcha/common';
+import { IParser } from '@orcha/common';
 import * as TodoActions from './todo.actions';
 
 export const TODO_KEY = 'todo';
 
-export type TodoStoreModel = IStoreModel<Todo, typeof TodoQueryModel>;
+export type TodoStoreModel = IParser<Todo, typeof TodoQueryModel>;
 
 export interface TodoState {
   todos: EntityState<TodoStoreModel>;

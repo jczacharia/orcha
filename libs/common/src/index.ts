@@ -6,6 +6,6 @@ export * from './lib/orchestration';
 export * from './lib/pagination';
 export * from './lib/parser';
 export { IExactQuery, IPaginate, IQuery, IQueryModel } from './lib/query';
+export * from './lib/query-helpers';
 export * from './lib/relations';
-export * from './lib/store-model';
 export * from './lib/transform';

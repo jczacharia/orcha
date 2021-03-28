@@ -1,6 +1,6 @@
 <h1 align="center">OrchaJS - A Typescript-Native Client-Server Facilitator</h1>
 <p align="center">
-  <i>OrchaJS provides a toolkit to safely, securely, and efficiently build scalable web apps requiring real-world domain modeling such as highly-relational data, user authentication, file uploading, pagination, and real-time updates. All while providing an unprecedented developer-experience.</i>
+  <i>OrchaJS provides a framework to safely, securely, and efficiently build scalable web apps requiring real-world domain modeling and use cases such as highly-relational data, user authentication, file uploading, pagination, and real-time updates. All while providing an unprecedented developer-experience.</i>
 </p>
 
 <hr>

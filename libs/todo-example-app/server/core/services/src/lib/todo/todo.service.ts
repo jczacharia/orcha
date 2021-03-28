@@ -1,9 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { TodoRepository } from '@orcha-todo-example-app/server/core/domain';
 import {
+  compareTodoContent,
+  compareTwoTodos,
   CreateTodoDto,
   DeleteTodoDto,
-  ReadTodosDto,
+  isTodoDone,
   Todo,
   UpdateTodoDto,
 } from '@orcha-todo-example-app/shared/domain';
@@ -22,6 +24,20 @@ export class TodoService {
       throw new HttpException('You cannot create a todo item for another user.', HttpStatus.UNAUTHORIZED);
     }
 
+    /*
+      This is just silly example business logic.
+    */
+    const myTodos = await this.todoRepo.query({ content: true }, { where: { user: user.id } });
+    for (const todo of myTodos) {
+      // Definitely silly but shows how `createLogic` works with extra params.
+      if (dto.content && compareTodoContent(todo, dto.content)) {
+        throw new HttpException(
+          `But you already have a todo that has content "${dto.content}"`,
+          HttpStatus.I_AM_A_TEAPOT
+        );
+      }
+    }
+
     return this.todoRepo.upsert(
       {
         id: uuid.v4(),
@@ -35,22 +51,34 @@ export class TodoService {
     );
   }
 
-  async read(query: IQuery<Todo[]>, token: string, dto: ReadTodosDto) {
+  async read(query: IQuery<Todo[]>, token: string) {
     const user = await this.user.verifyUserToken(token);
-
-    if (user.id !== dto.userId) {
-      throw new HttpException('You cannot read todo items for another user.', HttpStatus.UNAUTHORIZED);
-    }
-
-    return this.todoRepo.query(query, { where: { user: dto.userId } });
+    return this.todoRepo.query(query, { where: { user: user.id } });
   }
 
   async update(query: IQuery<Todo>, token: string, dto: UpdateTodoDto) {
     const user = await this.user.verifyUserToken(token);
-    const todo = await this.todoRepo.findOneOrFail(dto.todoId, { user: { id: true } });
+    const todo = await this.todoRepo.findOneOrFail(dto.todoId, {
+      user: { id: true },
+      done: true,
+      content: true,
+    });
 
     if (user.id !== todo.user.id) {
       throw new HttpException('You cannot update a todo item for another user.', HttpStatus.UNAUTHORIZED);
+    }
+
+    /*
+      This is just silly example business logic.
+    */
+    // Definitely silly but shows how `createLogic` works via curring.
+    if (dto.content && compareTwoTodos(todo)({ content: dto.content })) {
+      throw new HttpException('But your todo already contains that content!', HttpStatus.I_AM_A_TEAPOT);
+    }
+
+    // Silly business logic to show `createLogic` function.
+    if (isTodoDone(todo) === dto.done) {
+      throw new HttpException('Todo item is already done!', HttpStatus.I_AM_A_TEAPOT);
     }
 
     return this.todoRepo.update(dto.todoId, { content: dto.content, done: dto.done }, query);
