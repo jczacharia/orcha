@@ -19,7 +19,13 @@ export type IClientOperation<
   DTO extends Record<string, any> | undefined = undefined,
   F extends File | File[] | undefined = undefined
 > = DTO extends undefined
-  ? <Q extends IQuery<T>>(query: IExactQuery<T, Q>) => Observable<IParser<T, Q>>
+  ? F extends undefined
+    ? <Q extends IQuery<T>>(query: IExactQuery<T, Q>) => Observable<IParser<T, Q>>
+    : <Q extends IQuery<T>>(
+        query: IExactQuery<T, Q>,
+        _: undefined,
+        files: F
+      ) => Observable<HttpEvent<IParser<T, Q>>>
   : F extends undefined
   ? <Q extends IQuery<T>>(query: IExactQuery<T, Q>, dto: DTO) => Observable<IParser<T, Q>>
   : <Q extends IQuery<T>>(

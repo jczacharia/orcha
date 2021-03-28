@@ -5,8 +5,22 @@ import { IPaginate } from './query';
  * Creates a parsed model type based on an Orcha Query type.
  *
  * @example
- * ```typescript
- * export const UserQueryModel = createQueryModel<User>()({
+ * type IUserModel = IParser<
+ *   User,
+ *   {
+ *     id: true;
+ *     name: true;
+ *     items: {
+ *       id: true;
+ *       title: true;
+ *     };
+ *   }
+ * >;
+ * ```
+ *
+ * Example using `createQuery`.
+ * ```ts
+ * const UserQueryModel = createQuery<User>()({
  *   id: true,
  *   name: true,
  *   items: {
@@ -14,7 +28,7 @@ import { IPaginate } from './query';
  *     title: true,
  *   }
  * });
- * export type IUserStoreModel = IParser<User, typeof UserQueryModel>;
+ * type IUserModel = IParser<User, typeof UserQueryModel>;
  * ```
  */
 export type IParser<T, Q> = T extends Array<infer A>

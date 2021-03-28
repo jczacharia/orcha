@@ -9,23 +9,12 @@ export type IServerOperation<
   T,
   DTO extends Record<string, any> | undefined = undefined,
   F extends File | File[] | undefined = undefined
-> = DTO extends undefined
-  ? <Q extends IQuery<T>>(
-      query: IExactQuery<T, Q>,
-      token: string
-    ) => ServerResponseType<IParser<T, IQuery<T>>>
-  : F extends undefined
-  ? <Q extends IQuery<T>>(
-      query: IExactQuery<T, Q>,
-      token: string,
-      dto: DTO
-    ) => ServerResponseType<IParser<T, IQuery<T>>>
-  : <Q extends IQuery<T>>(
-      query: IExactQuery<T, Q>,
-      token: string,
-      dto: DTO,
-      files: F extends File[] ? Express.Multer.File[] : Express.Multer.File
-    ) => ServerResponseType<IParser<T, IQuery<T>>>;
+> = <Q extends IQuery<T>>(
+  query: IExactQuery<T, Q>,
+  token: string,
+  dto: DTO,
+  files: F extends undefined ? undefined : F extends File[] ? Express.Multer.File[] : Express.Multer.File
+) => ServerResponseType<IParser<T, IQuery<T>>>;
 
 export type IServerOrchestration<O extends IOrchestration> = {
   [K in keyof O]: O[K] extends IOperation<infer T, infer Props, infer F>

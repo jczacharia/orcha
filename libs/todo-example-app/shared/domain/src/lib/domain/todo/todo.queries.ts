@@ -1,7 +1,7 @@
-import { createQueryModel } from '@orcha/common';
+import { createQuery } from '@orcha/common';
 import { Todo } from './todo.model';
 
-export const TodoQueryModel = createQueryModel<Todo>()({
+export const TodoQueryModel = createQuery<Todo>()({
   id: true,
   content: true,
   dateCreated: true,
@@ -12,4 +12,4 @@ export const TodoQueryModel = createQueryModel<Todo>()({
   },
 });
 
-export const DeleteTodoQueryModel = createQueryModel<{ deletedId: string }>()({ deletedId: true });
+export const DeleteTodoQueryModel = createQuery<{ deletedId: string }>()({ deletedId: true });
