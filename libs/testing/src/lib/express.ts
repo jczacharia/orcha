@@ -20,7 +20,11 @@ import {
 import 'multer';
 import * as request from 'supertest';
 
-type ITestResponse<T> = Omit<request.Response, 'body'> & { body: T; statusCode: HttpStatus };
+type ITestResponse<T> = Omit<request.Response, 'body'> & {
+  body: T;
+  statusCode: HttpStatus;
+  error?: string;
+};
 
 export const TestOperation = ClientOperation;
 export const TestOrchestration = ClientOrchestration;
@@ -30,19 +34,12 @@ export type ITestOperation<
   DTO extends Record<string, any> | undefined = undefined,
   F extends File | File[] | undefined = undefined
 > = DTO extends undefined
-  ? <Q extends IQuery<T>>(query: IExactQuery<T, Q>, token: string) => Promise<ITestResponse<IParser<T, Q>>>
+  ? F extends undefined
+    ? <Q extends IQuery<T>>(query: IExactQuery<T, Q>) => ITestResponse<IParser<T, Q>>
+    : <Q extends IQuery<T>>(query: IExactQuery<T, Q>, _: undefined, files: F) => ITestResponse<IParser<T, Q>>
   : F extends undefined
-  ? <Q extends IQuery<T>>(
-      query: IExactQuery<T, Q>,
-      token: string,
-      dto: DTO
-    ) => Promise<ITestResponse<IParser<T, Q>>>
-  : <Q extends IQuery<T>>(
-      query: IExactQuery<T, Q>,
-      token: string,
-      dto: DTO,
-      files: F
-    ) => Promise<ITestResponse<IParser<T, Q>>>;
+  ? <Q extends IQuery<T>>(query: IExactQuery<T, Q>, dto: DTO) => ITestResponse<IParser<T, Q>>
+  : <Q extends IQuery<T>>(query: IExactQuery<T, Q>, dto: DTO, files: F) => ITestResponse<IParser<T, Q>>;
 
 export type ITestOrchestration<O extends IOrchestration> = {
   [K in keyof O]: O[K] extends IOperation<infer T, infer Props, infer F>
@@ -80,7 +77,8 @@ export function createNestjsTestOrchestration<O extends Type<IOrchestration>>(
         req.attach(ORCHA_FILES, files, files.name);
       }
 
-      return req;
+      const res = await req;
+      return res.error ? { ...res, error: res.body.message } : res;
     };
     operations[operation] = testOperation;
   }
