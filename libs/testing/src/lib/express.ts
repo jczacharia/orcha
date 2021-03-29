@@ -35,11 +35,21 @@ export type ITestOperation<
   F extends File | File[] | undefined = undefined
 > = DTO extends undefined
   ? F extends undefined
-    ? <Q extends IQuery<T>>(query: IExactQuery<T, Q>) => ITestResponse<IParser<T, Q>>
-    : <Q extends IQuery<T>>(query: IExactQuery<T, Q>, _: undefined, files: F) => ITestResponse<IParser<T, Q>>
+    ? <Q extends IQuery<T>>(query: IExactQuery<T, Q>, token: string) => ITestResponse<IParser<T, Q>>
+    : <Q extends IQuery<T>>(
+        query: IExactQuery<T, Q>,
+        token: string,
+        _: undefined,
+        files: F
+      ) => ITestResponse<IParser<T, Q>>
   : F extends undefined
-  ? <Q extends IQuery<T>>(query: IExactQuery<T, Q>, dto: DTO) => ITestResponse<IParser<T, Q>>
-  : <Q extends IQuery<T>>(query: IExactQuery<T, Q>, dto: DTO, files: F) => ITestResponse<IParser<T, Q>>;
+  ? <Q extends IQuery<T>>(query: IExactQuery<T, Q>, token: string, dto: DTO) => ITestResponse<IParser<T, Q>>
+  : <Q extends IQuery<T>>(
+      query: IExactQuery<T, Q>,
+      token: string,
+      dto: DTO,
+      files: F
+    ) => ITestResponse<IParser<T, Q>>;
 
 export type ITestOrchestration<O extends IOrchestration> = {
   [K in keyof O]: O[K] extends IOperation<infer T, infer Props, infer F>
