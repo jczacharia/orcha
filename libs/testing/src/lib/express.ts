@@ -86,9 +86,9 @@ export function createNestjsTestOrchestration<O extends Type<IOrchestration>>(
       if (dto) req.field(ORCHA_DTO, JSON.stringify(dto));
 
       if (Array.isArray(files)) {
-        files.forEach((file) => req.attach(ORCHA_FILES, file, file.name));
+        files.forEach((file) => req.attach(ORCHA_FILES, Buffer.from('dummy'), file.name));
       } else if (files) {
-        req.attach(ORCHA_FILES, files, files.name);
+        req.attach(ORCHA_FILES, Buffer.from('dummy'), files.name);
       }
 
       const res = await req;

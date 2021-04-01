@@ -113,7 +113,7 @@ export class OrchaAngularModule {
         body.set(ORCHA_DTO, JSON.stringify(dto));
 
         if (Array.isArray(files)) {
-          files?.forEach((file) => body.append(ORCHA_FILES, file, file.name));
+          files.forEach((file) => body.append(ORCHA_FILES, file, file.name));
         } else if (files) {
           body.set(ORCHA_FILES, files, files.name);
         }
