@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { fetch, pessimisticUpdate } from '@nrwl/angular';
 import { DeleteTodoQueryModel, TodoQueryModel } from '@orcha-todo-example-app/shared/domain';
-import { map, switchMap, take } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { AppFacade } from '../app.facade';
 import * as TodoActions from './todo.actions';
 import { TodoOrchestration } from './todo.orchestration';
@@ -14,15 +14,10 @@ export class TodoEffects {
       ofType(TodoActions.readTodos),
       fetch({
         run: () =>
-          this.app.user.selectors.state$.pipe(
-            take(1),
-            switchMap(() =>
-              this.todo.read(TodoQueryModel).pipe(
-                map((todos) => {
-                  return TodoActions.readTodosSuccess({ todos });
-                })
-              )
-            )
+          this.todo.read(TodoQueryModel).pipe(
+            map((todos) => {
+              return TodoActions.readTodosSuccess({ todos });
+            })
           ),
         onError: (action, { error }) => {
           alert(error.message);
@@ -37,15 +32,10 @@ export class TodoEffects {
       ofType(TodoActions.createTodo),
       pessimisticUpdate({
         run: ({ content }) =>
-          this.app.user.selectors.state$.pipe(
-            take(1),
-            switchMap(({ id }) =>
-              this.todo.create(TodoQueryModel, { userId: id, content }).pipe(
-                map((todo) => {
-                  return TodoActions.createTodoSuccess({ todo });
-                })
-              )
-            )
+          this.todo.create(TodoQueryModel, { content }).pipe(
+            map((todo) => {
+              return TodoActions.createTodoSuccess({ todo });
+            })
           ),
         onError: (action, { error }) => {
           alert(error.message);
