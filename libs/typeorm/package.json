@@ -5,7 +5,7 @@
     "@orcha/common": "^0.2.5",
     "@nestjs/typeorm": "^7.1.5",
     "@nestjs/common": "^7.6.14",
-    "typeorm": "^0.2.51",
+    "typeorm": "^0.2.31",
     "nestjs-typeorm-paginate": "^2.3.2",
     "@nestjs/websockets": "^7.6.14",
     "socket.io": "^4.0.0",

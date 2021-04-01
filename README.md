@@ -52,6 +52,7 @@ However, the essence of this framework is to share code between the frontend and
    - Username: `postgres`
    - Password: `1Qazxsw2`
    - DB Name: `orcha-todo-example-app`
+   - e2e (Integration Testing) DB Name: `orcha-todo-example-app-e2e`
 
 4. Open 2 terminals:
 

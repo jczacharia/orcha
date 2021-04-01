@@ -35,6 +35,7 @@
     "client-shell": { "tags": [] },
     "shared-domain": { "tags": [] },
     "shared-util": { "tags": [] },
-    "client-shared-util": { "tags": [] }
+    "client-shared-util": { "tags": [] },
+    "api-e2e": { "tags": [] }
   }
 }

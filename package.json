@@ -11,6 +11,7 @@
     "test": "ng test",
     "lint": "nx workspace-lint && ng lint",
     "e2e": "ng e2e",
+    "api:e2e": "ng e2e api-e2e --runInBand",
     "deploy": "npm run deploy:angular && npm run deploy:common && npm run deploy:nestjs && npm run deploy:testing && npm run deploy:typeorm",
     "deploy:angular": "cd dist/libs/angular && npm publish --access public",
     "deploy:common": "cd dist/libs/common && npm publish --access public",
@@ -68,7 +69,8 @@
     "socket.io": "^4.0.0",
     "socket.io-client": "^4.0.0",
     "tslib": "2.1.0",
-    "typeorm": "0.2.51",
+    "typeorm": "0.2.31",
+    "typeorm-transactional-cls-hooked": "^0.1.20",
     "uuid": "^8.3.1",
     "zone.js": "0.11.4"
   },

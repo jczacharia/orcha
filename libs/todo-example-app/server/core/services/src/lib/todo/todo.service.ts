@@ -20,10 +20,6 @@ export class TodoService {
   async create(query: IQuery<Todo>, token: string, dto: CreateTodoDto) {
     const user = await this.user.verifyUserToken(token);
 
-    if (user.id !== dto.userId) {
-      throw new HttpException('You cannot create a todo item for another user.', HttpStatus.UNAUTHORIZED);
-    }
-
     /*
       This is just silly example business logic.
     */
@@ -32,7 +28,7 @@ export class TodoService {
       // Definitely silly but shows how `createLogic` works with extra params.
       if (dto.content && compareTodoContent(todo, dto.content)) {
         throw new HttpException(
-          `But you already have a todo that has content "${dto.content}"`,
+          `But you already have a todo that has content "${dto.content}".`,
           HttpStatus.I_AM_A_TEAPOT
         );
       }
@@ -45,7 +41,7 @@ export class TodoService {
         dateCreated: new Date(),
         dateUpdated: new Date(),
         done: false,
-        user: dto.userId,
+        user: user.id,
       },
       query
     );

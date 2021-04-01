@@ -476,6 +476,27 @@
           }
         }
       }
+    },
+    "api-e2e": {
+      "root": "apps/api-e2e",
+      "sourceRoot": "apps/api-e2e/src",
+      "projectType": "application",
+      "prefix": "api-e2e",
+      "schematics": {},
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/api-e2e/**/*.ts"]
+          }
+        },
+        "e2e": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "apps/api-e2e/jest.config.js"
+          }
+        }
+      }
     }
   },
   "cli": {
