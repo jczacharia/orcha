@@ -1,4 +1,5 @@
-import { IManyToOne } from '@orcha/common';
+import { IManyToOne, IOneToMany } from '@orcha/common';
+import { TodoTag } from '../todo-tag';
 import { User } from '../user';
 
 export interface Todo {
@@ -7,5 +8,6 @@ export interface Todo {
   done: boolean;
   dateCreated: Date | string;
   dateUpdated: Date | string;
-  user: IManyToOne<Todo, User>;
+  user: IManyToOne<User>;
+  todoTags: IOneToMany<TodoTag>;
 }

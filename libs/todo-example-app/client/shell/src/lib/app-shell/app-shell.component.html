@@ -1,2 +1,13 @@
-<button (click)="logout()">Log Out</button>
-<router-outlet></router-outlet>
+<ng-container *ngIf="state$ | async as state">
+  <div class="header">
+    <button (click)="logout()">Log Out</button>
+  </div>
+  <div class="tabs">
+    <div (click)="todos()" [style.background]="state.activeRoute.includes('todos') ? '#ccc' : ''">Todos</div>
+    <div (click)="tags()" [style.background]="state.activeRoute.includes('tags') ? '#ccc' : ''">Tags</div>
+    <div (click)="profile()" [style.background]="state.activeRoute.includes('profile') ? '#ccc' : ''">
+      Profile
+    </div>
+  </div>
+  <router-outlet></router-outlet>
+</ng-container>

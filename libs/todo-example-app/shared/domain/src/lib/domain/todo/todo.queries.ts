@@ -10,6 +10,13 @@ export const TodoQueryModel = createQuery<Todo>()({
   user: {
     id: true,
   },
+  todoTags: {
+    id: true,
+    dateLinked: true,
+    tag: {
+      id: true,
+    },
+  },
 });
 
 export const DeleteTodoQueryModel = createQuery<{ deletedId: string }>()({ deletedId: true });

@@ -1,0 +1,16 @@
+<ng-container *ngIf="state$ | async as state">
+  <div class="cont">
+    <div *ngIf="state.loaded">
+      <input type="text" [formControl]="tag" />
+      <button [disabled]="tag.invalid" (click)="create()">Add</button>
+    </div>
+    <div *ngIf="!state.loaded">Loading...</div>
+    <div *ngIf="state.loaded && state.tags.length < 1">You have no tags.</div>
+    <div class="item" *ngFor="let tag of state.tags">
+      <pre>{{ tag | json }}</pre>
+      <div class="buttons">
+        <button (click)="delete(tag)">Delete</button>
+      </div>
+    </div>
+  </div>
+</ng-container>

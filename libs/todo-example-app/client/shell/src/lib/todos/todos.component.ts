@@ -1,12 +1,14 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Validators } from '@angular/forms';
 import { FormControl } from '@ngneat/reactive-forms';
-import { AppFacade, TodoStoreModel } from '@orcha-todo-example-app/client/shared/data-access';
+import { AppFacade, TagStoreModel, TodoStoreModel } from '@orcha-todo-example-app/client/shared/data-access';
 import { StatefulComponent } from '@orcha-todo-example-app/client/shared/util';
+import { UnObservable } from '@orcha-todo-example-app/shared/util';
 import { tap } from 'rxjs/operators';
 
 interface State {
-  todos: TodoStoreModel[];
+  todos: UnObservable<typeof AppFacade.prototype.todo.selectors.todos$>['todos'];
+  tags: TagStoreModel[];
   loaded: boolean;
 }
 
@@ -20,7 +22,7 @@ export class TodosComponent extends StatefulComponent<State> implements OnInit {
   readonly todo = new FormControl('', (ac) => Validators.required(ac));
 
   constructor(private readonly app: AppFacade) {
-    super({ todos: [], loaded: false });
+    super({ todos: [], tags: [], loaded: false });
   }
 
   ngOnInit(): void {
@@ -31,6 +33,17 @@ export class TodosComponent extends StatefulComponent<State> implements OnInit {
             todos: todos.sort(
               (a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime()
             ),
+            loaded,
+          });
+        })
+      )
+    );
+
+    this.effect(() =>
+      this.app.tag.selectors.tags$.pipe(
+        tap(({ tags, loaded }) => {
+          this.updateState({
+            tags: tags.sort((a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime()),
             loaded,
           });
         })
@@ -48,5 +61,9 @@ export class TodosComponent extends StatefulComponent<State> implements OnInit {
 
   toggle(todo: TodoStoreModel) {
     this.app.todo.dispatchers.update({ todoId: todo.id, done: !todo.done });
+  }
+
+  link(todo: TodoStoreModel, tagName: string) {
+    this.app.todoTags.dispatchers.create(todo, tagName);
   }
 }

@@ -3,7 +3,6 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { fetch, pessimisticUpdate } from '@nrwl/angular';
 import { DeleteTodoQueryModel, TodoQueryModel } from '@orcha-todo-example-app/shared/domain';
 import { map } from 'rxjs/operators';
-import { AppFacade } from '../app.facade';
 import * as TodoActions from './todo.actions';
 import { TodoOrchestration } from './todo.orchestration';
 
@@ -81,9 +80,5 @@ export class TodoEffects {
     )
   );
 
-  constructor(
-    private readonly actions$: Actions,
-    private readonly app: AppFacade,
-    private readonly todo: TodoOrchestration
-  ) {}
+  constructor(private readonly actions$: Actions, private readonly todo: TodoOrchestration) {}
 }

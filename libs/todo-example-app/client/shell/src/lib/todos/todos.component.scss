@@ -1,11 +1,14 @@
-.cont {
-  display: grid;
-  place-content: center;
-  padding: 1rem;
-}
+.tags {
+  display: flex;
+  gap: 0.5em;
+  flex-wrap: wrap;
 
-.buttons {
-  display: grid;
-  grid-auto-flow: column;
-  justify-content: space-between;
+  .tag {
+    border: 1px solid #ccc;
+    padding: 0.5em;
+    border-radius: 100px;
+    min-width: 43px;
+    display: grid;
+    place-content: center;
+  }
 }

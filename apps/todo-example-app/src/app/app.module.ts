@@ -9,6 +9,7 @@ import { ClientSharedDataAccessModule } from '@orcha-todo-example-app/client/sha
 import { environment } from '@orcha-todo-example-app/shared/domain';
 import { OrchaAngularModule } from '@orcha/angular';
 import { AppComponent } from './app.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 const ngrxDebugFactory = <T>() => {
   return (reducer: ActionReducer<T>): ActionReducer<T> => {
@@ -55,6 +56,7 @@ const ngrxDebugFactory = <T>() => {
       logOnly: environment.production,
     }),
     EffectsModule.forRoot([]),
+    BrowserAnimationsModule,
   ],
   providers: [
     environment.production

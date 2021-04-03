@@ -40,7 +40,16 @@ export class UserService {
     }
 
     const hashedPassword = await this.createPasswordHash(password);
-    await this.userRepo.upsert({ id, password: hashedPassword, dateCreated: new Date(), todos: [] }, {});
+    await this.userRepo.upsert(
+      {
+        id,
+        password: hashedPassword,
+        dateCreated: new Date(),
+        todos: [],
+        tags: [],
+      },
+      {}
+    );
     const token = this.sign({ userId: id });
     return parseOrchaQuery(query, { token });
   }

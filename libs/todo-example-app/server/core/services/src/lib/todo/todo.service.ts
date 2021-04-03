@@ -20,9 +20,7 @@ export class TodoService {
   async create(query: IQuery<Todo>, token: string, dto: CreateTodoDto) {
     const user = await this.user.verifyUserToken(token);
 
-    /*
-      This is just silly example business logic.
-    */
+    // A silly example of business logic.
     const myTodos = await this.todoRepo.query({ content: true }, { where: { user: user.id } });
     for (const todo of myTodos) {
       // Definitely silly but shows how `createLogic` works with extra params.
@@ -42,6 +40,7 @@ export class TodoService {
         dateUpdated: new Date(),
         done: false,
         user: user.id,
+        todoTags: [],
       },
       query
     );
@@ -64,20 +63,21 @@ export class TodoService {
       throw new HttpException('You cannot update a todo item for another user.', HttpStatus.UNAUTHORIZED);
     }
 
-    /*
-      This is just silly example business logic.
-    */
-    // Definitely silly but shows how `createLogic` works via curring.
-    if (dto.content && compareTwoTodos(todo)({ content: dto.content })) {
-      throw new HttpException('But your todo already contains that content!', HttpStatus.I_AM_A_TEAPOT);
-    }
-
     // Silly business logic to show `createLogic` function.
     if (isTodoDone(todo) === dto.done) {
       throw new HttpException('Todo item is already done!', HttpStatus.I_AM_A_TEAPOT);
     }
 
-    return this.todoRepo.update(dto.todoId, { content: dto.content, done: dto.done }, query);
+    // A silly example of business logic but shows how `createLogic` works via curring.
+    if (dto.content && compareTwoTodos(todo)({ content: dto.content })) {
+      throw new HttpException('But your todo already contains that content!', HttpStatus.I_AM_A_TEAPOT);
+    }
+
+    return this.todoRepo.update(
+      dto.todoId,
+      { content: dto.content, done: dto.done, dateUpdated: new Date() },
+      query
+    );
   }
 
   async delete(query: IQuery<{ deletedId: string }>, token: string, dto: DeleteTodoDto) {

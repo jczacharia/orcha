@@ -231,7 +231,7 @@
             "tsConfig": "apps/todo-example-app/tsconfig.app.json",
             "aot": true,
             "assets": ["apps/todo-example-app/src/favicon.ico", "apps/todo-example-app/src/assets"],
-            "styles": ["apps/todo-example-app/src/styles.scss"],
+            "styles": ["./node_modules/@angular/material/prebuilt-themes/pink-bluegrey.css", "apps/todo-example-app/src/styles.scss"],
             "scripts": []
           },
           "configurations": {

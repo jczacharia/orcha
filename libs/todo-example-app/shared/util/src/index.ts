@@ -1,1 +1,1 @@
-export * from './lib/shared-util';
+export * from './lib/typescript';

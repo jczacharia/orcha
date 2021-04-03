@@ -17,12 +17,6 @@
   ],
   "typescript.tsdk": "node_modules/typescript/lib",
   "editor.formatOnSave": true,
-  "[typescript]": {
-    "editor.codeActionsOnSave": {
-      "source.organizeImports": true
-    },
-    "editor.tabSize": 2
-  },
   "editor.rulers": [
     110
   ]
