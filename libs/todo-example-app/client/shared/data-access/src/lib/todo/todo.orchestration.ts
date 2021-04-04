@@ -11,4 +11,8 @@ export class TodoOrchestration implements IClientOrchestration<ITodoOrchestratio
   update!: IClientOrchestration<ITodoOrchestration>['update'];
   @ClientOperation()
   delete!: IClientOrchestration<ITodoOrchestration>['delete'];
+  @ClientOperation()
+  tag!: IClientOrchestration<ITodoOrchestration>['tag'];
+  @ClientOperation()
+  untag!: IClientOrchestration<ITodoOrchestration>['untag'];
 }

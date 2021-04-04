@@ -58,5 +58,23 @@ export const TodoReducer = createReducer(
         todos: todosAdapter.upsertOne(todo, state.todos),
       };
     }
+  ),
+  on(
+    TodoActions.tagTodoSuccess,
+    (state, { todo }): TodoState => {
+      return {
+        ...state,
+        todos: todosAdapter.upsertOne(todo, state.todos),
+      };
+    }
+  ),
+  on(
+    TodoActions.untagTodoSuccess,
+    (state, { todo }): TodoState => {
+      return {
+        ...state,
+        todos: todosAdapter.upsertOne(todo, state.todos),
+      };
+    }
   )
 );

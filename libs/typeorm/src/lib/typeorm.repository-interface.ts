@@ -1,7 +1,6 @@
 import {
-  IDomainModel,
   IExactQuery,
-  IInsertEntity,
+  IUpsertEntity,
   IPaginate,
   IParser,
   IProps,
@@ -23,7 +22,7 @@ import { GatewaysStorage } from './subscription-storage';
  */
 export abstract class IOrchaTypeormRepository<
   // eslint-disable-next-line @typescript-eslint/ban-types
-  Entity extends IDomainModel<{ id: IdType }, {}>,
+  Entity extends { id: IdType },
   IdType extends string | number = string
 > {
   private readonly gatewaysStorage = new GatewaysStorage<Entity, IdType>();
@@ -177,24 +176,24 @@ export abstract class IOrchaTypeormRepository<
     return query ? this.findOneOrFail(id, query) : this.findOneOrFail(id);
   }
 
-  async upsert(entity: IInsertEntity<Entity>): Promise<IProps<Entity>>;
+  async upsert(entity: IUpsertEntity<Entity>): Promise<IProps<Entity>>;
   async upsert<Q extends IQuery<Entity>>(
-    entity: IInsertEntity<Entity>,
+    entity: IUpsertEntity<Entity>,
     query: IExactQuery<Entity, Q>
   ): Promise<IParser<Entity, Q>>;
-  async upsert<Q extends IQuery<Entity>>(entity: IInsertEntity<Entity>, query?: IExactQuery<Entity, Q>) {
+  async upsert<Q extends IQuery<Entity>>(entity: IUpsertEntity<Entity>, query?: IExactQuery<Entity, Q>) {
     await this.repo.save((entity as unknown) as DeepPartial<Entity>);
     this.gatewaysStorage.trigger(entity.id as IdType);
     return query ? this.findOneOrFail(entity.id as IdType, query) : this.findOneOrFail(entity.id as IdType);
   }
 
-  async upsertMany(entities: IInsertEntity<Entity>[]): Promise<IProps<Entity>[]>;
+  async upsertMany(entities: IUpsertEntity<Entity>[]): Promise<IProps<Entity>[]>;
   async upsertMany<Q extends IQuery<Entity>>(
-    entities: IInsertEntity<Entity>[],
+    entities: IUpsertEntity<Entity>[],
     query: IExactQuery<Entity, Q>
   ): Promise<IParser<Entity[], Q>>;
   async upsertMany<Q extends IQuery<Entity>>(
-    entities: IInsertEntity<Entity>[],
+    entities: IUpsertEntity<Entity>[],
     query?: IExactQuery<Entity, Q>
   ) {
     if (entities.length === 0) return ([] as unknown) as IParser<Entity[], Q>;

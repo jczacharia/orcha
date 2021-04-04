@@ -1,10 +1,9 @@
-import { ORCHA_DTO, ORCHA_QUERY, ORCHA_TOKEN } from './constants';
-import { IQuery } from './query';
+import { ORCHA_FILES } from './constants';
+import { IOperation } from './orchestration';
 
-export interface ISubscription<T, Dto = undefined> {
-  [ORCHA_QUERY]: IQuery<T>;
-  [ORCHA_DTO]?: Dto;
-  [ORCHA_TOKEN]?: string;
-}
+export type ISubscription<T, DTO extends Record<string, any> | undefined = undefined> = Omit<
+  IOperation<T, DTO>,
+  typeof ORCHA_FILES
+>;
 
-export type IGateway = Record<keyof unknown, ISubscription<unknown, unknown>>;
+export type IGateway = Record<keyof unknown, ISubscription<unknown, any>>;

@@ -1,10 +1,10 @@
 {
   "name": "@orcha/angular",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "peerDependencies": {
     "@angular/common": "^11.2.5",
     "@angular/core": "^11.2.5",
-    "@orcha/common": "^0.2.6"
+    "@orcha/common": "^0.2.7"
   },
   "dependencies": {
     "tslib": "^2.1.0"

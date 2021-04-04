@@ -1,14 +1,13 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Validators } from '@angular/forms';
 import { FormControl } from '@ngneat/reactive-forms';
-import { AppFacade, TagStoreModel, TodoStoreModel } from '@orcha-todo-example-app/client/shared/data-access';
+import { AppFacade, TodoStoreModel } from '@orcha-todo-example-app/client/shared/data-access';
 import { StatefulComponent } from '@orcha-todo-example-app/client/shared/util';
-import { UnObservable } from '@orcha-todo-example-app/shared/util';
 import { tap } from 'rxjs/operators';
 
 interface State {
-  todos: UnObservable<typeof AppFacade.prototype.todo.selectors.todos$>['todos'];
-  tags: TagStoreModel[];
+  todos: TodoStoreModel[];
+  tags: string[];
   loaded: boolean;
 }
 
@@ -22,7 +21,7 @@ export class TodosComponent extends StatefulComponent<State> implements OnInit {
   readonly todo = new FormControl('', (ac) => Validators.required(ac));
 
   constructor(private readonly app: AppFacade) {
-    super({ todos: [], tags: [], loaded: false });
+    super({ todos: [], loaded: false, tags: [] });
   }
 
   ngOnInit(): void {
@@ -34,17 +33,7 @@ export class TodosComponent extends StatefulComponent<State> implements OnInit {
               (a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime()
             ),
             loaded,
-          });
-        })
-      )
-    );
-
-    this.effect(() =>
-      this.app.tag.selectors.tags$.pipe(
-        tap(({ tags, loaded }) => {
-          this.updateState({
-            tags: tags.sort((a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime()),
-            loaded,
+            tags: todos.map((todo) => todo.todoTags.map((tt) => tt.tag.name)).flat(2),
           });
         })
       )
@@ -63,7 +52,15 @@ export class TodosComponent extends StatefulComponent<State> implements OnInit {
     this.app.todo.dispatchers.update({ todoId: todo.id, done: !todo.done });
   }
 
-  link(todo: TodoStoreModel, tagName: string) {
-    this.app.todoTags.dispatchers.create(todo, tagName);
+  tag(todo: TodoStoreModel, tagName: string) {
+    this.app.todo.dispatchers.tag(todo, tagName);
+  }
+
+  untag(todoTagId: string) {
+    this.app.todo.dispatchers.untag(todoTagId);
+  }
+
+  flattenTags(todo: TodoStoreModel['todoTags']) {
+    return todo.map((tt) => tt.tag).flat();
   }
 }

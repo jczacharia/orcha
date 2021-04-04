@@ -1,5 +1,4 @@
 export * from './lib/constants';
-export * from './lib/domain-model';
 export * from './lib/errors';
 export * from './lib/gateway';
 export * from './lib/orchestration';

@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserRepository } from '@orcha-todo-example-app/server/core/domain';
 import { User } from '@orcha-todo-example-app/shared/domain';
-import { IExactQuery, IParser, IQuery, parseOrchaQuery } from '@orcha/common';
+import { IExactQuery, IParser, IProps, IQuery, parseOrchaQuery } from '@orcha/common';
 import * as bcrypt from 'bcrypt';
 
 type Token = string;
@@ -47,6 +47,7 @@ export class UserService {
         dateCreated: new Date(),
         todos: [],
         tags: [],
+        dg: [],
       },
       {}
     );
@@ -59,7 +60,7 @@ export class UserService {
    * @param token User auth token.
    * @returns The user entity associated with the token.
    */
-  async verifyUserToken(token?: string): Promise<User>;
+  async verifyUserToken(token?: string): Promise<IProps<User>>;
   async verifyUserToken<Q extends IQuery<User>>(
     token: string,
     query: IExactQuery<User, Q>

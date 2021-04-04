@@ -15,6 +15,9 @@ export const TodoQueryModel = createQuery<Todo>()({
     dateLinked: true,
     tag: {
       id: true,
+      name: true,
+      dateCreated: true,
+      dateUpdated: true,
     },
   },
 });

@@ -77,3 +77,32 @@ export const updateTodoError = createAction(
   '[Todos] Update Todo Error',
   props<{ error: OrchaOperationError }>()
 );
+
+/*
+  _____          
+ |_   _|_ _ __ _ 
+   | |/ _` / _` |
+   |_|\__,_\__, |
+           |___/ 
+*/
+export const tagTodo = createAction('[Todos] Tag Todo', props<{ todo: TodoStoreModel; tagName: string }>());
+
+export const tagTodoSuccess = createAction('[Todos] Tag Todo Success', props<{ todo: TodoStoreModel }>());
+
+export const tagTodoError = createAction('[Todos] Tag Todo Error', props<{ error: OrchaOperationError }>());
+
+/*
+  _   _    _____          
+ | | | |_ |_   _|_ _ __ _ 
+ | |_| | ' \| |/ _` / _` |
+  \___/|_||_|_|\__,_\__, |
+                    |___/ 
+*/
+export const untagTodo = createAction('[Todos] UnTag Todo', props<{ todoTagId: string }>());
+
+export const untagTodoSuccess = createAction('[Todos] UnTag Todo Success', props<{ todo: TodoStoreModel }>());
+
+export const untagTodoError = createAction(
+  '[Todos] UnTag Todo Error',
+  props<{ error: OrchaOperationError }>()
+);

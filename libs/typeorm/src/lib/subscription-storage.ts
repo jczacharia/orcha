@@ -1,4 +1,4 @@
-import { IDomainModel, IExactQuery, IPagination, parseOrchaQuery } from '@orcha/common';
+import { IExactQuery, IPagination, parseOrchaQuery } from '@orcha/common';
 import { Socket } from 'socket.io';
 
 interface ISubscription<Entity> {
@@ -19,11 +19,7 @@ interface QuerySubscription<Entity> extends ISubscription<Entity> {
 
 type Subscription<Entity, IdType> = IdsSubscription<Entity, IdType> | QuerySubscription<Entity>;
 
-export class GatewaysStorage<
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  Entity extends IDomainModel<{ id: IdType }, {}>,
-  IdType
-> {
+export class GatewaysStorage<Entity extends { id: IdType }, IdType> {
   private readonly subscribers = new Map<string, Subscription<Entity, IdType>[]>();
 
   async provisionIdsSubscription(

@@ -14,6 +14,8 @@ export class UserEntity implements Required<User> {
   @Column()
   dateCreated!: Date;
 
+  dg!: string[];
+
   @Column({ nullable: true })
   dateLastLoggedIn!: Date;
 

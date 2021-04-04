@@ -7,6 +7,7 @@ export interface User {
   password: string;
   dateCreated: Date | string;
   dateLastLoggedIn?: Date | string;
-  todos: IOneToMany<Todo>;
-  tags: IOneToMany<Tag>;
+  dg: string[];
+  todos: IOneToMany<User, Todo>;
+  tags: IOneToMany<User, Tag>;
 }

@@ -44,6 +44,7 @@ import { TodosComponent } from './todos/todos.component';
             path: 'profile',
             component: ProfileComponent,
           },
+          { path: '**', pathMatch: 'full', redirectTo: 'todos' },
         ],
       },
       {

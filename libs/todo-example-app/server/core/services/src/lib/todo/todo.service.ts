@@ -1,12 +1,14 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { TodoRepository } from '@orcha-todo-example-app/server/core/domain';
+import { TagRepository, TodoRepository, TodoTagRepository } from '@orcha-todo-example-app/server/core/domain';
 import {
   compareTodoContent,
   compareTwoTodos,
   CreateTodoDto,
   DeleteTodoDto,
   isTodoDone,
+  TagDto,
   Todo,
+  UnTagDto,
   UpdateTodoDto,
 } from '@orcha-todo-example-app/shared/domain';
 import { IQuery, parseOrchaQuery } from '@orcha/common';
@@ -15,7 +17,12 @@ import { UserService } from '../user';
 
 @Injectable()
 export class TodoService {
-  constructor(private readonly todoRepo: TodoRepository, private readonly user: UserService) {}
+  constructor(
+    private readonly todoRepo: TodoRepository,
+    private readonly user: UserService,
+    private readonly tagRepo: TagRepository,
+    private readonly todoTagRepo: TodoTagRepository
+  ) {}
 
   async create(query: IQuery<Todo>, token: string, dto: CreateTodoDto) {
     const user = await this.user.verifyUserToken(token);
@@ -90,5 +97,62 @@ export class TodoService {
 
     await this.todoRepo.delete(dto.todoId);
     return parseOrchaQuery(query, { deletedId: dto.todoId });
+  }
+
+  async tag(query: IQuery<Todo>, token: string, dto: TagDto) {
+    const user = await this.user.verifyUserToken(token);
+
+    const todo = await this.todoRepo.findOneOrFail(dto.todoId, { id: true, user: { id: true } });
+    if (todo.user.id !== user.id) {
+      throw new HttpException('You cannot add a tag to someone elses todo.', HttpStatus.UNAUTHORIZED);
+    }
+
+    const tags = await this.tagRepo.query(
+      { id: true, name: true, user: { id: true } },
+      { where: { name: dto.tagName } }
+    );
+
+    const tagAlreadyExists = tags[0];
+    if (!tagAlreadyExists) {
+      await this.tagRepo.upsert({
+        id: uuid.v4(),
+        dateCreated: new Date(),
+        dateUpdated: new Date(),
+        name: dto.tagName,
+        user: user.id,
+        todoTags: [
+          {
+            id: uuid.v4(),
+            dateLinked: new Date(),
+            todo: todo.id,
+          },
+        ],
+      });
+      return this.todoRepo.findOneOrFail(todo.id, query);
+    }
+
+    const tts = await this.todoTagRepo.query({}, { where: { tag: tagAlreadyExists.id, todo: todo.id } });
+    if (!tts[0]) {
+      await this.todoTagRepo.upsert({
+        id: uuid.v4(),
+        dateLinked: new Date(),
+        todo: todo.id,
+        tag: tagAlreadyExists.id,
+      });
+    }
+    return this.todoRepo.findOneOrFail(todo.id, query);
+  }
+
+  async untag(query: IQuery<Todo>, token: string, dto: UnTagDto) {
+    const user = await this.user.verifyUserToken(token);
+    const todoTag = await this.todoTagRepo.findOneOrFail(dto.todoTagId, { todo: { id: true } });
+
+    const todo = await this.todoRepo.findOneOrFail(todoTag.todo.id, { user: { id: true } });
+    if (todo.user.id !== user.id) {
+      throw new HttpException('You cannot untag someone elses todo.', HttpStatus.UNAUTHORIZED);
+    }
+
+    await this.todoTagRepo.delete(dto.todoTagId);
+    return this.todoRepo.findOneOrFail(todoTag.todo.id, query);
   }
 }

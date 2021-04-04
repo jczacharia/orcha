@@ -3,10 +3,7 @@ import { IPagination } from './pagination';
 import { IParser } from './parser';
 import { IExactQuery, IQuery } from './query';
 
-export function parseOrchaQuery<T, Q extends IQuery<T>>(
-  query: IExactQuery<T, Q>,
-  entities: T
-): IParser<T, Q>;
+export function parseOrchaQuery<T, Q extends IQuery<T>>(query: IExactQuery<T, Q>, entities: T): IParser<T, Q>;
 export function parseOrchaQuery<T, Q extends IQuery<T>>(
   query: IExactQuery<T, Q>,
   entities: T[] | IPagination<T>

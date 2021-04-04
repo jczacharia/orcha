@@ -80,5 +80,41 @@ export class TodoEffects {
     )
   );
 
+  readonly tagTodo$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(TodoActions.tagTodo),
+      pessimisticUpdate({
+        run: ({ todo, tagName }) =>
+          this.todo.tag(TodoQueryModel, { todoId: todo.id, tagName }).pipe(
+            map((todo) => {
+              return TodoActions.tagTodoSuccess({ todo });
+            })
+          ),
+        onError: (action, { error }) => {
+          alert(error.message);
+          return TodoActions.tagTodoError({ error });
+        },
+      })
+    )
+  );
+
+  readonly untagTodo$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(TodoActions.untagTodo),
+      pessimisticUpdate({
+        run: ({ todoTagId }) =>
+          this.todo.untag(TodoQueryModel, { todoTagId }).pipe(
+            map((todo) => {
+              return TodoActions.untagTodoSuccess({ todo });
+            })
+          ),
+        onError: (action, { error }) => {
+          alert(error.message);
+          return TodoActions.untagTodoError({ error });
+        },
+      })
+    )
+  );
+
   constructor(private readonly actions$: Actions, private readonly todo: TodoOrchestration) {}
 }

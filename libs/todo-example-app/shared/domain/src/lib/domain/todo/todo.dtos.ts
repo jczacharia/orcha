@@ -22,3 +22,16 @@ export abstract class DeleteTodoDto {
   @IsUUID()
   todoId!: string;
 }
+
+export abstract class TagDto {
+  @IsUUID()
+  todoId!: string;
+
+  @IsString()
+  tagName!: string;
+}
+
+export abstract class UnTagDto {
+  @IsUUID()
+  todoTagId!: string;
+}

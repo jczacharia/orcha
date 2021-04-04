@@ -5,8 +5,10 @@ import {
   DeleteTodoQueryModel,
   ITodoOrchestration,
   OrchaTodoExampleAppOrchestrations,
+  TagDto,
   Todo,
   TodoQueryModel,
+  UnTagDto,
   UpdateTodoDto,
 } from '@orcha-todo-example-app/shared/domain';
 import { IQuery } from '@orcha/common';
@@ -34,5 +36,15 @@ export class TodoOrchestration implements IServerOrchestration<ITodoOrchestratio
   @ServerOperation({ validateQuery: DeleteTodoQueryModel })
   delete(query: IQuery<{ deletedId: string }>, token: string, dto: DeleteTodoDto) {
     return this.todo.delete(query, token, dto);
+  }
+
+  @ServerOperation({ validateQuery: TodoQueryModel })
+  tag(query: IQuery<Todo>, token: string, dto: TagDto) {
+    return this.todo.tag(query, token, dto);
+  }
+
+  @ServerOperation({ validateQuery: TodoQueryModel })
+  untag(query: IQuery<Todo>, token: string, dto: UnTagDto) {
+    return this.todo.untag(query, token, dto);
   }
 }

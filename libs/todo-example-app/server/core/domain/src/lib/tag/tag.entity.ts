@@ -20,6 +20,6 @@ export class TagEntity implements Required<Tag> {
   @ManyToOne(() => UserEntity, (e) => e.tags)
   user!: UserEntity;
 
-  @OneToMany(() => TodoTagEntity, (e) => e.tag)
+  @OneToMany(() => TodoTagEntity, (e) => e.tag, { cascade: true })
   todoTags!: TodoTagEntity[];
 }

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-types */
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpEventType, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { InjectionToken, Injector, ModuleWithProviders, NgModule, Provider, Type } from '@angular/core';
@@ -10,6 +9,7 @@ import {
   ORCHA_DTO,
   ORCHA_FILES,
   ORCHA_QUERY,
+  ORCHA_TOKEN,
   __ORCHA_GATEWAY_NAME,
   __ORCHA_OPERATIONS,
   __ORCHA_ORCHESTRATION_NAME,
@@ -106,7 +106,7 @@ export class OrchaAngularModule {
     const apiUrl = injector.get(OrchaApiUrl);
     const http = injector.get(HttpClient);
     for (const funcName of opsKeys) {
-      const clientOperation = (query: object, dto: object, files?: File | File[]) => {
+      const clientOperation = (query: unknown, dto: unknown, files?: File | File[]) => {
         const body = new FormData();
 
         body.set(ORCHA_QUERY, JSON.stringify(query));
@@ -174,10 +174,11 @@ export class OrchaAngularModule {
           subject.next(d);
         });
 
-        const clientSubscription = (query: object, props: object) => {
-          const body: ISubscription<object, object> = {
+        const clientSubscription = (query: Record<string, unknown>, props: unknown) => {
+          const body: ISubscription<unknown, any> = {
             [ORCHA_DTO]: props,
             [ORCHA_QUERY]: query,
+            [ORCHA_TOKEN]: '',
           };
           socket.emit(funcName, body);
           return subject.asObservable();
