@@ -16,7 +16,6 @@ body {
   margin-top: 1em;
   display: grid;
   gap: 1em;
-  width: 400px;
 
   pre {
     background: #fafafa;
@@ -38,4 +37,5 @@ body {
   grid-auto-flow: column;
   justify-content: space-between;
   align-items: center;
+  gap: 1em;
 }

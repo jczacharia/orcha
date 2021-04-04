@@ -7,7 +7,6 @@
     <div *ngIf="!state.loaded">Loading...</div>
     <div *ngIf="state.loaded && state.todos.length < 1">You have no todos.</div>
     <div class="todo" *ngFor="let todo of state.todos" class="item">
-      <pre>{{ todo | json }}</pre>
       <div>
         <b>{{ todo.content }}</b>
         <div>Created: {{ todo.dateCreated | date: 'MMM d, y, h:mm:ss a' }}</div>
@@ -21,7 +20,7 @@
       </div>
       <div class="buttons">
         <input type="checkbox" [checked]="todo.done" (change)="toggle(todo)" />
-        <div>
+        <form>
           <input
             #inp
             type="text"
@@ -30,16 +29,16 @@
             matInput
             [matAutocomplete]="auto"
           />
-          <button (click)="tag(todo, inp.value)">Add</button>
-        </div>
+          <button type="submit" (click)="tag(todo, inp.value)">Add</button>
+        </form>
         <button (click)="delete(todo)">Delete</button>
       </div>
     </div>
   </div>
 
   <mat-autocomplete #auto="matAutocomplete">
-    <mat-option *ngFor="let tag of state.tags" [value]="tag">
-      {{ tag }}
+    <mat-option *ngFor="let tag of state.tags" [value]="tag.name">
+      {{ tag.name }}
     </mat-option>
   </mat-autocomplete>
 </ng-container>

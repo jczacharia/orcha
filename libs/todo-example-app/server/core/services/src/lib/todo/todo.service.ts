@@ -1,11 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { TagRepository, TodoRepository, TodoTagRepository } from '@orcha-todo-example-app/server/core/domain';
 import {
-  compareTodoContent,
-  compareTwoTodos,
   CreateTodoDto,
   DeleteTodoDto,
-  isTodoDone,
   TagDto,
   Todo,
   UnTagDto,
@@ -13,6 +10,7 @@ import {
 } from '@orcha-todo-example-app/shared/domain';
 import { IQuery, parseOrchaQuery } from '@orcha/common';
 import * as uuid from 'uuid';
+import { DbTransactionCreator } from '../transaction-creator/transaction-creator.service';
 import { UserService } from '../user';
 
 @Injectable()
@@ -21,24 +19,12 @@ export class TodoService {
     private readonly todoRepo: TodoRepository,
     private readonly user: UserService,
     private readonly tagRepo: TagRepository,
-    private readonly todoTagRepo: TodoTagRepository
+    private readonly todoTagRepo: TodoTagRepository,
+    private readonly transaction: DbTransactionCreator
   ) {}
 
   async create(query: IQuery<Todo>, token: string, dto: CreateTodoDto) {
     const user = await this.user.verifyUserToken(token);
-
-    // A silly example of business logic.
-    const myTodos = await this.todoRepo.query({ content: true }, { where: { user: user.id } });
-    for (const todo of myTodos) {
-      // Definitely silly but shows how `createLogic` works with extra params.
-      if (dto.content && compareTodoContent(todo, dto.content)) {
-        throw new HttpException(
-          `But you already have a todo that has content "${dto.content}".`,
-          HttpStatus.I_AM_A_TEAPOT
-        );
-      }
-    }
-
     return this.todoRepo.upsert(
       {
         id: uuid.v4(),
@@ -70,16 +56,6 @@ export class TodoService {
       throw new HttpException('You cannot update a todo item for another user.', HttpStatus.UNAUTHORIZED);
     }
 
-    // Silly business logic to show `createLogic` function.
-    if (isTodoDone(todo) === dto.done) {
-      throw new HttpException('Todo item is already done!', HttpStatus.I_AM_A_TEAPOT);
-    }
-
-    // A silly example of business logic but shows how `createLogic` works via curring.
-    if (dto.content && compareTwoTodos(todo)({ content: dto.content })) {
-      throw new HttpException('But your todo already contains that content!', HttpStatus.I_AM_A_TEAPOT);
-    }
-
     return this.todoRepo.update(
       dto.todoId,
       { content: dto.content, done: dto.done, dateUpdated: new Date() },
@@ -89,13 +65,21 @@ export class TodoService {
 
   async delete(query: IQuery<{ deletedId: string }>, token: string, dto: DeleteTodoDto) {
     const user = await this.user.verifyUserToken(token);
-    const todo = await this.todoRepo.findOneOrFail(dto.todoId, { user: { id: true } });
+    const todo = await this.todoRepo.findOneOrFail(dto.todoId, {
+      user: { id: true },
+      todoTags: { id: true },
+    });
 
     if (user.id !== todo.user.id) {
       throw new HttpException('You cannot delete a todo item for another user.', HttpStatus.UNAUTHORIZED);
     }
 
-    await this.todoRepo.delete(dto.todoId);
+    await this.transaction.run(async () => {
+      await this.todoTagRepo.deleteMany(todo.todoTags.map((tt) => tt.id));
+      await this.todoRepo.delete(dto.todoId);
+      await this.deleteLonelyTags();
+    });
+
     return parseOrchaQuery(query, { deletedId: dto.todoId });
   }
 
@@ -145,14 +129,27 @@ export class TodoService {
 
   async untag(query: IQuery<Todo>, token: string, dto: UnTagDto) {
     const user = await this.user.verifyUserToken(token);
-    const todoTag = await this.todoTagRepo.findOneOrFail(dto.todoTagId, { todo: { id: true } });
+    const todoTag = await this.todoTagRepo.findOneOrFail(dto.todoTagId, {
+      todo: { id: true },
+      tag: { id: true },
+    });
 
     const todo = await this.todoRepo.findOneOrFail(todoTag.todo.id, { user: { id: true } });
     if (todo.user.id !== user.id) {
       throw new HttpException('You cannot untag someone elses todo.', HttpStatus.UNAUTHORIZED);
     }
 
-    await this.todoTagRepo.delete(dto.todoTagId);
+    await this.transaction.run(async () => {
+      await this.todoTagRepo.delete(dto.todoTagId);
+      await this.deleteLonelyTags();
+    });
+
     return this.todoRepo.findOneOrFail(todoTag.todo.id, query);
+  }
+
+  private async deleteLonelyTags() {
+    const tags = await this.tagRepo.findAll({ id: true, todoTags: {} });
+    const lonelyTags = tags.filter((tag) => tag.todoTags.length === 0);
+    await this.tagRepo.deleteMany(lonelyTags.map((t) => t.id));
   }
 }

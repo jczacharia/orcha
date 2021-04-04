@@ -10,6 +10,8 @@ import * as TodoSelectors from './todo/todo.selectors';
 import * as UserActions from './user/user.actions';
 import * as UserSelectors from './user/user.selectors';
 
+export type TagStoreModel = UnArray<UnObservable<typeof AppFacade.prototype.tag.selectors.tags$>['tags']>;
+
 @Injectable()
 export class AppFacade {
   readonly user = {
@@ -66,6 +68,18 @@ export class AppFacade {
     },
     selectors: {
       todos$: this.store.pipe(select(TodoSelectors.getTodos)).pipe(
+        tap(({ loaded }) => {
+          if (!loaded) {
+            this.store.dispatch(TodoActions.readTodos());
+          }
+        })
+      ),
+    },
+  };
+
+  readonly tag = {
+    selectors: {
+      tags$: this.store.pipe(select(TodoSelectors.getTags)).pipe(
         tap(({ loaded }) => {
           if (!loaded) {
             this.store.dispatch(TodoActions.readTodos());

@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Validators } from '@angular/forms';
 import { FormControl } from '@ngneat/reactive-forms';
-import { AppFacade } from '@orcha-todo-example-app/client/shared/data-access';
+import { AppFacade, TagStoreModel } from '@orcha-todo-example-app/client/shared/data-access';
 import { StatefulComponent } from '@orcha-todo-example-app/client/shared/util';
+import { tap } from 'rxjs/operators';
 
 interface State {
-  tags: any;
+  tags: TagStoreModel[];
   loaded: boolean;
 }
 
@@ -23,16 +24,16 @@ export class TagsComponent extends StatefulComponent<State> implements OnInit {
   }
 
   ngOnInit(): void {
-    // this.effect(() =>
-    //   this.app.tag.selectors.tags$.pipe(
-    //     tap(({ tags, loaded }) => {
-    //       this.updateState({
-    //         tags: tags.sort((a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime()),
-    //         loaded,
-    //       });
-    //     })
-    //   )
-    // );
+    this.effect(() =>
+      this.app.tag.selectors.tags$.pipe(
+        tap(({ tags, loaded }) => {
+          this.updateState({
+            tags: tags.sort((a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime()),
+            loaded,
+          });
+        })
+      )
+    );
   }
 
   // create() {

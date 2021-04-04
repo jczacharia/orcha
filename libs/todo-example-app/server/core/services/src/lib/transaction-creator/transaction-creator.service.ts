@@ -3,6 +3,9 @@
 import 'reflect-metadata';
 import { runOnTransactionCommit, Transactional } from 'typeorm-transactional-cls-hooked';
 
+/**
+ * Performs database transactions (ACID compliance).
+ */
 export class DbTransactionCreator {
   async run<T>(task: () => Promise<T>): Promise<T> {
     return new Promise(async (res: any, rej) => {

@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Validators } from '@angular/forms';
 import { FormControl } from '@ngneat/reactive-forms';
-import { AppFacade, TodoStoreModel } from '@orcha-todo-example-app/client/shared/data-access';
+import { AppFacade, TagStoreModel, TodoStoreModel } from '@orcha-todo-example-app/client/shared/data-access';
 import { StatefulComponent } from '@orcha-todo-example-app/client/shared/util';
 import { tap } from 'rxjs/operators';
 
 interface State {
   todos: TodoStoreModel[];
-  tags: string[];
+  tags: TagStoreModel[];
   loaded: boolean;
 }
 
@@ -33,7 +33,17 @@ export class TodosComponent extends StatefulComponent<State> implements OnInit {
               (a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime()
             ),
             loaded,
-            tags: todos.map((todo) => todo.todoTags.map((tt) => tt.tag.name)).flat(2),
+          });
+        })
+      )
+    );
+
+    this.effect(() =>
+      this.app.tag.selectors.tags$.pipe(
+        tap(({ tags, loaded }) => {
+          this.updateState({
+            tags: tags.sort((a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime()),
+            loaded,
           });
         })
       )
@@ -58,9 +68,5 @@ export class TodosComponent extends StatefulComponent<State> implements OnInit {
 
   untag(todoTagId: string) {
     this.app.todo.dispatchers.untag(todoTagId);
-  }
-
-  flattenTags(todo: TodoStoreModel['todoTags']) {
-    return todo.map((tt) => tt.tag).flat();
   }
 }

@@ -1,5 +1,12 @@
 import { NestFactory } from '@nestjs/core';
+import {
+  initializeTransactionalContext,
+  patchTypeORMRepositoryWithBaseRepository,
+} from 'typeorm-transactional-cls-hooked';
 import { AppModule } from './app/app.module';
+
+initializeTransactionalContext();
+patchTypeORMRepositoryWithBaseRepository();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
