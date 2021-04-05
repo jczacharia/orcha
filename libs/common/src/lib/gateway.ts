@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ORCHA_FILES } from './constants';
 import { IOperation } from './orchestration';
 

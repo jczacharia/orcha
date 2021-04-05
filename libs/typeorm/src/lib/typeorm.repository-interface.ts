@@ -1,15 +1,15 @@
 import {
   IExactQuery,
-  IUpsertEntity,
   IPaginate,
   IParser,
   IProps,
   IQuery,
   IUpdateEntity,
+  IUpsertEntity,
   ORCHA_LIMIT,
   ORCHA_PAGE,
   ORCHA_PAGINATE,
-  parseOrchaQuery,
+  parseQuery,
 } from '@orcha/common';
 import { paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { Socket } from 'socket.io';
@@ -18,7 +18,7 @@ import { createTypeormRelationsArray } from './relations.transform';
 import { GatewaysStorage } from './subscription-storage';
 
 /**
- * TODO
+ * Inherits all repository functionalities required to perform CRUD operations on an entity.
  */
 export abstract class IOrchaTypeormRepository<
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -83,7 +83,7 @@ export abstract class IOrchaTypeormRepository<
     if (query) {
       const relations = createTypeormRelationsArray(query);
       const dbRes = await this.repo.findOneOrFail(id, { relations });
-      return parseOrchaQuery(query, dbRes);
+      return parseQuery(query, dbRes);
     } else {
       return (this.repo.findOneOrFail(id) as unknown) as Promise<IProps<Entity>>;
     }
@@ -98,7 +98,7 @@ export abstract class IOrchaTypeormRepository<
     if (query) {
       const relations = createTypeormRelationsArray(query);
       const dbRes = await this.repo.findOne(id, { relations });
-      return parseOrchaQuery(query, dbRes);
+      return parseQuery(query, dbRes);
     } else {
       return (this.repo.findOne(id) as unknown) as Promise<IProps<Entity> | undefined>;
     }
@@ -114,7 +114,7 @@ export abstract class IOrchaTypeormRepository<
     if (query) {
       const relations = createTypeormRelationsArray(query);
       const dbRes = await this.repo.findByIds(ids, { relations });
-      return parseOrchaQuery(query, dbRes);
+      return parseQuery(query, dbRes);
     } else {
       return (this.repo.findByIds(ids) as unknown) as Promise<IProps<Entity>[]>;
     }
@@ -126,7 +126,7 @@ export abstract class IOrchaTypeormRepository<
     if (query) {
       const relations = createTypeormRelationsArray(query);
       const dbRes = await this.repo.find({ relations });
-      return parseOrchaQuery(query, dbRes);
+      return parseQuery(query, dbRes);
     } else {
       return (this.repo.find() as unknown) as Promise<IProps<Entity>[]>;
     }
@@ -137,7 +137,7 @@ export abstract class IOrchaTypeormRepository<
     options?: Omit<FindManyOptions<Entity>, 'relations'>
   ): Promise<IParser<Entity[], Q>> {
     const entities = await this.provisionQuery(query, options);
-    return parseOrchaQuery(query, entities) as IParser<Entity[], Q>;
+    return parseQuery(query, entities) as IParser<Entity[], Q>;
   }
 
   private async provisionQuery<Q extends IQuery<Entity>>(

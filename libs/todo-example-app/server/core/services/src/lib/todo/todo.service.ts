@@ -8,7 +8,7 @@ import {
   UnTagDto,
   UpdateTodoDto,
 } from '@orcha-todo-example-app/shared/domain';
-import { IQuery, parseOrchaQuery } from '@orcha/common';
+import { IQuery, parseQuery } from '@orcha/common';
 import * as uuid from 'uuid';
 import { DbTransactionCreator } from '../transaction-creator/transaction-creator.service';
 import { UserService } from '../user';
@@ -23,6 +23,12 @@ export class TodoService {
     private readonly transaction: DbTransactionCreator
   ) {}
 
+  /**
+   * Creates a new todo entity.
+   * @param query Orcha query of Todo.
+   * @param token User's auth token.
+   * @param dto Specs for creating the new todo entity.
+   */
   async create(query: IQuery<Todo>, token: string, dto: CreateTodoDto) {
     const user = await this.user.verifyUserToken(token);
     return this.todoRepo.upsert(
@@ -39,6 +45,11 @@ export class TodoService {
     );
   }
 
+  /**
+   * Gets all of a user's todo entities.
+   * @param query Orcha query of Todos.
+   * @param token User's auth token.
+   */
   async read(query: IQuery<Todo[]>, token: string) {
     const user = await this.user.verifyUserToken(token);
     return this.todoRepo.query(query, { where: { user: user.id } });
@@ -63,6 +74,12 @@ export class TodoService {
     );
   }
 
+  /**
+   * Deletes a todo entity, all of it's Tag links and any tags which were matched to only this Todo.
+   * @param query Orcha query of the deleted Id of the Todo.
+   * @param token User's auth token.
+   * @param dto Id of todo to delete.
+   */
   async delete(query: IQuery<{ deletedId: string }>, token: string, dto: DeleteTodoDto) {
     const user = await this.user.verifyUserToken(token);
     const todo = await this.todoRepo.findOneOrFail(dto.todoId, {
@@ -77,12 +94,18 @@ export class TodoService {
     await this.transaction.run(async () => {
       await this.todoTagRepo.deleteMany(todo.todoTags.map((tt) => tt.id));
       await this.todoRepo.delete(dto.todoId);
-      await this.deleteLonelyTags();
+      await this.deleteLonelyTags(user.id);
     });
 
-    return parseOrchaQuery(query, { deletedId: dto.todoId });
+    return parseQuery(query, { deletedId: dto.todoId });
   }
 
+  /**
+   * Links a Tag to a Todo. If the Tag name does not exist (for a user) then create a new Tag.
+   * @param query Orcha query of Todo.
+   * @param token User's auth token.
+   * @param dto Link the todo Id and the Tag name.
+   */
   async tag(query: IQuery<Todo>, token: string, dto: TagDto) {
     const user = await this.user.verifyUserToken(token);
 
@@ -93,7 +116,7 @@ export class TodoService {
 
     const tags = await this.tagRepo.query(
       { id: true, name: true, user: { id: true } },
-      { where: { name: dto.tagName } }
+      { where: { name: dto.tagName, user: user.id } }
     );
 
     const tagAlreadyExists = tags[0];
@@ -127,6 +150,12 @@ export class TodoService {
     return this.todoRepo.findOneOrFail(todo.id, query);
   }
 
+  /**
+   * Unlinks a Tag to a Todo. If the Tag name does not exist (for a user) then create a new Tag.
+   * @param query Orcha query of Todo.
+   * @param token User's auth token.
+   * @param dto Link the todo Id and the Tag name.
+   */
   async untag(query: IQuery<Todo>, token: string, dto: UnTagDto) {
     const user = await this.user.verifyUserToken(token);
     const todoTag = await this.todoTagRepo.findOneOrFail(dto.todoTagId, {
@@ -141,14 +170,18 @@ export class TodoService {
 
     await this.transaction.run(async () => {
       await this.todoTagRepo.delete(dto.todoTagId);
-      await this.deleteLonelyTags();
+      await this.deleteLonelyTags(user.id);
     });
 
     return this.todoRepo.findOneOrFail(todoTag.todo.id, query);
   }
 
-  private async deleteLonelyTags() {
-    const tags = await this.tagRepo.findAll({ id: true, todoTags: {} });
+  /**
+   * Deletes all Tags that are not linked to a todo by user.
+   * @param userId Id of User to delete lonely Tags
+   */
+  private async deleteLonelyTags(userId: string) {
+    const tags = await this.tagRepo.query({ id: true, todoTags: {} }, { where: { user: userId } });
     const lonelyTags = tags.filter((tag) => tag.todoTags.length === 0);
     await this.tagRepo.deleteMany(lonelyTags.map((t) => t.id));
   }

@@ -7,7 +7,7 @@ import { ActionReducer, StoreModule, USER_PROVIDED_META_REDUCERS } from '@ngrx/s
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { ClientSharedDataAccessModule } from '@orcha-todo-example-app/client/shared/data-access';
 import { environment } from '@orcha-todo-example-app/shared/domain';
-import { OrchaAngularModule } from '@orcha/angular';
+import { OrchaModule } from '@orcha/angular';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -31,7 +31,7 @@ const ngrxDebugFactory = <T>() => {
     BrowserModule,
     HttpClientModule,
     ClientSharedDataAccessModule,
-    OrchaAngularModule.forRoot(environment.apiUrl),
+    OrchaModule.forRoot(environment.apiUrl),
     RouterModule.forRoot([
       {
         path: '',

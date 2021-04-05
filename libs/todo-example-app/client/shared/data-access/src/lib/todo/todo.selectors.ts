@@ -17,13 +17,11 @@ export const getTags = createSelector(getTodoState, (state: TodoState) => {
   const todos = selectAll(state.todos);
   const todoTags = todos.map((todo) => todo.todoTags.map((tt) => ({ ...tt, todo: todo }))).flat();
   const tags = todoTags
-    .map((todoTag) => {
-      return {
-        ...todoTag.tag,
-        todoTags: todoTags.filter((tt) => tt.tag.id === todoTag.tag.id),
-      };
-    })
-    .filter((tag, i, self) => self.findIndex((t) => t.id === tag.id) === i);
+    .map((todoTag) => ({
+      ...todoTag.tag,
+      todoTags: todoTags.filter((tt) => tt.tag.id === todoTag.tag.id),
+    }))
+    .filter((tag, i, arr) => arr.findIndex((t) => t.id === tag.id) === i);
 
   return {
     tags,

@@ -1,4 +1,4 @@
-import { IExactQuery, IPagination, parseOrchaQuery } from '@orcha/common';
+import { IExactQuery, IPagination, parseQuery } from '@orcha/common';
 import { Socket } from 'socket.io';
 
 interface ISubscription<Entity> {
@@ -49,14 +49,14 @@ export class GatewaysStorage<Entity extends { id: IdType }, IdType> {
       for (const s of subscription) {
         if (s.type === 'entity') {
           if (triggeredIds.some((t) => s.idsListenedTo.includes(t))) {
-            s.socket.emit(s.channel, parseOrchaQuery(s.query as any, await s.listener()));
+            s.socket.emit(s.channel, parseQuery(s.query as any, await s.listener()));
           }
         } else if (s.type === 'query') {
           // TODO very inefficient for many clients listening to queries.
           const res = await s.listener();
           const ids = this.getIds(res);
           if (triggeredIds.some((t) => ids.includes(t))) {
-            s.socket.emit(s.channel, parseOrchaQuery(s.query as any, res));
+            s.socket.emit(s.channel, parseQuery(s.query as any, res));
           }
         }
       }
@@ -73,7 +73,7 @@ export class GatewaysStorage<Entity extends { id: IdType }, IdType> {
     } else {
       this.subscribers.set(newSub.socket.id, [newSub]);
     }
-    newSub.socket.emit(newSub.channel, parseOrchaQuery(newSub.query as any, await newSub.listener()));
+    newSub.socket.emit(newSub.channel, parseQuery(newSub.query as any, await newSub.listener()));
   }
 
   private getIds(res: Entity | Entity[] | IPagination<Entity>) {

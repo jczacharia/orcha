@@ -26,7 +26,40 @@ type ITestResponse<T> = Omit<request.Response, 'body'> & {
   error?: string;
 };
 
+/**
+ * Decorates a Test Orchestration's method with a Test Operation.
+ *
+ * @example
+ * ```ts
+ * @TestOrchestration(OrchaTodoExampleAppOrchestrations.user)
+ * class UserOrchestration implements ITestOrchestration<IUserOrchestration> {
+ *   @TestOperation()
+ *   signUp!: ITestOrchestration<IUserOrchestration>['signUp'];
+ *   @TestOperation()
+ *   login!: ITestOrchestration<IUserOrchestration>['login'];
+ *   @TestOperation()
+ *   getProfile!: ITestOrchestration<IUserOrchestration>['getProfile'];
+ * }
+ * ```
+ */
 export const TestOperation = ClientOperation;
+
+/**
+ * Decorates a class to be a Test Orchestration.
+ *
+ * @example
+ * ```ts
+ * @TestOrchestration(OrchaTodoExampleAppOrchestrations.user)
+ * class UserOrchestration implements ITestOrchestration<IUserOrchestration> {
+ *   @TestOperation()
+ *   signUp!: ITestOrchestration<IUserOrchestration>['signUp'];
+ *   @TestOperation()
+ *   login!: ITestOrchestration<IUserOrchestration>['login'];
+ *   @TestOperation()
+ *   getProfile!: ITestOrchestration<IUserOrchestration>['getProfile'];
+ * }
+ * ```
+ */
 export const TestOrchestration = ClientOrchestration;
 
 export type ITestOperation<
@@ -61,6 +94,9 @@ export type ITestOrchestration<O extends IOrchestration> = {
     : never;
 };
 
+/**
+ * Create a Test Orchestration from an Express NestJS application.
+ */
 export function createNestjsTestOrchestration<O extends Type<IOrchestration>>(
   app: INestApplication,
   orchestration: O

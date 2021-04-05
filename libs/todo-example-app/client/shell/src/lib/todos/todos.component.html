@@ -1,11 +1,12 @@
 <ng-container *ngIf="state$ | async as state">
   <div class="cont">
+    <div *ngIf="!state.loaded">Loading...</div>
+    <div *ngIf="state.loaded && state.todos.length < 1">You have no todos.</div>
+    <br />
     <div *ngIf="state.loaded">
       <input type="text" [formControl]="todo" />
       <button [disabled]="todo.invalid" (click)="create()">Add</button>
     </div>
-    <div *ngIf="!state.loaded">Loading...</div>
-    <div *ngIf="state.loaded && state.todos.length < 1">You have no todos.</div>
     <div class="todo" *ngFor="let todo of state.todos" class="item">
       <div>
         <b>{{ todo.content }}</b>

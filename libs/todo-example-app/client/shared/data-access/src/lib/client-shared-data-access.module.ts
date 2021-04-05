@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
-import { OrchaAngularModule } from '@orcha/angular';
+import { OrchaModule } from '@orcha/angular';
 import { AppFacade } from './app.facade';
 import { AuthInterceptor } from './auth.interceptor';
 import { TodoEffects } from './todo/todo.effects';
@@ -18,7 +18,7 @@ import { UserReducer, USER_KEY } from './user/user.reducer';
     StoreModule.forFeature(USER_KEY, UserReducer),
     StoreModule.forFeature(TODO_KEY, TodoReducer),
     EffectsModule.forFeature([UserEffects, TodoEffects]),
-    OrchaAngularModule.forFeature({
+    OrchaModule.forFeature({
       orchestrations: [UserOrchestration, TodoOrchestration],
       interceptors: [AuthInterceptor],
     }),

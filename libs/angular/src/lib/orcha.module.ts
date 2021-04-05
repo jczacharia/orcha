@@ -32,10 +32,17 @@ export class OrchaAngularFeatureModule {
   constructor(protected readonly root: OrchaAngularRootModule) {}
 }
 
+/**
+ * Module that imports Orcha Angular functionalities.
+ */
 @NgModule({
   imports: [CommonModule],
 })
-export class OrchaAngularModule {
+export class OrchaModule {
+  /**
+   * Initializes Orcha's core Angular functionalities.
+   * @param apiUrl The base URL of your Orca server.
+   */
   static forRoot(apiUrl: string): ModuleWithProviders<OrchaAngularRootModule> {
     return {
       ngModule: OrchaAngularRootModule,
@@ -48,6 +55,9 @@ export class OrchaAngularModule {
     };
   }
 
+  /**
+   * Creates an Orcha feature by grouping relevant orchestrations, gateways, and interceptors.
+   */
   static forFeature({
     orchestrations,
     gateways,
@@ -62,7 +72,7 @@ export class OrchaAngularModule {
         (o): Provider => ({
           deps: [Injector],
           provide: o,
-          useFactory: (injector: Injector) => OrchaAngularModule.createOrchestration(injector, o),
+          useFactory: (injector: Injector) => OrchaModule.createOrchestration(injector, o),
         })
       ) ?? [];
 
@@ -71,7 +81,7 @@ export class OrchaAngularModule {
         (s): Provider => ({
           deps: [Injector],
           provide: s,
-          useFactory: (injector: Injector) => OrchaAngularModule.createGateway(injector, s),
+          useFactory: (injector: Injector) => OrchaModule.createGateway(injector, s),
         })
       ) ?? [];
 

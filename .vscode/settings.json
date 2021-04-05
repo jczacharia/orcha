@@ -1,7 +1,9 @@
 {
   "cSpell.words": [
+    "Angular's",
     "Fastify",
     "ORCHA",
+    "Orcha's",
     "dtos",
     "metatype",
     "nestjs",
@@ -13,6 +15,7 @@
     "todos",
     "typeorm",
     "upsert",
+    "upserting",
     "websockets"
   ],
   "typescript.tsdk": "node_modules/typescript/lib",

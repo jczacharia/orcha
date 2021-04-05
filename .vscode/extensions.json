@@ -1,9 +1,28 @@
 {
   "recommendations": [
-    "nrwl.angular-console",
     "angular.ng-template",
-    "ms-vscode.vscode-typescript-tslint-plugin",
+    "johnpapa.angular2",
+    "natewallace.angular2-inline",
+    "helixquar.asciidecorator",
+    "nucllear.vscode-extension-auto-import",
+    "aaron-bond.better-comments",
+    "formulahendry.auto-rename-tag",
+    "coenraads.bracket-pair-colorizer",
+    "streetsidesoftware.code-spell-checker",
+    "idbartosz.darkpp-italic",
+    "eamodio.gitlens",
+    "byi8220.indented-block-highlighting",
+    "nrwl.angular-console",
+    "christian-kohler.path-intellisense",
     "esbenp.prettier-vscode",
-    "firsttris.vscode-jest-runner"
+    "dbaeumer.vscode-eslint",
+    "visualstudioexptteam.vscodeintellicode",
+    "vscode-icons-team.vscode-icons",
+    "redhat.vscode-yaml",
+    "bradgashler.htmltagwrap",
+    "gruntfuggly.todo-tree",
+    "cssho.vscode-svgviewer",
+    "firsttris.vscode-jest-runner",
+    "ghaschel.vscode-angular-html"
   ]
 }

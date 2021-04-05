@@ -2,7 +2,12 @@ import { HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http'
 import { Type } from '@angular/core';
 import { ORCHA } from '@orcha/common';
 
-export interface OrchaInterceptor extends HttpInterceptor {}
+/**
+ * Implements an Orcha Interceptor.
+ * An Orcha Interceptor intercepts every Angular's HTTP client request whose URL is prefixed with `/orcha`.
+ * This is commonly used to inject the user's auth token into each operation.
+ */
+export type OrchaInterceptor = HttpInterceptor;
 
 export function createOrchaInterceptorFilter(interceptor: Type<OrchaInterceptor>) {
   const originalFunction = interceptor.prototype.intercept;

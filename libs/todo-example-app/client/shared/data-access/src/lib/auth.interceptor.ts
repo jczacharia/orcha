@@ -1,10 +1,8 @@
 import { HttpEvent, HttpHandler, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from '@orcha-todo-example-app/shared/domain';
 import { OrchaInterceptor } from '@orcha/angular';
 import { ORCHA_TOKEN } from '@orcha/common';
 import { Observable } from 'rxjs';
-import { delay, tap } from 'rxjs/operators';
 import { AuthTokenStorage } from './user/user.storage';
 
 @Injectable()
@@ -19,11 +17,8 @@ export class AuthInterceptor implements OrchaInterceptor {
     }
 
     const authReq = req.clone({ headers, body });
-    return (
-      next
-        .handle(authReq)
-        // Simulate HTTP delay for development.
-        // .pipe(environment.production ? tap() : delay(Math.floor(Math.random() * (1000 - 200 + 1) + 200)))
-    );
+    return next.handle(authReq);
+    // Simulate HTTP delay for development.
+    // .pipe(environment.production ? tap() : delay(Math.floor(Math.random() * (1000 - 200 + 1) + 200)))
   }
 }

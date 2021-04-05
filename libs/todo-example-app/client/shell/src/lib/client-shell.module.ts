@@ -28,6 +28,14 @@ import { TodosComponent } from './todos/todos.component';
     MatAutocompleteModule,
     RouterModule.forChild([
       {
+        path: 'login',
+        component: LoginComponent,
+      },
+      {
+        path: 'sign-up',
+        component: SignUpComponent,
+      },
+      {
         path: '',
         component: AppShellComponent,
         canActivate: [AppGuard],
@@ -44,15 +52,8 @@ import { TodosComponent } from './todos/todos.component';
             path: 'profile',
             component: ProfileComponent,
           },
+          { path: '**', pathMatch: 'full', redirectTo: 'todos' },
         ],
-      },
-      {
-        path: 'login',
-        component: LoginComponent,
-      },
-      {
-        path: 'sign-up',
-        component: SignUpComponent,
       },
     ]),
   ],

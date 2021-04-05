@@ -1,12 +1,18 @@
-import { IGateway, IOrchestration } from '@orcha/common';
 import { DynamicModule, Module, Type } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
+import { IGateway, IOrchestration } from '@orcha/common';
 import { OrchaOperationErrorFilter } from './orcha.filter';
 
+/**
+ * Module that imports Orcha NestJS functionalities.
+ */
 @Module({
   providers: [{ provide: APP_FILTER, useClass: OrchaOperationErrorFilter }],
 })
 export class OrchaModule {
+  /**
+   * Creates an Orcha feature by grouping relevant orchestrations and gateways.
+   */
   static forFeature({
     orchestrations,
     gateways,

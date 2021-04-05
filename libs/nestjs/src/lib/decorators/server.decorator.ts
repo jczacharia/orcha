@@ -14,13 +14,33 @@ import { ValidationPipe } from '../pipes';
 import { QueryValidationPipe } from '../pipes/query-validation.pipe';
 
 /**
- * Creates an Orchestration of endpoints to receive inbound requests and produce responses.
+ * Decorates a NestJS class (Orchestration) of Operations to receive inbound requests and produce responses.
  *
- * Example endpoint using the Orchestration name `user`:
+ * @example
+ * ```ts
+ * @ServerOrchestration('user')
+ * export class UserOrchestration implements IServerOrchestration<IUserOrchestration> {
+ *   constructor(private readonly user: UserService) {}
+ *
+ *   // `/orcha/user/login`
+ *   @ServerOperation({ validateQuery: LoginQueryModel })
+ *   login(query: IQuery<{ token: string }>, _: string, { id, password }: LoginDto) {
+ *     return this.user.login(id, password, query);
+ *   }
+ *
+ *   // `/orcha/user/signUp`
+ *   @ServerOperation({ validateQuery: SignUpQueryModel })
+ *   signUp(query: IQuery<{ token: string }>, _: string, { id, password }: SignUpDto) {
+ *     return this.user.signUp(id, password, query);
+ *   }
+ *
+ *   // `/orcha/user/getProfile`
+ *   @ServerOperation({ validateQuery: EntireProfile })
+ *   getProfile(query: IQuery<User>, token: string) {
+ *     return this.user.verifyUserToken(token, query);
+ *   }
+ * }
  * ```
- * /orcha/user/*
- * ```
- * Where `*` is the name of any class method who has a `ServerOperation` decorator.
  *
  * @param name Name of orchestration class.
  */
@@ -40,13 +60,34 @@ function transform(val: string) {
 }
 
 /**
- * Maps a function to an Orchestration endpoint.
+ * Maps an Orchestrations method to an Orchestration endpoint.
  *
  * ! Note: It is highly advised to use the `validateQuery` option in `options` for endpoint security.
  *
- * Example endpoint using the Orchestration name `user` and method name `login`:
- * ```
- * /orcha/user/login
+ * @example
+ * ```ts
+ * @ServerOrchestration('user')
+ * export class UserOrchestration implements IServerOrchestration<IUserOrchestration> {
+ *   constructor(private readonly user: UserService) {}
+ *
+ *   // `/orcha/user/login`
+ *   @ServerOperation({ validateQuery: LoginQueryModel })
+ *   login(query: IQuery<{ token: string }>, _: string, { id, password }: LoginDto) {
+ *     return this.user.login(id, password, query);
+ *   }
+ *
+ *   // `/orcha/user/signUp`
+ *   @ServerOperation({ validateQuery: SignUpQueryModel })
+ *   signUp(query: IQuery<{ token: string }>, _: string, { id, password }: SignUpDto) {
+ *     return this.user.signUp(id, password, query);
+ *   }
+ *
+ *   // `/orcha/user/getProfile`
+ *   @ServerOperation({ validateQuery: EntireProfile })
+ *   getProfile(query: IQuery<User>, token: string) {
+ *     return this.user.verifyUserToken(token, query);
+ *   }
+ * }
  * ```
  */
 export function ServerOperation(options?: {

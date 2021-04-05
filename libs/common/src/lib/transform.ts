@@ -1,14 +1,67 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-types */
 import { IPagination } from './pagination';
 import { IParser } from './parser';
 import { IExactQuery, IQuery } from './query';
 
-export function parseOrchaQuery<T, Q extends IQuery<T>>(query: IExactQuery<T, Q>, entities: T): IParser<T, Q>;
-export function parseOrchaQuery<T, Q extends IQuery<T>>(
+/**
+ * Manually parse an Orcha Query.
+ *
+ * This will recursively go through all `entities` and remove values that are not specified in the query.
+ *
+ * @example
+ * ```ts
+ * const query = createQuery<{ id: string; data: { name: string } }>()({
+ *   id: true,
+ *   data: {
+ *     name: true,
+ *   },
+ * });
+ * const parsed = parseQuery(query, [
+ *   {
+ *     id: 1,
+ *     extraField: 'field',
+ *     data: {
+ *       name: 'James',
+ *       initial: 'J',
+ *     },
+ *   },
+ *   {
+ *     id: 2,
+ *     extraField: 'field',
+ *     data: {
+ *       name: 'Lilly',
+ *       initial: 'L',
+ *     },
+ *   },
+ * ]);
+ *
+ * // output:
+ * // [
+ * //   {
+ * //     id: 1,
+ * //     data: {
+ * //       name: 'James',
+ * //     },
+ * //   },
+ * //   {
+ * //     id: 2,
+ * //     data: {
+ * //       name: 'Lilly',
+ * //     },
+ * //   },
+ * // ]
+ * ```
+ *
+ * @param query Reference Query.
+ * @param entities Objects to parse.
+ */
+export function parseQuery<T, Q extends IQuery<T>>(query: IExactQuery<T, Q>, entities: T): IParser<T, Q>;
+export function parseQuery<T, Q extends IQuery<T>>(
   query: IExactQuery<T, Q>,
   entities: T[] | IPagination<T>
 ): IParser<T[], Q>;
-export function parseOrchaQuery<T, Q extends IQuery<T>>(
+export function parseQuery<T, Q extends IQuery<T>>(
   query: IExactQuery<T, Q>,
   entities: T | T[] | IPagination<T> | undefined
 ) {
@@ -16,7 +69,7 @@ export function parseOrchaQuery<T, Q extends IQuery<T>>(
 
   // is pagination
   if ('items' in entities && 'meta' in entities) {
-    const i = parseOrchaQuery(query, entities.items);
+    const i = parseQuery(query, entities.items);
     // TODO any
     (entities as any).items = i;
     return (entities as unknown) as IParser<T[], Q>;
@@ -36,7 +89,7 @@ export function parseOrchaQuery<T, Q extends IQuery<T>>(
 
     for (const [k, q] of Object.entries(query as object)) {
       if (typeof q === 'object') {
-        parseOrchaQuery(q, e[k as keyof T]);
+        parseQuery(q, e[k as keyof T]);
       }
     }
 

@@ -1,3 +1,6 @@
 import { Pagination } from 'nestjs-typeorm-paginate';
 
-export interface IPagination<E> extends Pagination<E> {}
+/**
+ * Describes the response schema for a pagination-based Operation.
+ */
+export type IPagination<E> = Pagination<E>;

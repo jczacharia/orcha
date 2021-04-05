@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserRepository } from '@orcha-todo-example-app/server/core/domain';
 import { User } from '@orcha-todo-example-app/shared/domain';
-import { IExactQuery, IParser, IProps, IQuery, parseOrchaQuery } from '@orcha/common';
+import { IExactQuery, IParser, IProps, IQuery, parseQuery } from '@orcha/common';
 import * as bcrypt from 'bcrypt';
 
 type Token = string;
@@ -29,7 +29,7 @@ export class UserService {
 
     await this.userRepo.update(user.id, { dateLastLoggedIn: new Date() });
     const token = this.sign({ userId: id });
-    return parseOrchaQuery(query, { token });
+    return parseQuery(query, { token });
   }
 
   async signUp(id: string, password: string, query: IQuery<{ token: string }>) {
@@ -52,7 +52,7 @@ export class UserService {
       {}
     );
     const token = this.sign({ userId: id });
-    return parseOrchaQuery(query, { token });
+    return parseQuery(query, { token });
   }
 
   /**
