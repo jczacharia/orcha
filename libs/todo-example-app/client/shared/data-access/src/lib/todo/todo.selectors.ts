@@ -14,6 +14,10 @@ export const getTodos = createSelector(getTodoState, (state: TodoState) => ({
 export const getTags = createSelector(getTodoState, (state: TodoState) => {
   /* Invert Many-to-Many relationship between Todos and Tags. */
 
+  /*
+    Note this could be done using https://github.com/paularmstrong/normalizr
+  */
+
   const todos = selectAll(state.todos);
   const todoTags = todos.map((todo) => todo.todoTags.map((tt) => ({ ...tt, todo: todo }))).flat();
   const tags = todoTags

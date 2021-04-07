@@ -47,7 +47,7 @@ export class TodoService {
 
   /**
    * Gets all of a user's todo entities.
-   * @param query Orcha query of Todos.
+   * @param query Orcha query of todos.
    * @param token User's auth token.
    */
   async read(query: IQuery<Todo[]>, token: string) {
@@ -55,6 +55,12 @@ export class TodoService {
     return this.todoRepo.query(query, { where: { user: user.id } });
   }
 
+  /**
+   * Update a todo entity.
+   * @param query Orcha query of todo.
+   * @param token User auth token.
+   * @param dto Id of todo to update.
+   */
   async update(query: IQuery<Todo>, token: string, dto: UpdateTodoDto) {
     const user = await this.user.verifyUserToken(token);
     const todo = await this.todoRepo.findOneOrFail(dto.todoId, {

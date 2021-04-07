@@ -9,12 +9,13 @@ export class UserEntity implements Required<User> {
   id!: string;
 
   @Column()
-  password!: string;
+  passwordHash!: string;
+
+  @Column()
+  salt!: string;
 
   @Column()
   dateCreated!: Date;
-
-  dg!: string[];
 
   @Column({ nullable: true })
   dateLastLoggedIn!: Date;

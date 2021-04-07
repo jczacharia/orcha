@@ -4,10 +4,10 @@ import { Todo } from '../todo';
 
 export interface User {
   id: string;
-  password: string;
+  passwordHash: string;
+  salt: string;
   dateCreated: Date | string;
   dateLastLoggedIn?: Date | string;
-  dg: string[];
   todos: IOneToMany<User, Todo>;
   tags: IOneToMany<User, Tag>;
 }

@@ -3,7 +3,8 @@ import { JwtService } from '@nestjs/jwt';
 import { UserRepository } from '@orcha-todo-example-app/server/core/domain';
 import { User } from '@orcha-todo-example-app/shared/domain';
 import { IExactQuery, IParser, IProps, IQuery, parseQuery } from '@orcha/common';
-import * as bcrypt from 'bcrypt';
+import { FirebaseScrypt } from 'firebase-scrypt';
+import * as uuid from 'uuid';
 
 type Token = string;
 
@@ -13,6 +14,16 @@ export interface Sign {
 
 @Injectable()
 export class UserService {
+  /**
+   * This library is super easy to use. (Same scrypt implementation Firebase uses.)
+   */
+  scrypt = new FirebaseScrypt({
+    memCost: 14,
+    rounds: 8,
+    saltSeparator: 'Bw==',
+    signerKey: 'qUmhMeByCl+H+YaT4RlH/kri/BLQEkCRrySxVqrODKR8MIhwU49k3WzyZJtr1R3dgQXDPq+7LUmIs+vuFdp8Nw==',
+  });
+
   constructor(private readonly userRepo: UserRepository, private readonly jwtService: JwtService) {}
 
   async login(id: string, pass: string, query: IQuery<{ token: string }>) {
@@ -22,7 +33,7 @@ export class UserService {
       throw new HttpException(`User "${id}" does not exist.`, HttpStatus.NOT_FOUND);
     }
 
-    const compare = await bcrypt.compare(pass, user.password);
+    const compare = await this.scrypt.verify(pass, user.salt, user.passwordHash);
     if (!compare) {
       throw new HttpException(`Incorrect password.`, HttpStatus.UNAUTHORIZED);
     }
@@ -39,18 +50,17 @@ export class UserService {
       throw new HttpException(`User with email "${conflictingUser.id}" already exists.`, HttpStatus.CONFLICT);
     }
 
-    const hashedPassword = await this.createPasswordHash(password);
-    await this.userRepo.upsert(
-      {
-        id,
-        password: hashedPassword,
-        dateCreated: new Date(),
-        todos: [],
-        tags: [],
-        dg: [],
-      },
-      {}
-    );
+    const salt = uuid.v4();
+    const passwordHash = await this.scrypt.hash(password, salt);
+    await this.userRepo.upsert({
+      id,
+      passwordHash,
+      salt,
+      dateCreated: new Date(),
+      todos: [],
+      tags: [],
+      dg: [],
+    });
     const token = this.sign({ userId: id });
     return parseQuery(query, { token });
   }
@@ -103,10 +113,6 @@ export class UserService {
 
   private sign(sign: Sign): Token {
     return this.jwtService.sign(sign);
-  }
-
-  private createPasswordHash(password: string) {
-    return bcrypt.hash(password, 10);
   }
 
   private getTokenOwner(token: string): Promise<Sign> {
