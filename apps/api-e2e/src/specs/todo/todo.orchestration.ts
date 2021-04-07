@@ -17,6 +17,10 @@ class TodoOrchestration implements ITestOrchestration<ITodoOrchestration> {
   update!: ITestOrchestration<ITodoOrchestration>['update'];
   @TestOperation()
   delete!: ITestOrchestration<ITodoOrchestration>['delete'];
+  @TestOperation()
+  tag!: ITestOrchestration<ITodoOrchestration>['tag'];
+  @TestOperation()
+  untag!: ITestOrchestration<ITodoOrchestration>['untag'];
 }
 
 export function createTodoOrchestration(app: INestApplication) {
