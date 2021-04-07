@@ -31,7 +31,7 @@ describe('Todo Orchestration Integration Tests', () => {
     user: {
       id: true,
     },
-    todoTags: {
+    taggedTodos: {
       id: true,
       tag: {
         id: true,
@@ -137,7 +137,7 @@ describe('Todo Orchestration Integration Tests', () => {
       });
       expect(deletedTodo.deletedId).toBe(todo.id);
       expect(await todoRepo.findOne(todo.id)).toBeFalsy();
-      expect(await tagRepo.findOne(taggedTodo.todoTags[0].tag.id)).toBeFalsy();
+      expect(await tagRepo.findOne(taggedTodo.taggedTodos[0].tag.id)).toBeFalsy();
     });
     it('should delete todo and keep non-lonely tags', async () => {
       const { body: todoToDelete } = await todoOrcha.create(todoQuery, auth.body.token, {
@@ -169,7 +169,7 @@ describe('Todo Orchestration Integration Tests', () => {
         todoId: todo.id,
         tagName: 'tag1',
       });
-      expect(taggedTodo.todoTags[0].tag.name).toBe('tag1');
+      expect(taggedTodo.taggedTodos[0].tag.name).toBe('tag1');
     });
     it('should reuse a tag', async () => {
       const { body: todo1 } = await todoOrcha.create(todoQuery, auth.body.token, { content: 'new content' });
@@ -177,7 +177,7 @@ describe('Todo Orchestration Integration Tests', () => {
       await todoOrcha.tag(todoQuery, auth.body.token, { todoId: todo1.id, tagName: 'tag1' });
       await todoOrcha.tag(todoQuery, auth.body.token, { todoId: todo2.id, tagName: 'tag1' });
       const { body: todos } = await todoOrcha.read(todoQuery, auth.body.token);
-      expect(todos[0].todoTags[0].tag.id).toBe(todos[1].todoTags[0].tag.id);
+      expect(todos[0].taggedTodos[0].tag.id).toBe(todos[1].taggedTodos[0].tag.id);
     });
     it('should create separate tag entities if same name but different user', async () => {
       const { body: otherUser } = await userOrcha.signUp({ token: true }, '', {
@@ -196,7 +196,7 @@ describe('Todo Orchestration Integration Tests', () => {
         todoId: otherTodo.id,
         tagName: 'sameTagName',
       });
-      expect(myTaggedTodo.todoTags[0].tag.id).not.toBe(otherTaggedTodo.todoTags[0].tag.id);
+      expect(myTaggedTodo.taggedTodos[0].tag.id).not.toBe(otherTaggedTodo.taggedTodos[0].tag.id);
     });
   });
   describe('untag', () => {
@@ -207,10 +207,10 @@ describe('Todo Orchestration Integration Tests', () => {
         tagName: 'tag1',
       });
       const { body: untaggedTodo } = await todoOrcha.untag(todoQuery, auth.body.token, {
-        todoTagId: taggedTodo.todoTags[0].id,
+        taggedTodoId: taggedTodo.taggedTodos[0].id,
       });
-      expect(untaggedTodo.todoTags.length).toBe(0);
-      expect(await tagRepo.findOne(taggedTodo.todoTags[0].tag.id)).toBeFalsy();
+      expect(untaggedTodo.taggedTodos.length).toBe(0);
+      expect(await tagRepo.findOne(taggedTodo.taggedTodos[0].tag.id)).toBeFalsy();
     });
     it('should untag and keep non-lonely tags', async () => {
       const { body: todo } = await todoOrcha.create(todoQuery, auth.body.token, { content: 'new content' });
@@ -223,7 +223,7 @@ describe('Todo Orchestration Integration Tests', () => {
         tagName: 'tagToKeep',
       });
       await todoOrcha.untag(todoQuery, auth.body.token, {
-        todoTagId: tagToDelete.todoTags[0].id,
+        taggedTodoId: tagToDelete.taggedTodos[0].id,
       });
       expect(
         (await tagRepo.query({ id: true }, { where: { name: 'tagToDelete', user: credentials.id } })).length

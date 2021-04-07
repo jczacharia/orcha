@@ -33,5 +33,5 @@ export abstract class TagDto {
 
 export abstract class UnTagDto {
   @IsUUID()
-  todoTagId!: string;
+  taggedTodoId!: string;
 }

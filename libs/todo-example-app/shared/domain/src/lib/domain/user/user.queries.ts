@@ -19,7 +19,7 @@ export const EntireProfile = createQuery<User>()({
     name: true,
     dateCreated: true,
     dateUpdated: true,
-    todoTags: {
+    taggedTodos: {
       id: true,
       dateLinked: true,
       todo: {
@@ -33,7 +33,7 @@ export const EntireProfile = createQuery<User>()({
     done: true,
     dateCreated: true,
     dateUpdated: true,
-    todoTags: {
+    taggedTodos: {
       id: true,
       dateLinked: true,
       tag: {

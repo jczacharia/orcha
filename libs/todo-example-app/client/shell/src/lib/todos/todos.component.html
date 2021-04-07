@@ -14,7 +14,7 @@
         <div>Updated: {{ todo.dateUpdated | date: 'MMM d, y, h:mm:ss a' }}</div>
       </div>
       <div class="tags">
-        <div class="tag" *ngFor="let link of todo.todoTags">
+        <div class="tag" *ngFor="let link of todo.taggedTodos">
           {{ link.tag.name }}
           <span (click)="untag(link.id)">❌</span>
         </div>

@@ -66,7 +66,7 @@ export class TodosComponent extends StatefulComponent<State> implements OnInit {
     this.app.todo.dispatchers.tag(todo, tagName);
   }
 
-  untag(todoTagId: string) {
-    this.app.todo.dispatchers.untag(todoTagId);
+  untag(taggedTodoId: string) {
+    this.app.todo.dispatchers.untag(taggedTodoId);
   }
 }

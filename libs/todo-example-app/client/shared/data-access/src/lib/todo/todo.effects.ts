@@ -102,8 +102,8 @@ export class TodoEffects {
     this.actions$.pipe(
       ofType(TodoActions.untagTodo),
       pessimisticUpdate({
-        run: ({ todoTagId }) =>
-          this.todo.untag(TodoQueryModel, { todoTagId }).pipe(
+        run: ({ taggedTodoId }) =>
+          this.todo.untag(TodoQueryModel, { taggedTodoId }).pipe(
             map((todo) => {
               return TodoActions.untagTodoSuccess({ todo });
             })

@@ -10,7 +10,7 @@ export const TodoQueryModel = createQuery<Todo>()({
   user: {
     id: true,
   },
-  todoTags: {
+  taggedTodos: {
     id: true,
     dateLinked: true,
     tag: {

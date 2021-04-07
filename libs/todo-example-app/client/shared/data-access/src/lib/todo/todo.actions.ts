@@ -98,7 +98,7 @@ export const tagTodoError = createAction('[Todos] Tag Todo Error', props<{ error
   \___/|_||_|_|\__,_\__, |
                     |___/ 
 */
-export const untagTodo = createAction('[Todos] UnTag Todo', props<{ todoTagId: string }>());
+export const untagTodo = createAction('[Todos] UnTag Todo', props<{ taggedTodoId: string }>());
 
 export const untagTodoSuccess = createAction('[Todos] UnTag Todo Success', props<{ todo: TodoStoreModel }>());
 

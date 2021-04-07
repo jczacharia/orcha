@@ -1,5 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { TagRepository, TodoRepository, TodoTagRepository } from '@orcha-todo-example-app/server/core/domain';
+import {
+  TagRepository,
+  TodoRepository,
+  TaggedTodoRepository,
+} from '@orcha-todo-example-app/server/core/domain';
 import {
   CreateTodoDto,
   DeleteTodoDto,
@@ -19,7 +23,7 @@ export class TodoService {
     private readonly todoRepo: TodoRepository,
     private readonly user: UserService,
     private readonly tagRepo: TagRepository,
-    private readonly todoTagRepo: TodoTagRepository,
+    private readonly taggedTodoRepo: TaggedTodoRepository,
     private readonly transaction: DbTransactionCreator
   ) {}
 
@@ -39,7 +43,7 @@ export class TodoService {
         dateUpdated: new Date(),
         done: false,
         user: user.id,
-        todoTags: [],
+        taggedTodos: [],
       },
       query
     );
@@ -90,7 +94,7 @@ export class TodoService {
     const user = await this.user.verifyUserToken(token);
     const todo = await this.todoRepo.findOneOrFail(dto.todoId, {
       user: { id: true },
-      todoTags: { id: true },
+      taggedTodos: { id: true },
     });
 
     if (user.id !== todo.user.id) {
@@ -98,7 +102,7 @@ export class TodoService {
     }
 
     await this.transaction.run(async () => {
-      await this.todoTagRepo.deleteMany(todo.todoTags.map((tt) => tt.id));
+      await this.taggedTodoRepo.deleteMany(todo.taggedTodos.map((tt) => tt.id));
       await this.todoRepo.delete(dto.todoId);
       await this.deleteLonelyTags(user.id);
     });
@@ -133,7 +137,7 @@ export class TodoService {
         dateUpdated: new Date(),
         name: dto.tagName,
         user: user.id,
-        todoTags: [
+        taggedTodos: [
           {
             id: uuid.v4(),
             dateLinked: new Date(),
@@ -144,9 +148,9 @@ export class TodoService {
       return this.todoRepo.findOneOrFail(todo.id, query);
     }
 
-    const tts = await this.todoTagRepo.query({}, { where: { tag: tagAlreadyExists.id, todo: todo.id } });
+    const tts = await this.taggedTodoRepo.query({}, { where: { tag: tagAlreadyExists.id, todo: todo.id } });
     if (!tts[0]) {
-      await this.todoTagRepo.upsert({
+      await this.taggedTodoRepo.upsert({
         id: uuid.v4(),
         dateLinked: new Date(),
         todo: todo.id,
@@ -164,22 +168,22 @@ export class TodoService {
    */
   async untag(query: IQuery<Todo>, token: string, dto: UnTagDto) {
     const user = await this.user.verifyUserToken(token);
-    const todoTag = await this.todoTagRepo.findOneOrFail(dto.todoTagId, {
+    const taggedTodo = await this.taggedTodoRepo.findOneOrFail(dto.taggedTodoId, {
       todo: { id: true },
       tag: { id: true },
     });
 
-    const todo = await this.todoRepo.findOneOrFail(todoTag.todo.id, { user: { id: true } });
+    const todo = await this.todoRepo.findOneOrFail(taggedTodo.todo.id, { user: { id: true } });
     if (todo.user.id !== user.id) {
       throw new HttpException('You cannot untag someone elses todo.', HttpStatus.UNAUTHORIZED);
     }
 
     await this.transaction.run(async () => {
-      await this.todoTagRepo.delete(dto.todoTagId);
+      await this.taggedTodoRepo.delete(dto.taggedTodoId);
       await this.deleteLonelyTags(user.id);
     });
 
-    return this.todoRepo.findOneOrFail(todoTag.todo.id, query);
+    return this.todoRepo.findOneOrFail(taggedTodo.todo.id, query);
   }
 
   /**
@@ -187,8 +191,8 @@ export class TodoService {
    * @param userId Id of User to delete lonely Tags
    */
   private async deleteLonelyTags(userId: string) {
-    const tags = await this.tagRepo.query({ id: true, todoTags: {} }, { where: { user: userId } });
-    const lonelyTags = tags.filter((tag) => tag.todoTags.length === 0);
+    const tags = await this.tagRepo.query({ id: true, taggedTodos: {} }, { where: { user: userId } });
+    const lonelyTags = tags.filter((tag) => tag.taggedTodos.length === 0);
     await this.tagRepo.deleteMany(lonelyTags.map((t) => t.id));
   }
 }

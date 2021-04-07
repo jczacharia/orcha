@@ -111,19 +111,19 @@ export type IManyToOne<Self, Relation> = {
  * ```ts
  * interface Todo {
  *   id: string;
- *   todoTags: IOneToMany<Todo, TodoTag>;
+ *   taggedTodos: IOneToMany<Todo, TaggedTodo>;
  * }
  *
  * interface Tag {
  *   id: string;
- *   todoTags: IOneToMany<Tag, TodoTag>;
+ *   taggedTodos: IOneToMany<Tag, TaggedTodo>;
  * }
  *
- * interface TodoTag {
+ * interface TaggedTodo {
  *   id: string;
  *   dateLinked: Date | string; // Added meta column.
- *   todo: IManyToOne<TodoTag, Todo>;
- *   tag: IManyToOne<TodoTag, Tag>;
+ *   todo: IManyToOne<TaggedTodo, Todo>;
+ *   tag: IManyToOne<TaggedTodo, Tag>;
  * }
  * ```
  */

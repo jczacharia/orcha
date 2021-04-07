@@ -59,7 +59,6 @@ export class UserService {
       dateCreated: new Date(),
       todos: [],
       tags: [],
-      dg: [],
     });
     const token = this.sign({ userId: id });
     return parseQuery(query, { token });

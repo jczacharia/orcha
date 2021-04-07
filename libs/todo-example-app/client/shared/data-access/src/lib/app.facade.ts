@@ -62,8 +62,8 @@ export class AppFacade {
       tag: (todo: TodoStoreModel, tagName: string) => {
         this.store.dispatch(TodoActions.tagTodo({ todo, tagName }));
       },
-      untag: (todoTagId: string) => {
-        this.store.dispatch(TodoActions.untagTodo({ todoTagId }));
+      untag: (taggedTodoId: string) => {
+        this.store.dispatch(TodoActions.untagTodo({ taggedTodoId }));
       },
     },
     selectors: {
