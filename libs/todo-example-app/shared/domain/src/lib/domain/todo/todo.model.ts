@@ -8,6 +8,6 @@ export interface Todo {
   done: boolean;
   dateCreated: Date | string;
   dateUpdated: Date | string;
-  user: IManyToOne<Todo, User>;
-  taggedTodos: IOneToMany<Todo, TaggedTodo>;
+  user: IManyToOne<User, 'todos'>;
+  taggedTodos: IOneToMany<TaggedTodo, 'todo'>;
 }

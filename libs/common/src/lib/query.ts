@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/ban-types */
 import { ORCHA_LIMIT, ORCHA_PAGE, ORCHA_PAGINATE } from './constants';
 import { IAnyRelation } from './relations';
@@ -18,13 +19,15 @@ export type IQueryUndefined<Q> = Q extends undefined
   ? IQueryObject<NonNullable<Q>> | undefined
   : IQueryObject<Q>;
 
-export type IQueryObject<Q> = {
-  [K in keyof Q]?: NonNullable<Q[K]> extends object
-    ? // `Required<infer _>` seems to work, but idk why.
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      NonNullable<Q[K]> extends IAnyRelation<Q[K], Required<infer _>>
-      ? true
-      : IQueryArray<Q[K]>
+export type IQueryObject<T> = {
+  [K in keyof T]?: NonNullable<T[K]> extends object
+    ? {
+        [_ in keyof NonNullable<T[K]>]: NonNullable<T[K]> extends IAnyRelation<infer R, infer _>
+          ? Required<T> extends Required<R>
+            ? true
+            : IQueryArray<T[K]>
+          : true;
+      }[keyof NonNullable<T[K]>]
     : true;
 };
 

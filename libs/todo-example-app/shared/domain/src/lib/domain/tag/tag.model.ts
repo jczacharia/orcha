@@ -7,6 +7,6 @@ export interface Tag {
   name: string;
   dateCreated: Date | string;
   dateUpdated: Date | string;
-  user: IManyToOne<Tag, User>;
-  taggedTodos: IOneToMany<Tag, TaggedTodo>;
+  user: IManyToOne<User, 'tags'>;
+  taggedTodos: IOneToMany<TaggedTodo, 'tag'>;
 }

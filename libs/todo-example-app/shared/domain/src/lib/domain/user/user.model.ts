@@ -8,6 +8,6 @@ export interface User {
   salt: string;
   dateCreated: Date | string;
   dateLastLoggedIn?: Date | string;
-  todos: IOneToMany<User, Todo>;
-  tags: IOneToMany<User, Tag>;
+  todos: IOneToMany<Todo, 'user'>;
+  tags: IOneToMany<Tag, 'user'>;
 }

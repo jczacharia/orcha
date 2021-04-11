@@ -25,4 +25,6 @@ export class UserEntity implements Required<User> {
 
   @OneToMany(() => TagEntity, (e) => e.user)
   tags!: TagEntity[];
+
+  address: any;
 }

@@ -8,6 +8,6 @@ import { Todo } from '../todo';
 export interface TaggedTodo {
   id: string;
   dateLinked: Date | string;
-  todo: IManyToOne<TaggedTodo, Todo>;
-  tag: IManyToOne<TaggedTodo, Tag>;
+  todo: IManyToOne<Todo, 'taggedTodos'>;
+  tag: IManyToOne<Tag, 'taggedTodos'>;
 }

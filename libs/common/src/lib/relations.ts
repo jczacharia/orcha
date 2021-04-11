@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -8,21 +9,17 @@
  * ```ts
  * interface User {
  *   id: string;
- *   privateData: IOneToOne<User, UserPrivate>;
+ *   privateData: IOneToOne<'user', UserPrivate>;
  * }
  *
  * interface UserPrivate {
  *   id: string;
- *   user: IOneToOne<UserPrivate, User>;
+ *   user: IOneToOne<'privateData', User>;
  * }
  * ```
  */
-export type IOneToOne<Self, Relation> = {
-  [K in keyof Relation as Relation[K] extends IOneToOne<Relation, infer S>
-    ? Required<S> extends Required<Self>
-      ? never
-      : K
-    : K]: Relation[K];
+export type IOneToOne<Relation, SelfKey extends keyof Relation> = {
+  [K in keyof Relation as SelfKey extends K ? never : K]: Relation[K];
 };
 
 /**
@@ -32,21 +29,17 @@ export type IOneToOne<Self, Relation> = {
  * ```ts
  * interface User {
  *   id: string;
- *   posts: IOneToMany<User, Post>;
+ *   posts: IOneToMany<'user', Post>;
  * }
  *
  * interface Post {
  *   id: string;
- *   user: IManyToOne<Post, User>;
+ *   user: IManyToOne<'posts', User>;
  * }
  * ```
  */
-export type IOneToMany<Self, Relation> = {
-  [K in keyof Relation as Relation[K] extends IManyToOne<Relation, infer S>
-    ? Required<S> extends Required<Self>
-      ? never
-      : K
-    : K]: Relation[K];
+export type IOneToMany<Relation, SelfKey extends keyof Relation> = {
+  [K in keyof Relation as SelfKey extends K ? never : K]: Relation[K];
 }[];
 
 /**
@@ -56,21 +49,17 @@ export type IOneToMany<Self, Relation> = {
  * ```ts
  * interface Post {
  *   id: string;
- *   user: IManyToOne<Post, User>;
+ *   user: IManyToOne<'posts', User>;
  * }
  *
  * interface User {
  *   id: string;
- *   posts: IOneToMany<User, Post>;
+ *   posts: IOneToMany<'user', Post>;
  * }
  * ```
  */
-export type IManyToOne<Self, Relation> = {
-  [K in keyof Relation as Relation[K] extends IOneToMany<Relation, infer S>
-    ? Required<S> extends Required<Self>
-      ? never
-      : K
-    : K]: Relation[K];
+export type IManyToOne<Relation, SelfKey extends keyof Relation> = {
+  [K in keyof Relation as SelfKey extends K ? never : K]: Relation[K];
 };
 
 /**
@@ -80,12 +69,12 @@ export type IManyToOne<Self, Relation> = {
  * ```ts
  * interface Todo {
  *   id: string;
- *   todos: IManyToMany<Todo, Tag>;
+ *   todos: IManyToMany<'todos', Tag>;
  * }
  *
  * interface Tag {
  *   id: string;
- *   tags: IManyToMany<Tag, Todo>;
+ *   todos: IManyToMany<'tags', Todo>;
  * }
  * ```
  *
@@ -99,74 +88,92 @@ export type IManyToOne<Self, Relation> = {
  * ```ts
  * interface Todo {
  *   id: string;
- *   todos: IManyToMany<Todo, Tag>;
+ *   todos: IManyToMany<'todos', Tag>;
  * }
  *
  * interface Tag {
  *   id: string;
- *   tags: IManyToMany<Tag, Todo>;
+ *   todos: IManyToMany<'tags', Todo>;
  * }
  * ```
  * Do this:
  * ```ts
  * interface Todo {
  *   id: string;
- *   taggedTodos: IOneToMany<Todo, TaggedTodo>;
+ *   taggedTodos: IOneToMany<'todo', TaggedTodo>;
  * }
  *
  * interface Tag {
  *   id: string;
- *   taggedTodos: IOneToMany<Tag, TaggedTodo>;
+ *   taggedTodos: IOneToMany<'tag', TaggedTodo>;
  * }
  *
  * interface TaggedTodo {
  *   id: string;
- *   dateLinked: Date | string; // Added meta column.
- *   todo: IManyToOne<TaggedTodo, Todo>;
- *   tag: IManyToOne<TaggedTodo, Tag>;
+ *   dateLinked: Date; // Added meta column.
+ *   todo: IManyToOne<Todo, 'taggedTodo'>;
+ *   tag: IManyToOne<Tag, 'taggedTodo'>;
  * }
  * ```
  */
-export type IManyToMany<Self, Relation> = {
-  [K in keyof Relation as Relation[K] extends IManyToMany<Relation, infer S>
-    ? Required<S> extends Required<Self>
-      ? never
-      : K
-    : K]: Relation[K];
+export type IManyToMany<Relation, SelfKey extends keyof Relation> = {
+  [K in keyof Relation as SelfKey extends K ? never : K]: Relation[K];
 }[];
 
 /**
  * Utility type for any relation.
  */
-export type IAnyRelation<Self = any, Relation = any> =
-  | IOneToOne<Self, Relation>
-  | IOneToMany<Self, Relation>
-  | IManyToOne<Self, Relation>
-  | IManyToMany<Self, Relation>;
+export type IAnyRelation<Relation, SelfKey extends keyof Relation> =
+  | IOneToOne<Relation, SelfKey>
+  | IOneToMany<Relation, SelfKey>
+  | IManyToOne<Relation, SelfKey>
+  | IManyToMany<Relation, SelfKey>;
 
 /**
  * Filter an entity to only have its fields (no relations).
  */
 export type IProps<T> = {
-  [K in keyof T as NonNullable<T[K]> extends IAnyRelation<T[K], Required<infer _>> ? K : never]: T[K];
+  [K in keyof T as NonNullable<T[K]> extends object
+    ? {
+        [_ in keyof NonNullable<T[K]>]: NonNullable<T[K]> extends IAnyRelation<infer R, infer _>
+          ? Required<T> extends Required<R>
+            ? K
+            : never
+          : K;
+      }[keyof NonNullable<T[K]>]
+    : K]: T[K];
 };
 
 /**
  * Filter an entity to only have relations (no fields).
  */
 export type IRelations<T> = {
-  [K in keyof T as NonNullable<T[K]> extends IAnyRelation<T[K], Required<infer _>> ? never : K]: T[K];
+  [K in keyof T as NonNullable<T[K]> extends object
+    ? {
+        [_ in keyof NonNullable<T[K]>]: NonNullable<T[K]> extends IAnyRelation<infer R, infer _>
+          ? Required<T> extends Required<R>
+            ? never
+            : K
+          : never;
+      }[keyof NonNullable<T[K]>]
+    : never]: T[K];
 };
 
 /**
  * Utility type when upserting an entity to a database function.
  */
 export type IUpsertEntity<T> = {
-  [K in keyof T]: NonNullable<T[K]> extends IAnyRelation<T[K], Required<infer _>>
-    ? T[K]
-    : T[K] extends Array<infer A>
-    ? (IUpsertEntity<A> | string)[]
-    : IUpsertEntity<T[K]> | string | null | { id: string };
+  [K in keyof T]: NonNullable<T[K]> extends object
+    ? {
+        [_ in keyof NonNullable<T[K]>]: NonNullable<T[K]> extends IAnyRelation<infer R, infer _>
+          ? Required<T> extends Required<R>
+            ? T[K]
+            : T[K] extends Array<infer A>
+            ? (IUpsertEntity<A> | string)[]
+            : IUpsertEntity<T[K]> | string | null | { id: string }
+          : T[K];
+      }[keyof NonNullable<T[K]>]
+    : T[K];
 };
 
 /**
