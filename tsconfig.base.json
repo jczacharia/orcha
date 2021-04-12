@@ -28,9 +28,6 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@orcha/api-interfaces": [
-        "libs/api-interfaces/src/index.ts"
-      ],
       "@orcha/angular": [
         "libs/angular/src/index.ts"
       ],

@@ -29,7 +29,7 @@ However, the essence of this framework is to share code between the frontend and
 
 #### Creating an Orcha Query:
 
-<img width="100%" height="100%" src="https://i.imgur.com/XHGzIsQ.gif">
+<img width="100%" height="100%" src="https://i.imgur.com/RO9kd1T.gif">
 
 # Todo Example App
 
