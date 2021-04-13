@@ -13,7 +13,7 @@ export class UserEffects {
   readonly userLogin$ = createEffect(() =>
     this.actions$.pipe(
       ofType(UserActions.userLogin),
-      fetch({
+      pessimisticUpdate({
         run: ({ id, password }) =>
           this.user.login({ token: true }, { id, password }).pipe(
             map(({ token }) => {
@@ -51,7 +51,7 @@ export class UserEffects {
   readonly getProfile$ = createEffect(() =>
     this.actions$.pipe(
       ofType(UserActions.getProfile),
-      pessimisticUpdate({
+      fetch({
         run: () =>
           this.user.getProfile(UserQueryModel).pipe(map((user) => UserActions.getProfileSuccess({ user }))),
         onError: (action, { error }) => {
