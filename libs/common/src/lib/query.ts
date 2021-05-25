@@ -11,13 +11,13 @@ export type IQueryModel = { [k: string]: true | IQueryModel } | IPaginate;
 /**
  * Create a primitive Orcha Query from a model.
  */
-export type IQuery<Q> = Q extends Array<infer A> ? IQueryArray<A> & IPaginate : IQueryArray<Q>;
+export type IQuery<T> = T extends Array<infer A> ? IQueryArray<A> & IPaginate : IQueryArray<T>;
 
-export type IQueryArray<Q> = Q extends Array<infer A> ? IQueryUndefined<A> : IQueryUndefined<Q>;
+export type IQueryArray<T> = T extends Array<infer A> ? IQueryUndefined<A> : IQueryUndefined<T>;
 
-export type IQueryUndefined<Q> = Q extends undefined
-  ? IQueryObject<NonNullable<Q>> | undefined
-  : IQueryObject<Q>;
+export type IQueryUndefined<T> = T extends undefined
+  ? IQueryObject<NonNullable<T>> | undefined
+  : IQueryObject<T>;
 
 export type IQueryObject<T> = {
   [K in keyof T]?: NonNullable<T[K]> extends object

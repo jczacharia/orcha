@@ -55,7 +55,7 @@ function transform(val: string) {
   try {
     return JSON.parse(val);
   } catch (error) {
-    return undefined;
+    return {};
   }
 }
 
