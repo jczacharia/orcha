@@ -18,7 +18,7 @@ export class OrchaOperationErrorFilter implements ExceptionFilter {
       timestamp: new Date().toISOString(),
       operation,
       message: exception.message,
-      response: exception.getResponse(),
+      response: typeof exception.getResponse === 'function' ? exception.getResponse() : exception.message,
     };
 
     Logger.error(
