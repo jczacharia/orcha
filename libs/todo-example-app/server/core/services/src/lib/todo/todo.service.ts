@@ -20,7 +20,7 @@ import { UserService } from '../user';
 @Injectable()
 export class TodoService {
   constructor(
-    private readonly todoRepo: TodoRepository,
+    public readonly todoRepo: TodoRepository,
     private readonly user: UserService,
     private readonly tagRepo: TagRepository,
     private readonly taggedTodoRepo: TaggedTodoRepository,

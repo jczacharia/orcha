@@ -2,8 +2,9 @@ import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { fetch, pessimisticUpdate } from '@nrwl/angular';
 import { DeleteTodoQueryModel, TodoQueryModel } from '@orcha-todo-example-app/shared/domain';
-import { map } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import * as TodoActions from './todo.actions';
+import { TodoGateway } from './todo.gateway';
 import { TodoOrchestration } from './todo.orchestration';
 
 @Injectable()
@@ -22,6 +23,18 @@ export class TodoEffects {
           alert(error.message);
           return TodoActions.readTodosError({ error });
         },
+      })
+    )
+  );
+
+  readonly readSubTodos$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(TodoActions.readTodos),
+      switchMap(() => {
+        return this.todoGateway.read(TodoQueryModel, undefined);
+      }),
+      map((todos) => {
+        return TodoActions.readTodosSuccess({ todos });
       })
     )
   );
@@ -116,5 +129,9 @@ export class TodoEffects {
     )
   );
 
-  constructor(private readonly actions$: Actions, private readonly todo: TodoOrchestration) {}
+  constructor(
+    private readonly actions$: Actions,
+    private readonly todo: TodoOrchestration,
+    private readonly todoGateway: TodoGateway
+  ) {}
 }

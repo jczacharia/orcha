@@ -6,6 +6,7 @@ import { OrchaModule } from '@orcha/angular';
 import { AppFacade } from './app.facade';
 import { AuthInterceptor } from './auth.interceptor';
 import { TodoEffects } from './todo/todo.effects';
+import { TodoGateway } from './todo/todo.gateway';
 import { TodoOrchestration } from './todo/todo.orchestration';
 import { TodoReducer, TODO_KEY } from './todo/todo.reducer';
 import { UserEffects } from './user/user.effects';
@@ -20,6 +21,7 @@ import { UserReducer, USER_KEY } from './user/user.reducer';
     EffectsModule.forFeature([UserEffects, TodoEffects]),
     OrchaModule.forFeature({
       orchestrations: [UserOrchestration, TodoOrchestration],
+      gateways: [TodoGateway],
       interceptors: [AuthInterceptor],
     }),
   ],
