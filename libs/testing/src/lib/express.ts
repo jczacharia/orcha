@@ -23,7 +23,7 @@ import * as request from 'supertest';
 type ITestResponse<T> = Omit<request.Response, 'body'> & {
   body: T;
   statusCode: HttpStatus;
-  error?: string;
+  error?: any;
 };
 
 /**
