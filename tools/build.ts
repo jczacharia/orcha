@@ -1,7 +1,7 @@
 import * as cp from 'child_process';
 
 cp.execSync(
-  `nx run-many --with-deps --target build --prod --projects common,nestjs,angular,typeorm,testing --parallel --maxParallel=5`,
+  `nx run-many --with-deps --target build --prod --projects=common,nestjs,angular,typeorm,testing`,
   { stdio: 'inherit' }
 );
 
