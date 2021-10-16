@@ -3,6 +3,9 @@
 import { ORCHA_LIMIT, ORCHA_PAGE, ORCHA_PAGINATE } from './constants';
 import { IAnyRelation } from './relations';
 
+/** Empty object `{}` response. */
+export type EmptyResponse = {};
+
 /**
  * Describes the fundamental type for an Orcha Query.
  */

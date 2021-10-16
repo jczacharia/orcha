@@ -1,6 +1,6 @@
 {
   "name": "orcha",
-  "version": "0.2.15",
+  "version": "0.2.16",
   "license": "MIT",
   "scripts": {
     "ng": "nx",
@@ -71,7 +71,7 @@
     "socket.io": "^4.1.2",
     "socket.io-client": "^4.1.2",
     "tslib": "^2.2.0",
-    "typeorm": "^0.2.32",
+    "typeorm": "^0.2.37",
     "typeorm-transactional-cls-hooked": "^0.1.21",
     "uuid": "^8.3.2",
     "zone.js": "~0.11.4"
