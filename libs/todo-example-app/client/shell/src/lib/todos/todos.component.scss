@@ -1,5 +1,51 @@
+:host {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+
+  .stick {
+    position: sticky;
+    top: 0;
+    display: grid;
+  }
+
+  .tag-tab {
+    height: 50px;
+    display: grid;
+    place-content: center;
+    border-radius: 0 50px 50px 0;
+    cursor: pointer;
+    &:hover {
+      background-color: #ddd;
+    }
+  }
+
+  .active-tag {
+    cursor: default;
+    background-color: rgb(116, 172, 255);
+    &:hover {
+      background-color: rgb(116, 172, 255);
+    }
+  }
+}
+
+form {
+  display: grid;
+  grid-auto-flow: column;
+
+  input {
+    width: 139px;
+  }
+}
+
 .cont {
   text-align: center;
+  gap: 10px;
+}
+
+.todos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(288px, 1fr));
+  gap: 10px;
 }
 
 .tags {

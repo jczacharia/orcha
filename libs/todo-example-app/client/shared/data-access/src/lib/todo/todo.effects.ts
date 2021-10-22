@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { fetch, pessimisticUpdate } from '@nrwl/angular';
 import { DeleteTodoQueryModel, TodoQueryModel } from '@orcha-todo-example-app/shared/domain';
-import { map } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
+import * as TagActions from '../tag/tag.actions';
 import * as TodoActions from './todo.actions';
 import { TodoOrchestration } from './todo.orchestration';
 
@@ -86,8 +88,8 @@ export class TodoEffects {
       pessimisticUpdate({
         run: ({ todo, tagName }) =>
           this.todo.tag(TodoQueryModel, { todoId: todo.id, tagName }).pipe(
-            map((todo) => {
-              return TodoActions.tagTodoSuccess({ todo });
+            switchMap((todo) => {
+              return of(TodoActions.tagTodoSuccess({ todo }), TagActions.readTags());
             })
           ),
         onError: (action, { error }) => {
@@ -104,8 +106,8 @@ export class TodoEffects {
       pessimisticUpdate({
         run: ({ taggedTodoId }) =>
           this.todo.untag(TodoQueryModel, { taggedTodoId }).pipe(
-            map((todo) => {
-              return TodoActions.untagTodoSuccess({ todo });
+            switchMap((todo) => {
+              return of(TodoActions.untagTodoSuccess({ todo }), TagActions.readTags());
             })
           ),
         onError: (action, { error }) => {

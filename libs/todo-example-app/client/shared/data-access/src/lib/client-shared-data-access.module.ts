@@ -5,6 +5,9 @@ import { StoreModule } from '@ngrx/store';
 import { OrchaModule } from '@orcha/angular';
 import { AppFacade } from './app.facade';
 import { AuthInterceptor } from './auth.interceptor';
+import { TagEffects } from './tag/tag.effects';
+import { TagOrchestration } from './tag/tag.orchestration';
+import { TagReducer, TAG_KEY } from './tag/tag.reducer';
 import { TodoEffects } from './todo/todo.effects';
 import { TodoOrchestration } from './todo/todo.orchestration';
 import { TodoReducer, TODO_KEY } from './todo/todo.reducer';
@@ -17,9 +20,10 @@ import { UserReducer, USER_KEY } from './user/user.reducer';
     CommonModule,
     StoreModule.forFeature(USER_KEY, UserReducer),
     StoreModule.forFeature(TODO_KEY, TodoReducer),
-    EffectsModule.forFeature([UserEffects, TodoEffects]),
+    StoreModule.forFeature(TAG_KEY, TagReducer),
+    EffectsModule.forFeature([UserEffects, TodoEffects, TagEffects]),
     OrchaModule.forFeature({
-      orchestrations: [UserOrchestration, TodoOrchestration],
+      orchestrations: [UserOrchestration, TodoOrchestration, TagOrchestration],
       interceptors: [AuthInterceptor],
     }),
   ],

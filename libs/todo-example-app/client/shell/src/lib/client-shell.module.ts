@@ -9,18 +9,10 @@ import { AppGuard } from './app.guard';
 import { LoginComponent } from './login/login.component';
 import { ProfileComponent } from './profile/profile.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
-import { TagsComponent } from './tags/tags.component';
 import { TodosComponent } from './todos/todos.component';
 
 @NgModule({
-  declarations: [
-    AppShellComponent,
-    LoginComponent,
-    SignUpComponent,
-    TodosComponent,
-    TagsComponent,
-    ProfileComponent,
-  ],
+  declarations: [AppShellComponent, LoginComponent, SignUpComponent, TodosComponent, ProfileComponent],
   providers: [AppGuard],
   imports: [
     CommonModule,
@@ -45,10 +37,6 @@ import { TodosComponent } from './todos/todos.component';
           {
             path: 'todos',
             component: TodosComponent,
-          },
-          {
-            path: 'tags',
-            component: TagsComponent,
           },
           {
             path: 'profile',

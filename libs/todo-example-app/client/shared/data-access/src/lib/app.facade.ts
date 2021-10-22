@@ -5,8 +5,10 @@ import { UpdateTodoDto } from '@orcha-todo-example-app/shared/domain';
 import { UnArray, UnObservable } from '@orcha-todo-example-app/shared/util';
 import { tap } from 'rxjs/operators';
 import * as TodoActions from './todo/todo.actions';
+import * as TagActions from './tag/tag.actions';
 import { TodoStoreModel } from './todo/todo.reducer';
 import * as TodoSelectors from './todo/todo.selectors';
+import * as TagSelectors from './tag/tag.selectors';
 import * as UserActions from './user/user.actions';
 import * as UserSelectors from './user/user.selectors';
 
@@ -79,10 +81,10 @@ export class AppFacade {
 
   readonly tag = {
     selectors: {
-      tags$: this.store.pipe(select(TodoSelectors.getTags)).pipe(
+      tags$: this.store.pipe(select(TagSelectors.getTags)).pipe(
         tap(({ loaded }) => {
           if (!loaded) {
-            this.store.dispatch(TodoActions.readTodos());
+            this.store.dispatch(TagActions.readTags());
           }
         })
       ),
