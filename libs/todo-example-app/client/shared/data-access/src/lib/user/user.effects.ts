@@ -11,14 +11,14 @@ import { AuthTokenStorage } from './user.storage';
 @Injectable()
 export class UserEffects {
   readonly userLogin$ = createEffect(() =>
-    this.actions$.pipe(
+    this._actions$.pipe(
       ofType(UserActions.userLogin),
       pessimisticUpdate({
         run: ({ id, password }) =>
-          this.user.login({ token: true }, { id, password }).pipe(
+          this._user.login({ token: true }, { id, password }).pipe(
             map(({ token }) => {
               AuthTokenStorage.setValue({ id, token });
-              this.router.navigate(['']);
+              this._router.navigate(['']);
               return UserActions.userLoginSuccess({ id, token });
             })
           ),
@@ -30,14 +30,14 @@ export class UserEffects {
   );
 
   readonly userSignUp$ = createEffect(() =>
-    this.actions$.pipe(
+    this._actions$.pipe(
       ofType(UserActions.userSignUp),
       pessimisticUpdate({
         run: ({ id, password }) =>
-          this.user.signUp({ token: true }, { id, password }).pipe(
+          this._user.signUp({ token: true }, { id, password }).pipe(
             map(({ token }) => {
               AuthTokenStorage.setValue({ id, token });
-              this.router.navigate(['/login']);
+              this._router.navigate(['/login']);
               return UserActions.userSignUpSuccess({ token });
             })
           ),
@@ -49,11 +49,11 @@ export class UserEffects {
   );
 
   readonly getProfile$ = createEffect(() =>
-    this.actions$.pipe(
+    this._actions$.pipe(
       ofType(UserActions.getProfile),
       fetch({
         run: () =>
-          this.user.getProfile(UserQueryModel).pipe(map((user) => UserActions.getProfileSuccess({ user }))),
+          this._user.getProfile(UserQueryModel).pipe(map((user) => UserActions.getProfileSuccess({ user }))),
         onError: (action, { error }) => {
           return UserActions.getProfileError({ error });
         },
@@ -63,7 +63,7 @@ export class UserEffects {
 
   readonly userLogOut$ = createEffect(
     () =>
-      this.actions$.pipe(
+      this._actions$.pipe(
         ofType(UserActions.logout),
         tap(() => {
           AuthTokenStorage.delete();
@@ -74,8 +74,8 @@ export class UserEffects {
   );
 
   constructor(
-    private readonly actions$: Actions,
-    private readonly user: UserOrchestration,
-    private readonly router: Router
+    private readonly _actions$: Actions,
+    private readonly _user: UserOrchestration,
+    private readonly _router: Router
   ) {}
 }

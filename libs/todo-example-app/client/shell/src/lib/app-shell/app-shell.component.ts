@@ -14,18 +14,18 @@ export class AppShellComponent extends RxJSBaseClass implements OnInit {
   activeRoute = '';
 
   constructor(
-    private readonly app: AppFacade,
-    private readonly router: Router,
+    private readonly _app: AppFacade,
+    private readonly _router: Router,
     private readonly _change: ChangeDetectorRef
   ) {
     super();
   }
 
   ngOnInit(): void {
-    this.activeRoute = this.router.url;
+    this.activeRoute = this._router.url;
     this._change.markForCheck();
 
-    this.router.events.pipe(takeUntil(this.destroy$)).subscribe((res) => {
+    this._router.events.pipe(takeUntil(this.destroy$)).subscribe((res) => {
       if (res instanceof NavigationEnd) {
         this.activeRoute = res.urlAfterRedirects;
         this._change.markForCheck();
@@ -34,22 +34,22 @@ export class AppShellComponent extends RxJSBaseClass implements OnInit {
   }
 
   logout() {
-    this.app.user.dispatchers.logout();
+    this._app.user.dispatchers.logout();
   }
 
   todos() {
-    this.router.navigate(['todos']);
+    this._router.navigate(['todos']);
   }
 
   todosPaginate() {
-    this.router.navigate(['todos-paginate']);
+    this._router.navigate(['todos-paginate']);
   }
 
   tags() {
-    this.router.navigate(['tags']);
+    this._router.navigate(['tags']);
   }
 
   profile() {
-    this.router.navigate(['profile']);
+    this._router.navigate(['profile']);
   }
 }

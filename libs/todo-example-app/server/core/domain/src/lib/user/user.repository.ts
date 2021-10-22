@@ -7,7 +7,7 @@ import { UserEntity } from './user.entity';
 
 @Injectable()
 export class UserRepository extends IOrchaTypeormRepository<User> {
-  constructor(@InjectRepository(UserEntity) protected readonly repo: Repository<User>) {
-    super(repo);
+  constructor(@InjectRepository(UserEntity) protected readonly _repo: Repository<User>) {
+    super(_repo);
   }
 }

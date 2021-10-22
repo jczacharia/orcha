@@ -10,10 +10,10 @@ import { IServerOrchestration, ServerOperation, ServerOrchestration } from '@orc
 
 @ServerOrchestration(OrchaTodoExampleAppOrchestrations.tag)
 export class TagOrchestration implements IServerOrchestration<ITagOrchestration> {
-  constructor(private readonly tag: TagService) {}
+  constructor(private readonly _tag: TagService) {}
 
   @ServerOperation({ validateQuery: TagQueryModel })
   read(query: IQuery<Tag[]>, token: string) {
-    return this.tag.read(query, token);
+    return this._tag.read(query, token);
   }
 }

@@ -14,20 +14,20 @@ import { IServerOrchestration, ServerOperation, ServerOrchestration } from '@orc
 
 @ServerOrchestration(OrchaTodoExampleAppOrchestrations.user)
 export class UserOrchestration implements IServerOrchestration<IUserOrchestration> {
-  constructor(private readonly user: UserService) {}
+  constructor(private readonly _user: UserService) {}
 
   @ServerOperation({ validateQuery: LoginQueryModel })
   login(query: IQuery<{ token: string }>, _: string, { id, password }: LoginDto) {
-    return this.user.login(id, password, query);
+    return this._user.login(id, password, query);
   }
 
   @ServerOperation({ validateQuery: SignUpQueryModel })
   signUp(query: IQuery<{ token: string }>, _: string, { id, password }: SignUpDto) {
-    return this.user.signUp(id, password, query);
+    return this._user.signUp(id, password, query);
   }
 
   @ServerOperation({ validateQuery: EntireProfile })
   getProfile(query: IQuery<User>, token: string) {
-    return this.user.verifyUserToken(token, query);
+    return this._user.verifyUserToken(token, query);
   }
 }

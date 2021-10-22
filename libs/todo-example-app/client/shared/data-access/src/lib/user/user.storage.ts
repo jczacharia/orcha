@@ -1,18 +1,18 @@
 export class LocalStorageManager<T> {
-  constructor(private readonly key: string) {}
+  constructor(private readonly _key: string) {}
 
   setValue(data: T): T {
-    localStorage.setItem(this.key, JSON.stringify(data));
+    localStorage.setItem(this._key, JSON.stringify(data));
     return data;
   }
 
   getValue(): T | undefined {
-    const val = localStorage.getItem(this.key);
+    const val = localStorage.getItem(this._key);
     return val ? JSON.parse(val) : undefined;
   }
 
   delete() {
-    localStorage.removeItem(this.key);
+    localStorage.removeItem(this._key);
   }
 }
 

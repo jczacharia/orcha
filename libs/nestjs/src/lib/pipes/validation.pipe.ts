@@ -6,26 +6,26 @@ import { validate } from 'class-validator';
 @Injectable()
 export class ValidationPipe implements PipeTransform<unknown> {
   async transform(value: unknown, { metatype }: ArgumentMetadata): Promise<unknown> {
-    if (!metatype || !this.toValidate(metatype)) {
+    if (!metatype || !this._toValidate(metatype)) {
       return value;
     }
     const object = plainToClass(metatype, value);
     const errors = await validate(object);
     if (errors.length > 0) {
       throw new HttpException(
-        `Validation failed: ${this.formatErrors(errors as { constraints: {} }[])}`,
+        `Validation failed: ${this._formatErrors(errors as { constraints: {} }[])}`,
         HttpStatus.BAD_REQUEST
       );
     }
     return value;
   }
 
-  private toValidate(metaType: Function): boolean {
+  private _toValidate(metaType: Function): boolean {
     const types: Function[] = [String, Boolean, Number, Array, Object];
     return !types.includes(metaType);
   }
 
-  private formatErrors(errors: { constraints: {} }[]): string {
+  private _formatErrors(errors: { constraints: {} }[]): string {
     return errors
       .map(({ constraints }) => {
         for (const value of Object.values(constraints)) {

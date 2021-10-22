@@ -7,7 +7,7 @@ import { TaggedTodoEntity } from './tagged-todo.entity';
 
 @Injectable()
 export class TaggedTodoRepository extends IOrchaTypeormRepository<TaggedTodo> {
-  constructor(@InjectRepository(TaggedTodoEntity) protected readonly repo: Repository<TaggedTodo>) {
-    super(repo);
+  constructor(@InjectRepository(TaggedTodoEntity) protected readonly _repo: Repository<TaggedTodo>) {
+    super(_repo);
   }
 }

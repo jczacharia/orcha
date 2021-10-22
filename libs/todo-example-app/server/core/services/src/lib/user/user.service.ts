@@ -24,10 +24,10 @@ export class UserService {
     signerKey: 'qUmhMeByCl+H+YaT4RlH/kri/BLQEkCRrySxVqrODKR8MIhwU49k3WzyZJtr1R3dgQXDPq+7LUmIs+vuFdp8Nw==',
   });
 
-  constructor(private readonly userRepo: UserRepository, private readonly jwtService: JwtService) {}
+  constructor(private readonly _userRepo: UserRepository, private readonly _jwtService: JwtService) {}
 
   async login(id: string, pass: string, query: IQuery<{ token: string }>) {
-    const user = await this.userRepo.findOne(id);
+    const user = await this._userRepo.findOne(id);
 
     if (!user) {
       throw new HttpException(`User "${id}" does not exist.`, HttpStatus.NOT_FOUND);
@@ -38,13 +38,13 @@ export class UserService {
       throw new HttpException(`Incorrect password.`, HttpStatus.UNAUTHORIZED);
     }
 
-    await this.userRepo.update(user.id, { dateLastLoggedIn: new Date() });
-    const token = this.sign({ userId: id });
+    await this._userRepo.update(user.id, { dateLastLoggedIn: new Date() });
+    const token = this._sign({ userId: id });
     return parseQuery(query, { token });
   }
 
   async signUp(id: string, password: string, query: IQuery<{ token: string }>) {
-    const conflictingUser = await this.userRepo.findOne(id, { id: true });
+    const conflictingUser = await this._userRepo.findOne(id, { id: true });
 
     if (conflictingUser?.id) {
       throw new HttpException(`User with email "${conflictingUser.id}" already exists.`, HttpStatus.CONFLICT);
@@ -52,7 +52,7 @@ export class UserService {
 
     const salt = uuid.v4();
     const passwordHash = await this.scrypt.hash(password, salt);
-    await this.userRepo.upsert({
+    await this._userRepo.upsert({
       id,
       passwordHash,
       salt,
@@ -60,7 +60,7 @@ export class UserService {
       todos: [],
       tags: [],
     });
-    const token = this.sign({ userId: id });
+    const token = this._sign({ userId: id });
     return parseQuery(query, { token });
   }
 
@@ -85,7 +85,7 @@ export class UserService {
     let sign: Sign | undefined;
 
     try {
-      sign = await this.getTokenOwner(token);
+      sign = await this._getTokenOwner(token);
     } catch (e) {
       throw new HttpException(e, HttpStatus.UNAUTHORIZED);
     }
@@ -99,8 +99,8 @@ export class UserService {
 
     try {
       return query
-        ? await this.userRepo.findOneOrFail(sign.userId, query)
-        : await this.userRepo.findOneOrFail(sign.userId);
+        ? await this._userRepo.findOneOrFail(sign.userId, query)
+        : await this._userRepo.findOneOrFail(sign.userId);
     } catch (error) {
       console.error(error);
       throw new HttpException(
@@ -110,11 +110,11 @@ export class UserService {
     }
   }
 
-  private sign(sign: Sign): Token {
-    return this.jwtService.sign(sign);
+  private _sign(sign: Sign): Token {
+    return this._jwtService.sign(sign);
   }
 
-  private getTokenOwner(token: string): Promise<Sign> {
-    return this.jwtService.verifyAsync(token);
+  private _getTokenOwner(token: string): Promise<Sign> {
+    return this._jwtService.verifyAsync(token);
   }
 }

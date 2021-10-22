@@ -21,15 +21,15 @@ export class SignUpComponent extends RxJSBaseClass implements OnInit {
   error: string | null = null;
 
   constructor(
-    private readonly app: AppFacade,
-    private readonly router: Router,
+    private readonly _app: AppFacade,
+    private readonly _router: Router,
     private readonly _change: ChangeDetectorRef
   ) {
     super();
   }
 
   ngOnInit(): void {
-    this.app.user.actionListeners.signUp.error.pipe(takeUntil(this.destroy$)).subscribe(({ error }) => {
+    this._app.user.actionListeners.signUp.error.pipe(takeUntil(this.destroy$)).subscribe(({ error }) => {
       this.error = error.message;
       this._change.markForCheck();
     });
@@ -37,10 +37,10 @@ export class SignUpComponent extends RxJSBaseClass implements OnInit {
 
   signUp() {
     const { id, password } = this.signUpForm.value;
-    this.app.user.dispatchers.signUp(id, password);
+    this._app.user.dispatchers.signUp(id, password);
   }
 
   loginPage() {
-    this.router.navigate(['/login']);
+    this._router.navigate(['/login']);
   }
 }

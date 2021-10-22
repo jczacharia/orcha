@@ -3,7 +3,6 @@ import { Validators } from '@angular/forms';
 import { FormControl } from '@ngneat/reactive-forms';
 import { AppFacade, TagStoreModel, TodoStoreModel } from '@orcha-todo-example-app/client/shared/data-access';
 import { RxJSBaseClass } from '@orcha-todo-example-app/client/shared/util';
-import { Tag } from '@orcha-todo-example-app/shared/domain';
 import { takeUntil } from 'rxjs/operators';
 
 @Component({
@@ -21,18 +20,18 @@ export class TodosComponent extends RxJSBaseClass implements OnInit {
 
   tagFilter: 'all' | string = 'all';
 
-  constructor(private readonly app: AppFacade, private readonly _change: ChangeDetectorRef) {
+  constructor(private readonly _app: AppFacade, private readonly _change: ChangeDetectorRef) {
     super();
   }
 
   ngOnInit(): void {
-    this.app.todo.selectors.todos$.pipe(takeUntil(this.destroy$)).subscribe(({ todos, loaded }) => {
+    this._app.todo.selectors.todos$.pipe(takeUntil(this.destroy$)).subscribe(({ todos, loaded }) => {
       this.todos = todos;
       this.loaded = loaded;
       this._change.markForCheck();
     });
 
-    this.app.tag.selectors.tags$.pipe(takeUntil(this.destroy$)).subscribe(({ tags, loaded }) => {
+    this._app.tag.selectors.tags$.pipe(takeUntil(this.destroy$)).subscribe(({ tags, loaded }) => {
       this.tags = tags;
       this.loaded = loaded;
       this._change.markForCheck();
@@ -40,23 +39,23 @@ export class TodosComponent extends RxJSBaseClass implements OnInit {
   }
 
   create() {
-    this.app.todo.dispatchers.create(this.todo.value);
+    this._app.todo.dispatchers.create(this.todo.value);
   }
 
   delete(todo: TodoStoreModel) {
-    this.app.todo.dispatchers.delete(todo);
+    this._app.todo.dispatchers.delete(todo);
   }
 
   toggle(todo: TodoStoreModel) {
-    this.app.todo.dispatchers.update({ todoId: todo.id, done: !todo.done });
+    this._app.todo.dispatchers.update({ todoId: todo.id, done: !todo.done });
   }
 
   tag(todo: TodoStoreModel, tagName: string) {
-    this.app.todo.dispatchers.tag(todo, tagName);
+    this._app.todo.dispatchers.tag(todo, tagName);
   }
 
   untag(taggedTodoId: string) {
-    this.app.todo.dispatchers.untag(taggedTodoId);
+    this._app.todo.dispatchers.untag(taggedTodoId);
   }
 
   tagFilterChange(tag: TagStoreModel) {

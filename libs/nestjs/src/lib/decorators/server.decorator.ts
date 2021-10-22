@@ -20,24 +20,24 @@ import { QueryValidationPipe } from '../pipes/query-validation.pipe';
  * ```ts
  * @ServerOrchestration('user')
  * export class UserOrchestration implements IServerOrchestration<IUserOrchestration> {
- *   constructor(private readonly user: UserService) {}
+ *   constructor(private readonly _user: UserService) {}
  *
  *   // `/orcha/user/login`
  *   @ServerOperation({ validateQuery: LoginQueryModel })
  *   login(query: IQuery<{ token: string }>, _: string, { id, password }: LoginDto) {
- *     return this.user.login(id, password, query);
+ *     return this._user.login(id, password, query);
  *   }
  *
  *   // `/orcha/user/signUp`
  *   @ServerOperation({ validateQuery: SignUpQueryModel })
  *   signUp(query: IQuery<{ token: string }>, _: string, { id, password }: SignUpDto) {
- *     return this.user.signUp(id, password, query);
+ *     return this._user.signUp(id, password, query);
  *   }
  *
  *   // `/orcha/user/getProfile`
  *   @ServerOperation({ validateQuery: EntireProfile })
  *   getProfile(query: IQuery<User>, token: string) {
- *     return this.user.verifyUserToken(token, query);
+ *     return this._user.verifyUserToken(token, query);
  *   }
  * }
  * ```
@@ -68,24 +68,24 @@ function transform(val: string) {
  * ```ts
  * @ServerOrchestration('user')
  * export class UserOrchestration implements IServerOrchestration<IUserOrchestration> {
- *   constructor(private readonly user: UserService) {}
+ *   constructor(private readonly _user: UserService) {}
  *
  *   // `/orcha/user/login`
  *   @ServerOperation({ validateQuery: LoginQueryModel })
  *   login(query: IQuery<{ token: string }>, _: string, { id, password }: LoginDto) {
- *     return this.user.login(id, password, query);
+ *     return this._user.login(id, password, query);
  *   }
  *
  *   // `/orcha/user/signUp`
  *   @ServerOperation({ validateQuery: SignUpQueryModel })
  *   signUp(query: IQuery<{ token: string }>, _: string, { id, password }: SignUpDto) {
- *     return this.user.signUp(id, password, query);
+ *     return this._user.signUp(id, password, query);
  *   }
  *
  *   // `/orcha/user/getProfile`
  *   @ServerOperation({ validateQuery: EntireProfile })
  *   getProfile(query: IQuery<User>, token: string) {
- *     return this.user.verifyUserToken(token, query);
+ *     return this._user.verifyUserToken(token, query);
  *   }
  * }
  * ```

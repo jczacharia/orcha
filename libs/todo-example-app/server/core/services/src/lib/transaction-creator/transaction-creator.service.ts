@@ -10,7 +10,7 @@ export class DbTransactionCreator {
   async run<T>(task: () => Promise<T>): Promise<T> {
     return new Promise(async (res: any, rej) => {
       try {
-        return await this.transact(task, res);
+        return await this._transact(task, res);
       } catch (e) {
         rej(e);
       }
@@ -18,7 +18,7 @@ export class DbTransactionCreator {
   }
 
   @Transactional()
-  private async transact<T>(task: () => Promise<T>, res: () => void): Promise<void> {
+  private async _transact<T>(task: () => Promise<T>, res: () => void): Promise<void> {
     await task();
     runOnTransactionCommit(res);
   }

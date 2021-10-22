@@ -24,7 +24,7 @@ export abstract class IOrchaTypeormRepository<
   Entity extends { id: IdType },
   IdType extends string | number = string
 > {
-  private readonly gatewaysStorage = new GatewaysStorage<Entity, IdType>();
+  private readonly _gatewaysStorage = new GatewaysStorage<Entity, IdType>();
 
   readonly subscriptions = {
     oneEntitySubscription: async <Q extends IQuery<Entity>>(
@@ -35,9 +35,9 @@ export abstract class IOrchaTypeormRepository<
     ) => {
       const listener = () => {
         const relations = createTypeormRelationsArray(query);
-        return this.repo.findOneOrFail(id, { relations });
+        return this._repo.findOneOrFail(id, { relations });
       };
-      return this.gatewaysStorage.provisionIdsSubscription({ socket, channel, listener, query });
+      return this._gatewaysStorage.provisionIdsSubscription({ socket, channel, listener, query });
     },
 
     manyEntitiesSubscription: async <Q extends IQuery<Entity>>(
@@ -48,9 +48,9 @@ export abstract class IOrchaTypeormRepository<
     ) => {
       const listener = () => {
         const relations = createTypeormRelationsArray(query);
-        return this.repo.findByIds(ids, { relations });
+        return this._repo.findByIds(ids, { relations });
       };
-      return this.gatewaysStorage.provisionIdsSubscription({ socket, channel, listener, query });
+      return this._gatewaysStorage.provisionIdsSubscription({ socket, channel, listener, query });
     },
 
     querySubscription: async <Q extends IQuery<Entity>>(
@@ -59,18 +59,18 @@ export abstract class IOrchaTypeormRepository<
       query: IExactQuery<Entity, Q>,
       options?: Omit<FindManyOptions<Entity>, 'relations'>
     ) => {
-      const listener = async () => this.provisionQuery(query, options);
-      return this.gatewaysStorage.provisionQuerySubscription({ socket, channel, listener, query });
+      const listener = async () => this._provisionQuery(query, options);
+      return this._gatewaysStorage.provisionQuerySubscription({ socket, channel, listener, query });
     },
 
     onDisconnect: (socket: Socket) => {
-      return this.gatewaysStorage.removeListener(socket);
+      return this._gatewaysStorage.removeListener(socket);
     },
   };
 
   constructor(
     /** Note: Calling mutating functions here will not trigger repo subscribers. */
-    protected readonly repo: Repository<Entity>
+    protected readonly _repo: Repository<Entity>
   ) {}
 
   async findOneOrFail(id: IdType): Promise<IProps<Entity>>;
@@ -81,10 +81,10 @@ export abstract class IOrchaTypeormRepository<
   async findOneOrFail<Q extends IQuery<Entity>>(id: IdType, query?: IExactQuery<Entity, Q>) {
     if (query) {
       const relations = createTypeormRelationsArray(query);
-      const dbRes = await this.repo.findOneOrFail(id, { relations });
+      const dbRes = await this._repo.findOneOrFail(id, { relations });
       return parseQuery(query, dbRes);
     } else {
-      return this.repo.findOneOrFail(id) as unknown as Promise<IProps<Entity>>;
+      return this._repo.findOneOrFail(id) as unknown as Promise<IProps<Entity>>;
     }
   }
 
@@ -96,10 +96,10 @@ export abstract class IOrchaTypeormRepository<
   async findOne<Q extends IQuery<Entity>>(id: IdType, query?: IExactQuery<Entity, Q>) {
     if (query) {
       const relations = createTypeormRelationsArray(query);
-      const dbRes = await this.repo.findOne(id, { relations });
+      const dbRes = await this._repo.findOne(id, { relations });
       return parseQuery(query, dbRes);
     } else {
-      return this.repo.findOne(id) as unknown as Promise<IProps<Entity> | undefined>;
+      return this._repo.findOne(id) as unknown as Promise<IProps<Entity> | undefined>;
     }
   }
 
@@ -112,10 +112,10 @@ export abstract class IOrchaTypeormRepository<
     if (ids.length === 0) return [] as unknown as IParser<Entity[], Q>;
     if (query) {
       const relations = createTypeormRelationsArray(query);
-      const dbRes = await this.repo.findByIds(ids, { relations });
+      const dbRes = await this._repo.findByIds(ids, { relations });
       return parseQuery(query, dbRes);
     } else {
-      return this.repo.findByIds(ids) as unknown as Promise<IProps<Entity>[]>;
+      return this._repo.findByIds(ids) as unknown as Promise<IProps<Entity>[]>;
     }
   }
 
@@ -124,10 +124,10 @@ export abstract class IOrchaTypeormRepository<
   async findAll<Q extends IQuery<Entity>>(query?: IExactQuery<Entity, Q>) {
     if (query) {
       const relations = createTypeormRelationsArray(query);
-      const dbRes = await this.repo.find({ relations });
+      const dbRes = await this._repo.find({ relations });
       return parseQuery(query, dbRes);
     } else {
-      return this.repo.find() as unknown as Promise<IProps<Entity>[]>;
+      return this._repo.find() as unknown as Promise<IProps<Entity>[]>;
     }
   }
 
@@ -135,11 +135,11 @@ export abstract class IOrchaTypeormRepository<
     query: IExactQuery<Entity, Q>,
     options?: Omit<FindManyOptions<Entity>, 'relations'>
   ): Promise<IParser<Entity[], Q>> {
-    const entities = await this.provisionQuery(query, options);
+    const entities = await this._provisionQuery(query, options);
     return parseQuery(query, entities) as IParser<Entity[], Q>;
   }
 
-  private async provisionQuery<Q extends IQuery<Entity>>(
+  private async _provisionQuery<Q extends IQuery<Entity>>(
     query: IExactQuery<Entity, Q>,
     options?: Omit<FindManyOptions<Entity>, 'relations'>
   ): Promise<Pagination<Entity> | Entity[]> {
@@ -149,12 +149,12 @@ export abstract class IOrchaTypeormRepository<
     const paginateOptions = (query as IPaginate)[ORCHA_PAGINATE];
     if (paginateOptions) {
       entities = await paginate(
-        this.repo,
+        this._repo,
         { page: paginateOptions[ORCHA_PAGE], limit: paginateOptions[ORCHA_LIMIT] },
         { ...options, relations }
       );
     } else {
-      entities = await this.repo.find({ ...options, relations });
+      entities = await this._repo.find({ ...options, relations });
     }
     return entities;
   }
@@ -170,8 +170,8 @@ export abstract class IOrchaTypeormRepository<
     entity: IUpdateEntity<Entity>,
     query?: IExactQuery<Entity, Q>
   ) {
-    await this.repo.save({ ...(entity as unknown as DeepPartial<Entity>), id });
-    this.gatewaysStorage.trigger(id);
+    await this._repo.save({ ...(entity as unknown as DeepPartial<Entity>), id });
+    this._gatewaysStorage.trigger(id);
     return query ? this.findOneOrFail(id, query) : this.findOneOrFail(id);
   }
 
@@ -181,8 +181,8 @@ export abstract class IOrchaTypeormRepository<
     query: IExactQuery<Entity, Q>
   ): Promise<IParser<Entity, Q>>;
   async upsert<Q extends IQuery<Entity>>(entity: IUpsertEntity<Entity>, query?: IExactQuery<Entity, Q>) {
-    await this.repo.save(entity as unknown as DeepPartial<Entity>);
-    this.gatewaysStorage.trigger(entity.id as IdType);
+    await this._repo.save(entity as unknown as DeepPartial<Entity>);
+    this._gatewaysStorage.trigger(entity.id as IdType);
     return query ? this.findOneOrFail(entity.id as IdType, query) : this.findOneOrFail(entity.id as IdType);
   }
 
@@ -196,22 +196,22 @@ export abstract class IOrchaTypeormRepository<
     query?: IExactQuery<Entity, Q>
   ) {
     if (entities.length === 0) return [] as unknown as IParser<Entity[], Q>;
-    await this.repo.save(entities as unknown as DeepPartial<Entity>[]);
+    await this._repo.save(entities as unknown as DeepPartial<Entity>[]);
     const ids = entities.map((e) => e.id) as IdType[];
-    this.gatewaysStorage.trigger(ids);
+    this._gatewaysStorage.trigger(ids);
     return query ? this.findMany(ids, query) : this.findMany(ids);
   }
 
   async delete(id: IdType): Promise<IdType> {
-    await this.repo.delete(id);
-    this.gatewaysStorage.trigger(id);
+    await this._repo.delete(id);
+    this._gatewaysStorage.trigger(id);
     return id;
   }
 
   async deleteMany(ids: IdType[]): Promise<IdType[]> {
     if (ids.length === 0) return [];
-    await this.repo.delete(ids as string[]);
-    this.gatewaysStorage.trigger(ids);
+    await this._repo.delete(ids as string[]);
+    this._gatewaysStorage.trigger(ids);
     return ids;
   }
 }

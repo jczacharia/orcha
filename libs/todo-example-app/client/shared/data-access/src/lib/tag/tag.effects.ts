@@ -9,11 +9,11 @@ import { TagOrchestration } from './tag.orchestration';
 @Injectable()
 export class TagEffects {
   readonly readTags$ = createEffect(() =>
-    this.actions$.pipe(
+    this._actions$.pipe(
       ofType(TagActions.readTags),
       fetch({
         run: () =>
-          this.tag.read(TagQueryModel).pipe(
+          this._tag.read(TagQueryModel).pipe(
             map((tags) => {
               return TagActions.readTagsSuccess({ tags });
             })
@@ -26,5 +26,5 @@ export class TagEffects {
     )
   );
 
-  constructor(private readonly actions$: Actions, private readonly tag: TagOrchestration) {}
+  constructor(private readonly _actions$: Actions, private readonly _tag: TagOrchestration) {}
 }

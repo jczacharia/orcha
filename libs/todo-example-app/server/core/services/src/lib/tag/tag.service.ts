@@ -6,7 +6,7 @@ import { UserService } from '../user';
 
 @Injectable()
 export class TagService {
-  constructor(private readonly user: UserService, private readonly tagRepo: TagRepository) {}
+  constructor(private readonly _user: UserService, private readonly _tagRepo: TagRepository) {}
 
   /**
    * Gets all of a user's todo entities.
@@ -14,7 +14,7 @@ export class TagService {
    * @param token User's auth token.
    */
   async read(query: IQuery<Tag[]>, token: string) {
-    const user = await this.user.verifyUserToken(token);
-    return this.tagRepo.query(query, { where: { user: user.id } });
+    const user = await this._user.verifyUserToken(token);
+    return this._tagRepo.query(query, { where: { user: user.id } });
   }
 }

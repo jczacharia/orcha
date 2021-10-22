@@ -9,6 +9,6 @@ import { EntireProfile } from '@orcha-todo-example-app/shared/domain';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfileComponent {
-  readonly profile$ = this.user.getProfile(EntireProfile);
-  constructor(private readonly user: UserOrchestration) {}
+  readonly profile$ = this._user.getProfile(EntireProfile);
+  constructor(private readonly _user: UserOrchestration) {}
 }

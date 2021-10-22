@@ -1,12 +1,12 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
-import { TagQueryModel, Todo } from '@orcha-todo-example-app/shared/domain';
+import { Tag, TagQueryModel } from '@orcha-todo-example-app/shared/domain';
 import { IParser } from '@orcha/common';
 import * as TagActions from './tag.actions';
 
 export const TAG_KEY = 'tag';
 
-export type TagStoreModel = IParser<Todo, typeof TagQueryModel>;
+export type TagStoreModel = IParser<Tag, typeof TagQueryModel>;
 
 export interface TagState {
   tags: EntityState<TagStoreModel>;

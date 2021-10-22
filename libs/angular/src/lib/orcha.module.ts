@@ -144,7 +144,6 @@ export class OrchaModule {
               switch (event.type) {
                 case HttpEventType.UploadProgress:
                   return { ...event, progress: Math.round((100 * event.loaded) / (event.total ?? 1)) };
-
                 case HttpEventType.Response:
                   if (files) {
                     return event;

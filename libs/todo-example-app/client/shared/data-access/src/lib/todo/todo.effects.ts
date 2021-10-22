@@ -11,11 +11,11 @@ import { TodoOrchestration } from './todo.orchestration';
 @Injectable()
 export class TodoEffects {
   readonly readTodos$ = createEffect(() =>
-    this.actions$.pipe(
+    this._actions$.pipe(
       ofType(TodoActions.readTodos),
       fetch({
         run: () =>
-          this.todo.read(TodoQueryModel).pipe(
+          this._.read(TodoQueryModel).pipe(
             map((todos) => {
               return TodoActions.readTodosSuccess({ todos });
             })
@@ -29,11 +29,11 @@ export class TodoEffects {
   );
 
   readonly createTodo$ = createEffect(() =>
-    this.actions$.pipe(
+    this._actions$.pipe(
       ofType(TodoActions.createTodo),
       pessimisticUpdate({
         run: ({ content }) =>
-          this.todo.create(TodoQueryModel, { content }).pipe(
+          this._.create(TodoQueryModel, { content }).pipe(
             map((todo) => {
               return TodoActions.createTodoSuccess({ todo });
             })
@@ -47,11 +47,11 @@ export class TodoEffects {
   );
 
   readonly deleteTodo$ = createEffect(() =>
-    this.actions$.pipe(
+    this._actions$.pipe(
       ofType(TodoActions.deleteTodo),
       pessimisticUpdate({
         run: ({ todo }) =>
-          this.todo.delete(DeleteTodoQueryModel, { todoId: todo.id }).pipe(
+          this._.delete(DeleteTodoQueryModel, { todoId: todo.id }).pipe(
             map(({ deletedId }) => {
               return TodoActions.deleteTodoSuccess({ deletedId });
             })
@@ -65,11 +65,11 @@ export class TodoEffects {
   );
 
   readonly updateTodo$ = createEffect(() =>
-    this.actions$.pipe(
+    this._actions$.pipe(
       ofType(TodoActions.updateTodo),
       pessimisticUpdate({
         run: ({ dto }) =>
-          this.todo.update(TodoQueryModel, dto).pipe(
+          this._.update(TodoQueryModel, dto).pipe(
             map((todo) => {
               return TodoActions.updateTodoSuccess({ todo });
             })
@@ -83,12 +83,13 @@ export class TodoEffects {
   );
 
   readonly tagTodo$ = createEffect(() =>
-    this.actions$.pipe(
+    this._actions$.pipe(
       ofType(TodoActions.tagTodo),
       pessimisticUpdate({
         run: ({ todo, tagName }) =>
-          this.todo.tag(TodoQueryModel, { todoId: todo.id, tagName }).pipe(
+          this._.tag(TodoQueryModel, { todoId: todo.id, tagName }).pipe(
             switchMap((todo) => {
+              // Here reload tags since it's possible a new one was created.
               return of(TodoActions.tagTodoSuccess({ todo }), TagActions.readTags());
             })
           ),
@@ -101,12 +102,13 @@ export class TodoEffects {
   );
 
   readonly untagTodo$ = createEffect(() =>
-    this.actions$.pipe(
+    this._actions$.pipe(
       ofType(TodoActions.untagTodo),
       pessimisticUpdate({
         run: ({ taggedTodoId }) =>
-          this.todo.untag(TodoQueryModel, { taggedTodoId }).pipe(
+          this._.untag(TodoQueryModel, { taggedTodoId }).pipe(
             switchMap((todo) => {
+              // Here reload tags since it's possible one was deleted.
               return of(TodoActions.untagTodoSuccess({ todo }), TagActions.readTags());
             })
           ),
@@ -118,5 +120,5 @@ export class TodoEffects {
     )
   );
 
-  constructor(private readonly actions$: Actions, private readonly todo: TodoOrchestration) {}
+  constructor(private readonly _actions$: Actions, private readonly _: TodoOrchestration) {}
 }
