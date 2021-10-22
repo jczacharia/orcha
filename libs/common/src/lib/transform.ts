@@ -72,7 +72,7 @@ export function parseQuery<T, Q extends IQuery<T>>(
     const i = parseQuery(query, entities.items);
     // TODO any
     (entities as any).items = i;
-    return (entities as unknown) as IParser<T[], Q>;
+    return entities as unknown as IParser<T[], Q>;
   }
 
   if (Array.isArray(query)) {
@@ -98,9 +98,9 @@ export function parseQuery<T, Q extends IQuery<T>>(
 
   if (Array.isArray(entities)) {
     entities.map((e) => remove(e));
-    return (entities as unknown) as IParser<T[], Q>;
+    return entities as unknown as IParser<T[], Q>;
   } else {
     entities = remove(entities);
-    return (entities as unknown) as IParser<T, Q>;
+    return entities as unknown as IParser<T, Q>;
   }
 }

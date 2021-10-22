@@ -20,20 +20,14 @@ const initialState: UserState = {
 
 export const UserReducer = createReducer(
   initialState,
-  on(
-    UserActions.userLoginSuccess,
-    (state, { id }): UserState => {
-      return { ...state, id };
-    }
-  ),
-  on(
-    UserActions.getProfileSuccess,
-    (state, { user }): UserState => {
-      return {
-        ...state,
-        ...user,
-        loaded: true,
-      };
-    }
-  )
+  on(UserActions.userLoginSuccess, (state, { id }): UserState => {
+    return { ...state, id };
+  }),
+  on(UserActions.getProfileSuccess, (state, { user }): UserState => {
+    return {
+      ...state,
+      ...user,
+      loaded: true,
+    };
+  })
 );

@@ -1,15 +1,9 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Validators } from '@angular/forms';
 import { FormControl } from '@ngneat/reactive-forms';
 import { AppFacade, TagStoreModel, TodoStoreModel } from '@orcha-todo-example-app/client/shared/data-access';
-import { StatefulComponent } from '@orcha-todo-example-app/client/shared/util';
-import { tap } from 'rxjs/operators';
-
-interface State {
-  todos: TodoStoreModel[];
-  tags: TagStoreModel[];
-  loaded: boolean;
-}
+import { RxJSBaseClass } from '@orcha-todo-example-app/client/shared/util';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'orcha-todo-example-app-todos',
@@ -17,37 +11,31 @@ interface State {
   styleUrls: ['./todos.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TodosComponent extends StatefulComponent<State> implements OnInit {
+export class TodosComponent extends RxJSBaseClass implements OnInit {
   readonly todo = new FormControl('', (ac) => Validators.required(ac));
 
-  constructor(private readonly app: AppFacade) {
-    super({ todos: [], loaded: false, tags: [] });
+  todos: TodoStoreModel[] = [];
+  tags: TagStoreModel[] = [];
+  loaded = false;
+
+  constructor(private readonly app: AppFacade, private readonly _change: ChangeDetectorRef) {
+    super();
   }
 
   ngOnInit(): void {
-    this.effect(() =>
-      this.app.todo.selectors.todos$.pipe(
-        tap(({ todos, loaded }) => {
-          this.updateState({
-            todos: todos.sort(
-              (a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime()
-            ),
-            loaded,
-          });
-        })
-      )
-    );
+    this.app.todo.selectors.todos$.pipe(takeUntil(this.destroy$)).subscribe(({ todos, loaded }) => {
+      this.todos = todos.sort(
+        (a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime()
+      );
+      this.loaded = loaded;
+      this._change.markForCheck();
+    });
 
-    this.effect(() =>
-      this.app.tag.selectors.tags$.pipe(
-        tap(({ tags, loaded }) => {
-          this.updateState({
-            tags: tags.sort((a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime()),
-            loaded,
-          });
-        })
-      )
-    );
+    this.app.tag.selectors.tags$.pipe(takeUntil(this.destroy$)).subscribe(({ tags, loaded }) => {
+      this.tags = tags.sort((a, b) => new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime());
+      this.loaded = loaded;
+      this._change.markForCheck();
+    });
   }
 
   create() {

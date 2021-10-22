@@ -16,6 +16,6 @@ export const compareTodoContent = createLogic<Todo, { content: true }>()(
 /**
  * Example comparing two todo entities using currying.
  */
-export const compareTwoTodos = createLogic<Todo, { content: true }>()((todo) => (compare: typeof todo) =>
-  todo.content === compare.content
+export const compareTwoTodos = createLogic<Todo, { content: true }>()(
+  (todo) => (compare: typeof todo) => todo.content === compare.content
 );

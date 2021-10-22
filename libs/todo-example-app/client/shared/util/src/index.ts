@@ -1,1 +1,1 @@
-export * from './lib/stateful.component';
+export * from './lib/rxjs-base-class';

@@ -18,7 +18,10 @@ import { IExactQuery, IQuery } from './query';
  * });
  * ```
  */
-export const createQuery = <T>() => <Q extends IQuery<T>>(query: IExactQuery<T, Q>) => query as Q;
+export const createQuery =
+  <T>() =>
+  <Q extends IQuery<T>>(query: IExactQuery<T, Q>) =>
+    query as Q;
 
 /**
  * Defines a business logic/rule/calculation based on the given query template model.
@@ -61,6 +64,7 @@ export const createQuery = <T>() => <Q extends IQuery<T>>(query: IExactQuery<T, 
  *
  * @returns The function defined in the third curried function argument.
  */
-export const createLogic = <T, Q extends IQuery<T>>() => <R, K extends unknown[]>(
-  func: (model: IParser<T, Q>, ...a: K) => R
-) => func;
+export const createLogic =
+  <T, Q extends IQuery<T>>() =>
+  <R, K extends unknown[]>(func: (model: IParser<T, Q>, ...a: K) => R) =>
+    func;

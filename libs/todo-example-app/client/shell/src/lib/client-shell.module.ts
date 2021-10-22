@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { RouterModule } from '@angular/router';
+import { NgxPaginationModule } from 'ngx-pagination';
 import { AppShellComponent } from './app-shell/app-shell.component';
 import { AppGuard } from './app.guard';
 import { LoginComponent } from './login/login.component';
@@ -26,6 +27,7 @@ import { TodosComponent } from './todos/todos.component';
     FormsModule,
     ReactiveFormsModule,
     MatAutocompleteModule,
+    NgxPaginationModule,
     RouterModule.forChild([
       {
         path: 'login',

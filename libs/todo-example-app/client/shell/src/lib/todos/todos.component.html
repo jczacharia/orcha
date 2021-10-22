@@ -1,45 +1,36 @@
-<ng-container *ngIf="state$ | async as state">
-  <div class="cont">
-    <div *ngIf="!state.loaded">Loading...</div>
-    <div *ngIf="state.loaded && state.todos.length < 1">You have no todos.</div>
-    <br />
-    <div *ngIf="state.loaded">
-      <input type="text" [formControl]="todo" />
-      <button [disabled]="todo.invalid" (click)="create()">Add</button>
+<div class="cont">
+  <div *ngIf="!loaded">Loading...</div>
+  <div *ngIf="loaded && todos.length < 1">You have no todos.</div>
+  <br />
+  <div *ngIf="loaded">
+    <input type="text" [formControl]="todo" />
+    <button [disabled]="todo.invalid" (click)="create()">Add</button>
+  </div>
+  <div class="todo" *ngFor="let todo of todos" class="item">
+    <div>
+      <b>{{ todo.content }}</b>
+      <div>Created: {{ todo.dateCreated | date: 'MMM d, y, h:mm:ss a' }}</div>
+      <div>Updated: {{ todo.dateUpdated | date: 'MMM d, y, h:mm:ss a' }}</div>
     </div>
-    <div class="todo" *ngFor="let todo of state.todos" class="item">
-      <div>
-        <b>{{ todo.content }}</b>
-        <div>Created: {{ todo.dateCreated | date: 'MMM d, y, h:mm:ss a' }}</div>
-        <div>Updated: {{ todo.dateUpdated | date: 'MMM d, y, h:mm:ss a' }}</div>
+    <div class="tags">
+      <div class="tag" *ngFor="let link of todo.taggedTodos">
+        {{ link.tag.name }}
+        <span (click)="untag(link.id)">❌</span>
       </div>
-      <div class="tags">
-        <div class="tag" *ngFor="let link of todo.taggedTodos">
-          {{ link.tag.name }}
-          <span (click)="untag(link.id)">❌</span>
-        </div>
-      </div>
-      <div class="buttons">
-        <input type="checkbox" [checked]="todo.done" (change)="toggle(todo)" />
-        <form>
-          <input
-            #inp
-            type="text"
-            placeholder="Add Tag"
-            aria-label="Number"
-            matInput
-            [matAutocomplete]="auto"
-          />
-          <button type="submit" (click)="tag(todo, inp.value)">Add</button>
-        </form>
-        <button (click)="delete(todo)">Delete</button>
-      </div>
+    </div>
+    <div class="buttons">
+      <input type="checkbox" [checked]="todo.done" (change)="toggle(todo)" />
+      <form>
+        <input #inp type="text" placeholder="Add Tag" aria-label="Number" matInput [matAutocomplete]="auto" />
+        <button type="submit" (click)="tag(todo, inp.value)">Add</button>
+      </form>
+      <button (click)="delete(todo)">Delete</button>
     </div>
   </div>
+</div>
 
-  <mat-autocomplete #auto="matAutocomplete">
-    <mat-option *ngFor="let tag of state.tags" [value]="tag.name">
-      {{ tag.name }}
-    </mat-option>
-  </mat-autocomplete>
-</ng-container>
+<mat-autocomplete #auto="matAutocomplete">
+  <mat-option *ngFor="let tag of tags" [value]="tag.name">
+    {{ tag.name }}
+  </mat-option>
+</mat-autocomplete>

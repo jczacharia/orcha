@@ -1,7 +1,7 @@
 import { createQuery } from '@orcha/common';
 import { Todo } from './todo.model';
 
-export const TodoQueryModel = createQuery<Todo>()({
+export const TodoQueryModel = createQuery<Todo[]>()({
   id: true,
   content: true,
   dateCreated: true,

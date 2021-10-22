@@ -9,16 +9,12 @@
       "architect": {
         "build": {
           "builder": "@nrwl/node:build",
-          "outputs": [
-            "{options.outputPath}"
-          ],
+          "outputs": ["{options.outputPath}"],
           "options": {
             "outputPath": "dist/apps/api",
             "main": "apps/api/src/main.ts",
             "tsConfig": "apps/api/tsconfig.app.json",
-            "assets": [
-              "apps/api/src/assets"
-            ]
+            "assets": ["apps/api/src/assets"]
           },
           "configurations": {
             "production": {
@@ -44,16 +40,12 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": [
-              "apps/api/**/*.ts"
-            ]
+            "lintFilePatterns": ["apps/api/**/*.ts"]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/apps/api"
-          ],
+          "outputs": ["coverage/apps/api"],
           "options": {
             "jestConfig": "apps/api/jest.config.js",
             "passWithNoTests": true
@@ -82,17 +74,12 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": [
-              "libs/angular/src/**/*.ts",
-              "libs/angular/src/**/*.html"
-            ]
+            "lintFilePatterns": ["libs/angular/src/**/*.ts", "libs/angular/src/**/*.html"]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/libs/angular"
-          ],
+          "outputs": ["coverage/libs/angular"],
           "options": {
             "jestConfig": "libs/angular/jest.config.js",
             "passWithNoTests": true
@@ -108,16 +95,12 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": [
-              "libs/nestjs/**/*.ts"
-            ]
+            "lintFilePatterns": ["libs/nestjs/**/*.ts"]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/libs/nestjs"
-          ],
+          "outputs": ["coverage/libs/nestjs"],
           "options": {
             "jestConfig": "libs/nestjs/jest.config.js",
             "passWithNoTests": true
@@ -125,17 +108,13 @@
         },
         "build": {
           "builder": "@nrwl/node:package",
-          "outputs": [
-            "{options.outputPath}"
-          ],
+          "outputs": ["{options.outputPath}"],
           "options": {
             "outputPath": "dist/libs/nestjs",
             "tsConfig": "libs/nestjs/tsconfig.lib.json",
             "packageJson": "libs/nestjs/package.json",
             "main": "libs/nestjs/src/index.ts",
-            "assets": [
-              "libs/nestjs/*.md"
-            ]
+            "assets": ["libs/nestjs/*.md"]
           }
         }
       }
@@ -148,16 +127,12 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": [
-              "libs/typeorm/**/*.ts"
-            ]
+            "lintFilePatterns": ["libs/typeorm/**/*.ts"]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/libs/typeorm"
-          ],
+          "outputs": ["coverage/libs/typeorm"],
           "options": {
             "jestConfig": "libs/typeorm/jest.config.js",
             "passWithNoTests": true
@@ -165,17 +140,13 @@
         },
         "build": {
           "builder": "@nrwl/node:package",
-          "outputs": [
-            "{options.outputPath}"
-          ],
+          "outputs": ["{options.outputPath}"],
           "options": {
             "outputPath": "dist/libs/typeorm",
             "tsConfig": "libs/typeorm/tsconfig.lib.json",
             "packageJson": "libs/typeorm/package.json",
             "main": "libs/typeorm/src/index.ts",
-            "assets": [
-              "libs/typeorm/*.md"
-            ]
+            "assets": ["libs/typeorm/*.md"]
           }
         }
       }
@@ -188,16 +159,12 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": [
-              "libs/common/**/*.ts"
-            ]
+            "lintFilePatterns": ["libs/common/**/*.ts"]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/libs/common"
-          ],
+          "outputs": ["coverage/libs/common"],
           "options": {
             "jestConfig": "libs/common/jest.config.js",
             "passWithNoTests": true
@@ -205,17 +172,13 @@
         },
         "build": {
           "builder": "@nrwl/node:package",
-          "outputs": [
-            "{options.outputPath}"
-          ],
+          "outputs": ["{options.outputPath}"],
           "options": {
             "outputPath": "dist/libs/common",
             "tsConfig": "libs/common/tsconfig.lib.json",
             "packageJson": "libs/common/package.json",
             "main": "libs/common/src/index.ts",
-            "assets": [
-              "libs/common/*.md"
-            ]
+            "assets": ["libs/common/*.md"]
           }
         }
       }
@@ -228,16 +191,12 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": [
-              "libs/testing/**/*.ts"
-            ]
+            "lintFilePatterns": ["libs/testing/**/*.ts"]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/libs/testing"
-          ],
+          "outputs": ["coverage/libs/testing"],
           "options": {
             "jestConfig": "libs/testing/jest.config.js",
             "passWithNoTests": true
@@ -245,17 +204,13 @@
         },
         "build": {
           "builder": "@nrwl/node:package",
-          "outputs": [
-            "{options.outputPath}"
-          ],
+          "outputs": ["{options.outputPath}"],
           "options": {
             "outputPath": "dist/libs/testing",
             "tsConfig": "libs/testing/tsconfig.lib.json",
             "packageJson": "libs/testing/package.json",
             "main": "libs/testing/src/index.ts",
-            "assets": [
-              "libs/testing/*.md"
-            ]
+            "assets": ["libs/testing/*.md"]
           }
         }
       }
@@ -274,10 +229,7 @@
             "main": "apps/todo-example-app/src/main.ts",
             "polyfills": "apps/todo-example-app/src/polyfills.ts",
             "tsConfig": "apps/todo-example-app/tsconfig.app.json",
-            "assets": [
-              "apps/todo-example-app/src/favicon.ico",
-              "apps/todo-example-app/src/assets"
-            ],
+            "assets": ["apps/todo-example-app/src/favicon.ico", "apps/todo-example-app/src/assets"],
             "styles": [
               "./node_modules/@angular/material/prebuilt-themes/pink-bluegrey.css",
               "apps/todo-example-app/src/styles.scss"
@@ -340,17 +292,12 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": [
-              "apps/todo-example-app/src/**/*.ts",
-              "apps/todo-example-app/src/**/*.html"
-            ]
+            "lintFilePatterns": ["apps/todo-example-app/src/**/*.ts", "apps/todo-example-app/src/**/*.html"]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/apps/todo-example-app"
-          ],
+          "outputs": ["coverage/apps/todo-example-app"],
           "options": {
             "jestConfig": "apps/todo-example-app/jest.config.js",
             "passWithNoTests": true
@@ -366,16 +313,12 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": [
-              "libs/todo-example-app/server/core/services/**/*.ts"
-            ]
+            "lintFilePatterns": ["libs/todo-example-app/server/core/services/**/*.ts"]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/libs/todo-example-app/server/core/services"
-          ],
+          "outputs": ["coverage/libs/todo-example-app/server/core/services"],
           "options": {
             "jestConfig": "libs/todo-example-app/server/core/services/jest.config.js",
             "passWithNoTests": true
@@ -391,16 +334,12 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": [
-              "libs/todo-example-app/server/core/domain/**/*.ts"
-            ]
+            "lintFilePatterns": ["libs/todo-example-app/server/core/domain/**/*.ts"]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/libs/todo-example-app/server/core/domain"
-          ],
+          "outputs": ["coverage/libs/todo-example-app/server/core/domain"],
           "options": {
             "jestConfig": "libs/todo-example-app/server/core/domain/jest.config.js",
             "passWithNoTests": true
@@ -416,16 +355,12 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": [
-              "libs/todo-example-app/server/orcha/**/*.ts"
-            ]
+            "lintFilePatterns": ["libs/todo-example-app/server/orcha/**/*.ts"]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/libs/todo-example-app/server/orcha"
-          ],
+          "outputs": ["coverage/libs/todo-example-app/server/orcha"],
           "options": {
             "jestConfig": "libs/todo-example-app/server/orcha/jest.config.js",
             "passWithNoTests": true
@@ -450,9 +385,7 @@
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/libs/todo-example-app/client/shared/data-access"
-          ],
+          "outputs": ["coverage/libs/todo-example-app/client/shared/data-access"],
           "options": {
             "jestConfig": "libs/todo-example-app/client/shared/data-access/jest.config.js",
             "passWithNoTests": true
@@ -477,9 +410,7 @@
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/libs/todo-example-app/client/shell"
-          ],
+          "outputs": ["coverage/libs/todo-example-app/client/shell"],
           "options": {
             "jestConfig": "libs/todo-example-app/client/shell/jest.config.js",
             "passWithNoTests": true
@@ -495,16 +426,12 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": [
-              "libs/todo-example-app/shared/domain/**/*.ts"
-            ]
+            "lintFilePatterns": ["libs/todo-example-app/shared/domain/**/*.ts"]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/libs/todo-example-app/shared/domain"
-          ],
+          "outputs": ["coverage/libs/todo-example-app/shared/domain"],
           "options": {
             "jestConfig": "libs/todo-example-app/shared/domain/jest.config.js",
             "passWithNoTests": true
@@ -520,16 +447,12 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": [
-              "libs/todo-example-app/shared/util/**/*.ts"
-            ]
+            "lintFilePatterns": ["libs/todo-example-app/shared/util/**/*.ts"]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/libs/todo-example-app/shared/util"
-          ],
+          "outputs": ["coverage/libs/todo-example-app/shared/util"],
           "options": {
             "jestConfig": "libs/todo-example-app/shared/util/jest.config.js",
             "passWithNoTests": true
@@ -554,9 +477,7 @@
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/libs/todo-example-app/client/shared/util"
-          ],
+          "outputs": ["coverage/libs/todo-example-app/client/shared/util"],
           "options": {
             "jestConfig": "libs/todo-example-app/client/shared/util/jest.config.js",
             "passWithNoTests": true
@@ -574,9 +495,7 @@
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": [
-              "apps/api-e2e/**/*.ts"
-            ]
+            "lintFilePatterns": ["apps/api-e2e/**/*.ts"]
           }
         },
         "e2e": {

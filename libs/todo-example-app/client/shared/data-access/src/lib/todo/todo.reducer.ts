@@ -22,59 +22,41 @@ const initialState: TodoState = {
 
 export const TodoReducer = createReducer(
   initialState,
-  on(
-    TodoActions.readTodosSuccess,
-    (state, { todos }): TodoState => {
-      return {
-        ...state,
-        todos: todosAdapter.upsertMany(todos, state.todos),
-        loaded: true,
-      };
-    }
-  ),
-  on(
-    TodoActions.createTodoSuccess,
-    (state, { todo }): TodoState => {
-      return {
-        ...state,
-        todos: todosAdapter.upsertOne(todo, state.todos),
-      };
-    }
-  ),
-  on(
-    TodoActions.deleteTodoSuccess,
-    (state, { deletedId }): TodoState => {
-      return {
-        ...state,
-        todos: todosAdapter.removeOne(deletedId, state.todos),
-      };
-    }
-  ),
-  on(
-    TodoActions.updateTodoSuccess,
-    (state, { todo }): TodoState => {
-      return {
-        ...state,
-        todos: todosAdapter.upsertOne(todo, state.todos),
-      };
-    }
-  ),
-  on(
-    TodoActions.tagTodoSuccess,
-    (state, { todo }): TodoState => {
-      return {
-        ...state,
-        todos: todosAdapter.upsertOne(todo, state.todos),
-      };
-    }
-  ),
-  on(
-    TodoActions.untagTodoSuccess,
-    (state, { todo }): TodoState => {
-      return {
-        ...state,
-        todos: todosAdapter.upsertOne(todo, state.todos),
-      };
-    }
-  )
+  on(TodoActions.readTodosSuccess, (state, { todos }): TodoState => {
+    return {
+      ...state,
+      todos: todosAdapter.upsertMany(todos, state.todos),
+      loaded: true,
+    };
+  }),
+  on(TodoActions.createTodoSuccess, (state, { todo }): TodoState => {
+    return {
+      ...state,
+      todos: todosAdapter.upsertOne(todo, state.todos),
+    };
+  }),
+  on(TodoActions.deleteTodoSuccess, (state, { deletedId }): TodoState => {
+    return {
+      ...state,
+      todos: todosAdapter.removeOne(deletedId, state.todos),
+    };
+  }),
+  on(TodoActions.updateTodoSuccess, (state, { todo }): TodoState => {
+    return {
+      ...state,
+      todos: todosAdapter.upsertOne(todo, state.todos),
+    };
+  }),
+  on(TodoActions.tagTodoSuccess, (state, { todo }): TodoState => {
+    return {
+      ...state,
+      todos: todosAdapter.upsertOne(todo, state.todos),
+    };
+  }),
+  on(TodoActions.untagTodoSuccess, (state, { todo }): TodoState => {
+    return {
+      ...state,
+      todos: todosAdapter.upsertOne(todo, state.todos),
+    };
+  })
 );

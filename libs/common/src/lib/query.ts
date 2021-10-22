@@ -48,11 +48,10 @@ export interface IPaginate {
  * Utility type or an Orcha Query that does not allow for properties that are not specified in the model `T`.
  */
 export type IExactQuery<T, Q> = T extends Array<infer A> ? IExactQueryObject<A, Q> : IExactQueryObject<T, Q>;
-export type IExactQueryObject<T, Q> = Q &
-  {
-    [K in keyof Q]: K extends typeof ORCHA_PAGINATE
-      ? Q[K]
-      : K extends keyof T
-      ? IExactQuery<T[K], Q[K]>
-      : never;
-  };
+export type IExactQueryObject<T, Q> = Q & {
+  [K in keyof Q]: K extends typeof ORCHA_PAGINATE
+    ? Q[K]
+    : K extends keyof T
+    ? IExactQuery<T[K], Q[K]>
+    : never;
+};

@@ -1,12 +1,8 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { AppFacade } from '@orcha-todo-example-app/client/shared/data-access';
-import { StatefulComponent } from '@orcha-todo-example-app/client/shared/util';
-import { tap } from 'rxjs/operators';
-
-interface State {
-  activeRoute: string;
-}
+import { RxJSBaseClass } from '@orcha-todo-example-app/client/shared/util';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'orcha-todo-example-app-app-shell',
@@ -14,23 +10,27 @@ interface State {
   styleUrls: ['./app-shell.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AppShellComponent extends StatefulComponent<State> implements OnInit {
-  constructor(private readonly app: AppFacade, private readonly router: Router) {
-    super({ activeRoute: '' });
+export class AppShellComponent extends RxJSBaseClass implements OnInit {
+  activeRoute = '';
+
+  constructor(
+    private readonly app: AppFacade,
+    private readonly router: Router,
+    private readonly _change: ChangeDetectorRef
+  ) {
+    super();
   }
 
   ngOnInit(): void {
-    this.updateState({ activeRoute: this.router.url });
+    this.activeRoute = this.router.url;
+    this._change.markForCheck();
 
-    this.effect(() =>
-      this.router.events.pipe(
-        tap((res) => {
-          if (res instanceof NavigationEnd) {
-            this.updateState({ activeRoute: res.urlAfterRedirects });
-          }
-        })
-      )
-    );
+    this.router.events.pipe(takeUntil(this.destroy$)).subscribe((res) => {
+      if (res instanceof NavigationEnd) {
+        this.activeRoute = res.urlAfterRedirects;
+        this._change.markForCheck();
+      }
+    });
   }
 
   logout() {
@@ -39,6 +39,10 @@ export class AppShellComponent extends StatefulComponent<State> implements OnIni
 
   todos() {
     this.router.navigate(['todos']);
+  }
+
+  todosPaginate() {
+    this.router.navigate(['todos-paginate']);
   }
 
   tags() {

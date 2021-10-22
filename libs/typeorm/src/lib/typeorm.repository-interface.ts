@@ -21,7 +21,6 @@ import { GatewaysStorage } from './subscription-storage';
  * Inherits all repository functionalities required to perform CRUD operations on an entity.
  */
 export abstract class IOrchaTypeormRepository<
-  // eslint-disable-next-line @typescript-eslint/ban-types
   Entity extends { id: IdType },
   IdType extends string | number = string
 > {
@@ -85,7 +84,7 @@ export abstract class IOrchaTypeormRepository<
       const dbRes = await this.repo.findOneOrFail(id, { relations });
       return parseQuery(query, dbRes);
     } else {
-      return (this.repo.findOneOrFail(id) as unknown) as Promise<IProps<Entity>>;
+      return this.repo.findOneOrFail(id) as unknown as Promise<IProps<Entity>>;
     }
   }
 
@@ -100,7 +99,7 @@ export abstract class IOrchaTypeormRepository<
       const dbRes = await this.repo.findOne(id, { relations });
       return parseQuery(query, dbRes);
     } else {
-      return (this.repo.findOne(id) as unknown) as Promise<IProps<Entity> | undefined>;
+      return this.repo.findOne(id) as unknown as Promise<IProps<Entity> | undefined>;
     }
   }
 
@@ -110,13 +109,13 @@ export abstract class IOrchaTypeormRepository<
     query: IExactQuery<Entity, Q>
   ): Promise<IParser<Entity[], Q>>;
   async findMany<Q extends IQuery<Entity>>(ids: IdType[], query?: IExactQuery<Entity, Q>) {
-    if (ids.length === 0) return ([] as unknown) as IParser<Entity[], Q>;
+    if (ids.length === 0) return [] as unknown as IParser<Entity[], Q>;
     if (query) {
       const relations = createTypeormRelationsArray(query);
       const dbRes = await this.repo.findByIds(ids, { relations });
       return parseQuery(query, dbRes);
     } else {
-      return (this.repo.findByIds(ids) as unknown) as Promise<IProps<Entity>[]>;
+      return this.repo.findByIds(ids) as unknown as Promise<IProps<Entity>[]>;
     }
   }
 
@@ -128,7 +127,7 @@ export abstract class IOrchaTypeormRepository<
       const dbRes = await this.repo.find({ relations });
       return parseQuery(query, dbRes);
     } else {
-      return (this.repo.find() as unknown) as Promise<IProps<Entity>[]>;
+      return this.repo.find() as unknown as Promise<IProps<Entity>[]>;
     }
   }
 
@@ -171,7 +170,7 @@ export abstract class IOrchaTypeormRepository<
     entity: IUpdateEntity<Entity>,
     query?: IExactQuery<Entity, Q>
   ) {
-    await this.repo.save({ ...((entity as unknown) as DeepPartial<Entity>), id });
+    await this.repo.save({ ...(entity as unknown as DeepPartial<Entity>), id });
     this.gatewaysStorage.trigger(id);
     return query ? this.findOneOrFail(id, query) : this.findOneOrFail(id);
   }
@@ -182,7 +181,7 @@ export abstract class IOrchaTypeormRepository<
     query: IExactQuery<Entity, Q>
   ): Promise<IParser<Entity, Q>>;
   async upsert<Q extends IQuery<Entity>>(entity: IUpsertEntity<Entity>, query?: IExactQuery<Entity, Q>) {
-    await this.repo.save((entity as unknown) as DeepPartial<Entity>);
+    await this.repo.save(entity as unknown as DeepPartial<Entity>);
     this.gatewaysStorage.trigger(entity.id as IdType);
     return query ? this.findOneOrFail(entity.id as IdType, query) : this.findOneOrFail(entity.id as IdType);
   }
@@ -196,8 +195,8 @@ export abstract class IOrchaTypeormRepository<
     entities: IUpsertEntity<Entity>[],
     query?: IExactQuery<Entity, Q>
   ) {
-    if (entities.length === 0) return ([] as unknown) as IParser<Entity[], Q>;
-    await this.repo.save((entities as unknown) as DeepPartial<Entity>[]);
+    if (entities.length === 0) return [] as unknown as IParser<Entity[], Q>;
+    await this.repo.save(entities as unknown as DeepPartial<Entity>[]);
     const ids = entities.map((e) => e.id) as IdType[];
     this.gatewaysStorage.trigger(ids);
     return query ? this.findMany(ids, query) : this.findMany(ids);
