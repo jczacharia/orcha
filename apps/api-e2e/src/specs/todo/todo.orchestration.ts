@@ -12,8 +12,6 @@ class TodoOrchestration implements ITestOrchestration<ITodoOrchestration> {
   @TestOperation()
   create!: ITestOrchestration<ITodoOrchestration>['create'];
   @TestOperation()
-  read!: ITestOrchestration<ITodoOrchestration>['read'];
-  @TestOperation()
   update!: ITestOrchestration<ITodoOrchestration>['update'];
   @TestOperation()
   delete!: ITestOrchestration<ITodoOrchestration>['delete'];

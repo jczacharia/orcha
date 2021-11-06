@@ -4,11 +4,11 @@ import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { OrchaModule } from '@orcha/angular';
 import { AppFacade } from './app.facade';
-import { AuthInterceptor } from './auth.interceptor';
 import { TagEffects } from './tag/tag.effects';
-import { TagOrchestration } from './tag/tag.orchestration';
+import { TagGateway } from './tag/tag.gateway';
 import { TagReducer, TAG_KEY } from './tag/tag.reducer';
 import { TodoEffects } from './todo/todo.effects';
+import { TodoGateway } from './todo/todo.gateway';
 import { TodoOrchestration } from './todo/todo.orchestration';
 import { TodoReducer, TODO_KEY } from './todo/todo.reducer';
 import { UserEffects } from './user/user.effects';
@@ -23,10 +23,10 @@ import { UserReducer, USER_KEY } from './user/user.reducer';
     StoreModule.forFeature(TAG_KEY, TagReducer),
     EffectsModule.forFeature([UserEffects, TodoEffects, TagEffects]),
     OrchaModule.forFeature({
-      orchestrations: [UserOrchestration, TodoOrchestration, TagOrchestration],
-      interceptors: [AuthInterceptor],
+      orchestrations: [UserOrchestration, TodoOrchestration],
+      gateways: [TodoGateway, TagGateway],
     }),
   ],
-  providers: [AppFacade, AuthInterceptor],
+  providers: [AppFacade],
 })
 export class ClientSharedDataAccessModule {}

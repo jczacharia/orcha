@@ -1,6 +1,7 @@
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
 import { EffectsModule } from '@ngrx/effects';
 import { ActionReducer, StoreModule, USER_PROVIDED_META_REDUCERS } from '@ngrx/store';
@@ -9,7 +10,6 @@ import { ClientSharedDataAccessModule } from '@orcha-todo-example-app/client/sha
 import { environment } from '@orcha-todo-example-app/shared/domain';
 import { OrchaModule } from '@orcha/angular';
 import { AppComponent } from './app.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 const ngrxDebugFactory = <T>() => {
   return (reducer: ActionReducer<T>): ActionReducer<T> => {
@@ -31,7 +31,11 @@ const ngrxDebugFactory = <T>() => {
     BrowserModule,
     HttpClientModule,
     ClientSharedDataAccessModule,
-    OrchaModule.forRoot(environment.apiUrl),
+    OrchaModule.forRoot({
+      apiUrl: environment.apiUrl,
+      wsUrl: environment.wsUrl,
+      authTokenLocalStorageKey: 'todo-app',
+    }),
     RouterModule.forRoot([
       {
         path: '',
@@ -50,11 +54,7 @@ const ngrxDebugFactory = <T>() => {
             strictActionTypeUniqueness: true,
           },
     }),
-    StoreDevtoolsModule.instrument({
-      name: 'orcha-todo-example-app',
-      // In a production build you would want to disable the Store Devtools.
-      logOnly: environment.production,
-    }),
+    environment.production ? [] : StoreDevtoolsModule.instrument({ name: 'orcha-todo-example-app' }),
     EffectsModule.forRoot([]),
     BrowserAnimationsModule,
   ],

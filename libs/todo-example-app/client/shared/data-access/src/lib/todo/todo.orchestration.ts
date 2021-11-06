@@ -6,8 +6,6 @@ export class TodoOrchestration implements IClientOrchestration<ITodoOrchestratio
   @ClientOperation()
   create!: IClientOrchestration<ITodoOrchestration>['create'];
   @ClientOperation()
-  read!: IClientOrchestration<ITodoOrchestration>['read'];
-  @ClientOperation()
   update!: IClientOrchestration<ITodoOrchestration>['update'];
   @ClientOperation()
   delete!: IClientOrchestration<ITodoOrchestration>['delete'];

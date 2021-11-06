@@ -6,7 +6,7 @@ import {
   patchTypeORMRepositoryWithBaseRepository,
 } from 'typeorm-transactional-cls-hooked';
 
-jest.setTimeout(60000);
+jest.setTimeout(10000);
 
 initializeTransactionalContext();
 patchTypeORMRepositoryWithBaseRepository();

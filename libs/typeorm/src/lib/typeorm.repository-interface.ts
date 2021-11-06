@@ -37,7 +37,7 @@ export abstract class IOrchaTypeormRepository<
         const relations = createTypeormRelationsArray(query);
         return this._repo.findOneOrFail(id, { relations });
       };
-      return this._gatewaysStorage.provisionIdsSubscription({ socket, channel, listener, query });
+      return this._gatewaysStorage.provisionSubscription({ socket, channel, listener, query });
     },
 
     manyEntitiesSubscription: async <Q extends IQuery<Entity>>(
@@ -50,7 +50,7 @@ export abstract class IOrchaTypeormRepository<
         const relations = createTypeormRelationsArray(query);
         return this._repo.findByIds(ids, { relations });
       };
-      return this._gatewaysStorage.provisionIdsSubscription({ socket, channel, listener, query });
+      return this._gatewaysStorage.provisionSubscription({ socket, channel, listener, query });
     },
 
     querySubscription: async <Q extends IQuery<Entity>>(
@@ -59,8 +59,8 @@ export abstract class IOrchaTypeormRepository<
       query: IExactQuery<Entity, Q>,
       options?: Omit<FindManyOptions<Entity>, 'relations'>
     ) => {
-      const listener = async () => this._provisionQuery(query, options);
-      return this._gatewaysStorage.provisionQuerySubscription({ socket, channel, listener, query });
+      const listener = () => this._provisionQuery(query, options);
+      return this._gatewaysStorage.provisionSubscription({ socket, channel, listener, query });
     },
 
     onDisconnect: (socket: Socket) => {
@@ -145,7 +145,6 @@ export abstract class IOrchaTypeormRepository<
   ): Promise<Pagination<Entity> | Entity[]> {
     let entities: Pagination<Entity> | Entity[];
     const relations = createTypeormRelationsArray(query);
-
     const paginateOptions = (query as IPaginate)[ORCHA_PAGINATE];
     if (paginateOptions) {
       entities = await paginate(

@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { fetch, pessimisticUpdate } from '@nrwl/angular';
+import { pessimisticUpdate } from '@nrwl/angular';
 import { DeleteTodoQueryModel, TodoQueryModel } from '@orcha-todo-example-app/shared/domain';
 import { of } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import * as TagActions from '../tag/tag.actions';
 import * as TodoActions from './todo.actions';
+import { TodoGateway } from './todo.gateway';
 import { TodoOrchestration } from './todo.orchestration';
 
 @Injectable()
@@ -13,17 +14,16 @@ export class TodoEffects {
   readonly readTodos$ = createEffect(() =>
     this._actions$.pipe(
       ofType(TodoActions.readTodos),
-      fetch({
-        run: () =>
-          this._.read(TodoQueryModel).pipe(
-            map((todos) => {
-              return TodoActions.readTodosSuccess({ todos });
-            })
-          ),
-        onError: (action, { error }) => {
-          alert(error.message);
-          return TodoActions.readTodosError({ error });
-        },
+      switchMap(() =>
+        this._todoGateway.read(TodoQueryModel).pipe(
+          map((todos) => {
+            return TodoActions.readTodosSuccess({ todos });
+          })
+        )
+      ),
+      catchError((error) => {
+        alert(error.message);
+        return of(TodoActions.readTodosError({ error }));
       })
     )
   );
@@ -33,7 +33,7 @@ export class TodoEffects {
       ofType(TodoActions.createTodo),
       pessimisticUpdate({
         run: ({ content }) =>
-          this._.create(TodoQueryModel, { content }).pipe(
+          this._todoOrcha.create(TodoQueryModel, { content }).pipe(
             map((todo) => {
               return TodoActions.createTodoSuccess({ todo });
             })
@@ -51,7 +51,7 @@ export class TodoEffects {
       ofType(TodoActions.deleteTodo),
       pessimisticUpdate({
         run: ({ todo }) =>
-          this._.delete(DeleteTodoQueryModel, { todoId: todo.id }).pipe(
+          this._todoOrcha.delete(DeleteTodoQueryModel, { todoId: todo.id }).pipe(
             map(({ deletedId }) => {
               return TodoActions.deleteTodoSuccess({ deletedId });
             })
@@ -69,7 +69,7 @@ export class TodoEffects {
       ofType(TodoActions.updateTodo),
       pessimisticUpdate({
         run: ({ dto }) =>
-          this._.update(TodoQueryModel, dto).pipe(
+          this._todoOrcha.update(TodoQueryModel, dto).pipe(
             map((todo) => {
               return TodoActions.updateTodoSuccess({ todo });
             })
@@ -87,7 +87,7 @@ export class TodoEffects {
       ofType(TodoActions.tagTodo),
       pessimisticUpdate({
         run: ({ todo, tagName }) =>
-          this._.tag(TodoQueryModel, { todoId: todo.id, tagName }).pipe(
+          this._todoOrcha.tag(TodoQueryModel, { todoId: todo.id, tagName }).pipe(
             switchMap((todo) => {
               // Here reload tags since it's possible a new one was created.
               return of(TodoActions.tagTodoSuccess({ todo }), TagActions.readTags());
@@ -106,7 +106,7 @@ export class TodoEffects {
       ofType(TodoActions.untagTodo),
       pessimisticUpdate({
         run: ({ taggedTodoId }) =>
-          this._.untag(TodoQueryModel, { taggedTodoId }).pipe(
+          this._todoOrcha.untag(TodoQueryModel, { taggedTodoId }).pipe(
             switchMap((todo) => {
               // Here reload tags since it's possible one was deleted.
               return of(TodoActions.untagTodoSuccess({ todo }), TagActions.readTags());
@@ -120,5 +120,9 @@ export class TodoEffects {
     )
   );
 
-  constructor(private readonly _actions$: Actions, private readonly _: TodoOrchestration) {}
+  constructor(
+    private readonly _actions$: Actions,
+    private readonly _todoOrcha: TodoOrchestration,
+    private readonly _todoGateway: TodoGateway
+  ) {}
 }

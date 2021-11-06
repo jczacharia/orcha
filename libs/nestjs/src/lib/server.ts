@@ -28,12 +28,14 @@ export type IServerOrchestration<O extends IOrchestration> = {
     : never;
 };
 
-export type IServerSubscription<T, Dto> = (
-  socket: Socket,
-  query: IQuery<T>,
-  dto: Dto,
-  token: string
-) => Promise<void>;
+export type IServerSubscription<T, DTO> = DTO extends undefined
+  ? <Q extends IQuery<T>>(socket: Socket, query: IExactQuery<T, Q>, token: string) => Promise<unknown>
+  : <Q extends IQuery<T>>(
+      socket: Socket,
+      query: IExactQuery<T, Q>,
+      token: string,
+      dto: DTO
+    ) => Promise<unknown>;
 
 export type IServerGateway<O extends IOrchestration> = {
   [K in keyof O]: O[K] extends ISubscription<infer T, infer Props> ? IServerSubscription<T, Props> : never;

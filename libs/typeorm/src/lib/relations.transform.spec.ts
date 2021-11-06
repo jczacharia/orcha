@@ -1,4 +1,5 @@
 import { createTypeormRelationsArray } from './relations.transform';
+
 describe('relations transformer', () => {
   it('1', () => {
     expect(
@@ -14,8 +15,7 @@ describe('relations transformer', () => {
       } as any).sort()
     ).toStrictEqual(['d', 'd.1', 'c', 'c.1', 'c.2', 'c.3'].sort());
   });
-
-  it('1', () => {
+  it('2', () => {
     expect(
       createTypeormRelationsArray({
         d: {},

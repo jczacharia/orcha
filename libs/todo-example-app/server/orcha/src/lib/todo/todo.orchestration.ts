@@ -24,11 +24,6 @@ export class TodoOrchestration implements IServerOrchestration<ITodoOrchestratio
   }
 
   @ServerOperation({ validateQuery: TodoQueryModel })
-  read(query: IQuery<Todo[]>, token: string) {
-    return this._todo.read(query, token);
-  }
-
-  @ServerOperation({ validateQuery: TodoQueryModel })
   update(query: IQuery<Todo>, token: string, dto: UpdateTodoDto) {
     return this._todo.update(query, token, dto);
   }

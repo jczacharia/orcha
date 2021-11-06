@@ -132,32 +132,39 @@ export function ServerOperation(options?: {
 
 export function ServerGateway(name: string): ClassDecorator {
   return function (target: Function) {
-    WebSocketGateway({ namespace: name })(target);
+    WebSocketGateway(80, { namespace: name, cors: true })(target);
   };
 }
 
-export function ServerSubscription(): MethodDecorator {
+export function ServerSubscription(options?: {
+  /**
+   * Validates the query object. If query object has extra fields in any of its objects,
+   * compared to `validateQuery`, an unauthorized exception will be thrown. `__paginate` is ignored.
+   *
+   * @remarks
+   * It is highly recommended that you use this feature to prevent unauthorized access to data.
+   */
+  validateQuery?: IQueryModel;
+}): MethodDecorator {
   return function <T>(target: any, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) {
     ConnectedSocket()(target, propertyKey, 0);
-    // TODO
-    // MessageBody(ORCHA_QUERY)(target, propertyKey, 1);
-    // MessageBody(ORCHA_DTO, new ValidationPipe())(target, propertyKey, 2);
-    // MessageBody(ORCHA_TOKEN)(target, propertyKey, 3);
-    MessageBody()(target, propertyKey, 1);
-    MessageBody()(target, propertyKey, 2);
-    MessageBody()(target, propertyKey, 3);
-
+    if (options?.validateQuery) {
+      MessageBody(ORCHA_QUERY, new QueryValidationPipe(options.validateQuery))(target, propertyKey, 1);
+    } else {
+      MessageBody(ORCHA_QUERY)(target, propertyKey, 1);
+    }
+    MessageBody(ORCHA_TOKEN)(target, propertyKey, 2);
+    MessageBody(ORCHA_DTO, new ValidationPipe())(target, propertyKey, 3);
     const original = descriptor.value;
     if (original) {
       (descriptor as any).value = async function (...args: any[]) {
         try {
           return await (original as any).apply(this, args);
         } catch (error) {
-          throw new WsException(error.message);
+          throw new WsException(error);
         }
       };
     }
-
     SubscribeMessage(propertyKey as string)(target, propertyKey, descriptor);
     return descriptor;
   };

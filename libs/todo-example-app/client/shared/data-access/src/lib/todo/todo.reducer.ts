@@ -25,7 +25,7 @@ export const TodoReducer = createReducer(
   on(TodoActions.readTodosSuccess, (state, { todos }): TodoState => {
     return {
       ...state,
-      todos: todosAdapter.upsertMany(todos, state.todos),
+      todos: todosAdapter.setAll(todos, state.todos),
       loaded: true,
     };
   }),

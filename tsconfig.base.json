@@ -20,29 +20,57 @@
     "importHelpers": true,
     "target": "es2015",
     "module": "esnext",
-    "lib": ["es2019", "dom"],
+    "lib": [
+      "es2019",
+      "dom"
+    ],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@orcha/angular": ["libs/angular/src/index.ts"],
-      "@orcha/nestjs": ["libs/nestjs/src/index.ts"],
-      "@orcha/typeorm": ["libs/typeorm/src/index.ts"],
-      "@orcha/common": ["libs/common/src/index.ts"],
-      "@orcha/testing": ["libs/testing/src/index.ts"],
-      "@orcha-todo-example-app/server/core/services": [
-        "libs/todo-example-app/server/core/services/src/index.ts"
-      ],
-      "@orcha-todo-example-app/server/core/domain": ["libs/todo-example-app/server/core/domain/src/index.ts"],
-      "@orcha-todo-example-app/server/orcha": ["libs/todo-example-app/server/orcha/src/index.ts"],
       "@orcha-todo-example-app/client/shared/data-access": [
         "libs/todo-example-app/client/shared/data-access/src/index.ts"
       ],
-      "@orcha-todo-example-app/client/shell": ["libs/todo-example-app/client/shell/src/index.ts"],
-      "@orcha-todo-example-app/shared/domain": ["libs/todo-example-app/shared/domain/src/index.ts"],
-      "@orcha-todo-example-app/shared/util": ["libs/todo-example-app/shared/util/src/index.ts"],
-      "@orcha-todo-example-app/client/shared/util": ["libs/todo-example-app/client/shared/util/src/index.ts"]
+      "@orcha-todo-example-app/client/shared/util": [
+        "libs/todo-example-app/client/shared/util/src/index.ts"
+      ],
+      "@orcha-todo-example-app/client/shell": [
+        "libs/todo-example-app/client/shell/src/index.ts"
+      ],
+      "@orcha-todo-example-app/server/core/domain": [
+        "libs/todo-example-app/server/core/domain/src/index.ts"
+      ],
+      "@orcha-todo-example-app/server/core/services": [
+        "libs/todo-example-app/server/core/services/src/index.ts"
+      ],
+      "@orcha-todo-example-app/server/orcha": [
+        "libs/todo-example-app/server/orcha/src/index.ts"
+      ],
+      "@orcha-todo-example-app/shared/domain": [
+        "libs/todo-example-app/shared/domain/src/index.ts"
+      ],
+      "@orcha-todo-example-app/shared/util": [
+        "libs/todo-example-app/shared/util/src/index.ts"
+      ],
+      "@orcha/angular": [
+        "libs/angular/src/index.ts"
+      ],
+      "@orcha/common": [
+        "libs/common/src/index.ts"
+      ],
+      "@orcha/nestjs": [
+        "libs/nestjs/src/index.ts"
+      ],
+      "@orcha/testing": [
+        "libs/testing/src/index.ts"
+      ],
+      "@orcha/typeorm": [
+        "libs/typeorm/src/index.ts"
+      ]
     }
   },
-  "exclude": ["node_modules", "tmp"]
+  "exclude": [
+    "node_modules",
+    "tmp"
+  ]
 }

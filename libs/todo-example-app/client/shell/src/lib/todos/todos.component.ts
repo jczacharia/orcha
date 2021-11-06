@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { Validators } from '@angular/forms';
-import { FormControl } from '@ngneat/reactive-forms';
+import { FormControl, Validators } from '@angular/forms';
 import { AppFacade, TagStoreModel, TodoStoreModel } from '@orcha-todo-example-app/client/shared/data-access';
 import { RxJSBaseClass } from '@orcha-todo-example-app/client/shared/util';
 import { takeUntil } from 'rxjs/operators';
@@ -26,7 +25,9 @@ export class TodosComponent extends RxJSBaseClass implements OnInit {
 
   ngOnInit(): void {
     this._app.todo.selectors.todos$.pipe(takeUntil(this.destroy$)).subscribe(({ todos, loaded }) => {
-      this.todos = todos;
+      this.todos = todos.sort((a, b) =>
+        a.dateCreated < b.dateCreated ? -1 : a.dateCreated > b.dateCreated ? 1 : 0
+      );
       this.loaded = loaded;
       this._change.markForCheck();
     });
@@ -34,6 +35,9 @@ export class TodosComponent extends RxJSBaseClass implements OnInit {
     this._app.tag.selectors.tags$.pipe(takeUntil(this.destroy$)).subscribe(({ tags, loaded }) => {
       this.tags = tags;
       this.loaded = loaded;
+      if (!this.tags.some((t) => t.name === this.tagFilter)) {
+        this.tagFilter = 'all';
+      }
       this._change.markForCheck();
     });
   }

@@ -31,15 +31,15 @@ export const readTodosError = createAction(
                               
   */
 
-export const createTodo = createAction('[Todos] Create Todos', props<{ content: string }>());
+export const createTodo = createAction('[Todos] Create Todo', props<{ content: string }>());
 
 export const createTodoSuccess = createAction(
-  '[Todos] Create Todos Success',
+  '[Todos] Create Todo Success',
   props<{ todo: TodoStoreModel }>()
 );
 
 export const createTodoError = createAction(
-  '[Todos] Create Todos Error',
+  '[Todos] Create Todo Error',
   props<{ error: OrchaOperationError }>()
 );
 
@@ -50,12 +50,12 @@ export const createTodoError = createAction(
    |___/\___|_\___|\__\___|
                            
 */
-export const deleteTodo = createAction('[Todos] Delete Todos', props<{ todo: TodoStoreModel }>());
+export const deleteTodo = createAction('[Todos] Delete Todo', props<{ todo: TodoStoreModel }>());
 
-export const deleteTodoSuccess = createAction('[Todos] Delete Todos Success', props<{ deletedId: string }>());
+export const deleteTodoSuccess = createAction('[Todos] Delete Todo Success', props<{ deletedId: string }>());
 
 export const deleteTodoError = createAction(
-  '[Todos] Delete Todos Error',
+  '[Todos] Delete Todo Error',
   props<{ error: OrchaOperationError }>()
 );
 

@@ -1,3 +1,3 @@
+export * from './tag.gateway';
 export * from './tag.model';
-export * from './tag.orchestration';
 export * from './tag.queries';

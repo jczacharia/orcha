@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { FormControl, FormGroup } from '@ngneat/reactive-forms';
 import { AppFacade } from '@orcha-todo-example-app/client/shared/data-access';
 import { RxJSBaseClass } from '@orcha-todo-example-app/client/shared/util';
 import { takeUntil } from 'rxjs/operators';

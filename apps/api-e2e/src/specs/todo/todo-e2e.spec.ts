@@ -72,19 +72,19 @@ describe('Todo Orchestration Integration Tests', () => {
       expect(todo.content).toBe('content');
       expect(todo.done).toBe(false);
     });
-  });
-  describe('read', () => {
-    it('should get no todos at system init', async () => {
-      const { body: todos } = await todoOrcha.read(todoQuery, auth.body.token);
-      expect(todos.length).toBe(0);
-    });
-    it('should get my todo items', async () => {
-      await todoOrcha.create(todoQuery, auth.body.token, { content: 'content' });
-      const { body: todos } = await todoOrcha.read(todoQuery, auth.body.token);
-      expect(todos.length).toBe(1);
-      expect(todos[0].content).toBe('content');
-      expect(todos[0].user.id).toBe(credentials.id);
-    });
+    // });
+    // describe('read', () => {
+    //   it('should get no todos at system init', async () => {
+    //     const { body: todos } = await todoOrcha.read(todoQuery, auth.body.token);
+    //     expect(todos.length).toBe(0);
+    //   });
+    //   it('should get my todo items', async () => {
+    //     await todoOrcha.create(todoQuery, auth.body.token, { content: 'content' });
+    //     const { body: todos } = await todoOrcha.read(todoQuery, auth.body.token);
+    //     expect(todos.length).toBe(1);
+    //     expect(todos[0].content).toBe('content');
+    //     expect(todos[0].user.id).toBe(credentials.id);
+    //   });
   });
   describe('update', () => {
     it('should not update if owned by another user', async () => {
@@ -171,14 +171,14 @@ describe('Todo Orchestration Integration Tests', () => {
       });
       expect(taggedTodo.taggedTodos[0].tag.name).toBe('tag1');
     });
-    it('should reuse a tag', async () => {
-      const { body: todo1 } = await todoOrcha.create(todoQuery, auth.body.token, { content: 'new content' });
-      const { body: todo2 } = await todoOrcha.create(todoQuery, auth.body.token, { content: 'new content' });
-      await todoOrcha.tag(todoQuery, auth.body.token, { todoId: todo1.id, tagName: 'tag1' });
-      await todoOrcha.tag(todoQuery, auth.body.token, { todoId: todo2.id, tagName: 'tag1' });
-      const { body: todos } = await todoOrcha.read(todoQuery, auth.body.token);
-      expect(todos[0].taggedTodos[0].tag.id).toBe(todos[1].taggedTodos[0].tag.id);
-    });
+    // it('should reuse a tag', async () => {
+    //   const { body: todo1 } = await todoOrcha.create(todoQuery, auth.body.token, { content: 'new content' });
+    //   const { body: todo2 } = await todoOrcha.create(todoQuery, auth.body.token, { content: 'new content' });
+    //   await todoOrcha.tag(todoQuery, auth.body.token, { todoId: todo1.id, tagName: 'tag1' });
+    //   await todoOrcha.tag(todoQuery, auth.body.token, { todoId: todo2.id, tagName: 'tag1' });
+    //   const { body: todos } = await todoOrcha.read(todoQuery, auth.body.token);
+    //   expect(todos[0].taggedTodos[0].tag.id).toBe(todos[1].taggedTodos[0].tag.id);
+    // });
     it('should create separate tag entities if same name but different user', async () => {
       const { body: otherUser } = await userOrcha.signUp({ token: true }, '', {
         id: 'other@user.com',

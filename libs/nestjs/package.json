@@ -1,12 +1,13 @@
 {
   "name": "@orcha/nestjs",
-  "version": "0.2.16",
+  "version": "0.3.0",
   "peerDependencies": {
-    "@orcha/common": "^0.2.16",
-    "@nestjs/common": "^7.6.17",
-    "@nestjs/websockets": "^7.6.17",
-    "@nestjs/core": "^7.6.17",
-    "socket.io": "^4.1.2",
-    "socket.io-client": "^4.1.2"
+    "@orcha/common": "^0.3.0",
+    "@nestjs/common": "^8.1.2",
+    "@nestjs/core": "^8.1.2",
+    "@nestjs/websockets": "^8.1.2",
+    "@nestjs/platform-socket.io": "^8.1.2",
+    "socket.io": "^4.3.1",
+    "socket.io-client": "^4.3.2"
   }
 }

@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { AppShellComponent } from './app-shell/app-shell.component';
 import { AppGuard } from './app.guard';
+import { LoginGuard } from './login.guard';
 import { LoginComponent } from './login/login.component';
 import { ProfileComponent } from './profile/profile.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
@@ -13,7 +14,7 @@ import { TodosComponent } from './todos/todos.component';
 
 @NgModule({
   declarations: [AppShellComponent, LoginComponent, SignUpComponent, TodosComponent, ProfileComponent],
-  providers: [AppGuard],
+  providers: [AppGuard, LoginGuard],
   imports: [
     CommonModule,
     FormsModule,
@@ -24,10 +25,12 @@ import { TodosComponent } from './todos/todos.component';
       {
         path: 'login',
         component: LoginComponent,
+        canActivate: [LoginGuard],
       },
       {
         path: 'sign-up',
         component: SignUpComponent,
+        canActivate: [LoginGuard],
       },
       {
         path: '',

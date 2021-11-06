@@ -13,12 +13,31 @@ import {
   UpdateTodoDto,
 } from '@orcha-todo-example-app/shared/domain';
 import { IQuery, parseQuery } from '@orcha/common';
+import { Socket } from 'socket.io';
 import * as uuid from 'uuid';
 import { DbTransactionCreator } from '../transaction-creator/transaction-creator.service';
 import { UserService } from '../user';
 
 @Injectable()
 export class TodoService {
+  readonly subscriptions = {
+    /**
+     * Gets all of a user's todo entities.
+     * @param query Orcha query of todos.
+     * @param token User's auth token.
+     */
+    read: async (socket: Socket, query: IQuery<Todo[]>, token: string, channel: string) => {
+      const user = await this._user.verifyUserToken(token);
+      return this._todoRepo.subscriptions.querySubscription(socket, channel, query, {
+        where: { user: user.id },
+      });
+    },
+
+    onDisconnect: (socket: Socket) => {
+      return this._todoRepo.subscriptions.onDisconnect(socket);
+    },
+  };
+
   constructor(
     private readonly _todoRepo: TodoRepository,
     private readonly _user: UserService,
@@ -47,16 +66,6 @@ export class TodoService {
       },
       query
     );
-  }
-
-  /**
-   * Gets all of a user's todo entities.
-   * @param query Orcha query of todos.
-   * @param token User's auth token.
-   */
-  async read(query: IQuery<Todo[]>, token: string) {
-    const user = await this._user.verifyUserToken(token);
-    return this._todoRepo.query(query, { where: { user: user.id } });
   }
 
   /**

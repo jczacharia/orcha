@@ -19,60 +19,46 @@
       "runner": "@nrwl/nx-cloud",
       "options": {
         "accessToken": "N2E1NTg4NDgtNmFiNC00NjdhLWI3MzgtOGMxMTRkMzBhMmQzfHJlYWQtd3JpdGU=",
-        "cacheableOrchestration": ["build", "test", "lint", "e2e"],
+        "cacheableOrchestration": [
+          "build",
+          "test",
+          "lint",
+          "e2e"
+        ],
         "canTrackAnalytics": false,
         "showUsageWarnings": true
       }
     }
   },
-  "projects": {
-    "api": {
-      "tags": []
+  "cli": {
+    "defaultCollection": "@nrwl/angular"
+  },
+  "generators": {
+    "@nrwl/angular": {
+      "application": {
+        "linter": "eslint"
+      },
+      "library": {
+        "linter": "eslint"
+      },
+      "storybook-configuration": {
+        "linter": "eslint"
+      }
     },
-    "angular": {
-      "tags": []
+    "@nrwl/angular:application": {
+      "style": "scss",
+      "linter": "eslint",
+      "unitTestRunner": "jest",
+      "e2eTestRunner": "cypress"
     },
-    "nestjs": {
-      "tags": []
+    "@nrwl/angular:library": {
+      "style": "scss",
+      "linter": "eslint",
+      "unitTestRunner": "jest"
     },
-    "typeorm": {
-      "tags": []
-    },
-    "common": {
-      "tags": []
-    },
-    "testing": {
-      "tags": []
-    },
-    "todo-example-app": {
-      "tags": []
-    },
-    "server-core-services": {
-      "tags": []
-    },
-    "server-core-domain": {
-      "tags": []
-    },
-    "server-orcha": {
-      "tags": []
-    },
-    "client-shared-data-access": {
-      "tags": []
-    },
-    "client-shell": {
-      "tags": []
-    },
-    "shared-domain": {
-      "tags": []
-    },
-    "shared-util": {
-      "tags": []
-    },
-    "client-shared-util": {
-      "tags": []
-    },
-    "api-e2e": {
-      "tags": []
+    "@nrwl/angular:component": {
+      "style": "scss"
     }
-  }
+  },
+  "defaultProject": "todo-example-app"
 }

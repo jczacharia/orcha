@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { fetch, pessimisticUpdate } from '@nrwl/angular';
+import { pessimisticUpdate } from '@nrwl/angular';
 import { UserQueryModel } from '@orcha-todo-example-app/shared/domain';
-import { map, tap } from 'rxjs/operators';
+import { OrchaAuthTokenLocalStorage } from '@orcha/angular';
+import { of } from 'rxjs';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import * as UserActions from './user.actions';
 import { UserOrchestration } from './user.orchestration';
-import { AuthTokenStorage } from './user.storage';
 
 @Injectable()
 export class UserEffects {
@@ -17,7 +18,7 @@ export class UserEffects {
         run: ({ id, password }) =>
           this._user.login({ token: true }, { id, password }).pipe(
             map(({ token }) => {
-              AuthTokenStorage.setValue({ id, token });
+              this._authTokenStorage.setAuthToken(token);
               this._router.navigate(['']);
               return UserActions.userLoginSuccess({ id, token });
             })
@@ -36,7 +37,7 @@ export class UserEffects {
         run: ({ id, password }) =>
           this._user.signUp({ token: true }, { id, password }).pipe(
             map(({ token }) => {
-              AuthTokenStorage.setValue({ id, token });
+              this._authTokenStorage.setAuthToken(token);
               this._router.navigate(['/login']);
               return UserActions.userSignUpSuccess({ token });
             })
@@ -51,12 +52,10 @@ export class UserEffects {
   readonly getProfile$ = createEffect(() =>
     this._actions$.pipe(
       ofType(UserActions.getProfile),
-      fetch({
-        run: () =>
-          this._user.getProfile(UserQueryModel).pipe(map((user) => UserActions.getProfileSuccess({ user }))),
-        onError: (action, { error }) => {
-          return UserActions.getProfileError({ error });
-        },
+      switchMap(() => this._user.getProfile(UserQueryModel)),
+      map((user) => UserActions.getProfileSuccess({ user })),
+      catchError((error) => {
+        return of(UserActions.getProfileError({ error }));
       })
     )
   );
@@ -66,7 +65,7 @@ export class UserEffects {
       this._actions$.pipe(
         ofType(UserActions.logout),
         tap(() => {
-          AuthTokenStorage.delete();
+          this._authTokenStorage.deleteToken();
           window.location.href = '/';
         })
       ),
@@ -76,6 +75,7 @@ export class UserEffects {
   constructor(
     private readonly _actions$: Actions,
     private readonly _user: UserOrchestration,
-    private readonly _router: Router
+    private readonly _router: Router,
+    private readonly _authTokenStorage: OrchaAuthTokenLocalStorage
   ) {}
 }

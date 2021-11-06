@@ -1,4 +1,4 @@
-export * from './lib/orcha.module';
+export * from './lib/auth-token.storage';
 export * from './lib/client';
 export * from './lib/decorators';
-export * from './lib/orcha.interceptor';
+export * from './lib/orcha.module';

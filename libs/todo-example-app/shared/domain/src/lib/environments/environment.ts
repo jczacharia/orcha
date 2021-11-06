@@ -2,7 +2,9 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 export const environment = {
   production: false,
+  host: 'localhost',
   apiUrl: `http://localhost:3333`,
+  wsUrl: `http://localhost:80`,
   typeOrmConfig: {
     type: 'postgres',
     host: '127.0.0.1',

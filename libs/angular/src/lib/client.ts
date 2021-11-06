@@ -43,10 +43,9 @@ export type IClientOrchestration<O extends IOrchestration> = {
     : never;
 };
 
-export type IClientSubscription<T, Dto> = <Q extends IQuery<T>>(
-  query: Q,
-  dto: Dto
-) => Observable<IParser<T, Q>>;
+export type IClientSubscription<T, DTO> = DTO extends undefined
+  ? <Q extends IQuery<T>>(query: Q) => Observable<IParser<T, Q>>
+  : <Q extends IQuery<T>>(query: Q, dto: DTO) => Observable<IParser<T, Q>>;
 
 export type IClientGateway<Gateways extends IGateway> = {
   [K in keyof Gateways]: Gateways[K] extends ISubscription<infer T, infer Props>

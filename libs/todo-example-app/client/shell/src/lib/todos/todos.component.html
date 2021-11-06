@@ -22,6 +22,7 @@
     <div class="todo" *ngFor="let todo of todosFilter(todos)" class="item">
       <div>
         <b>{{ todo.content }}</b>
+        <div>{{ todo.id }}</div>
         <div>Created: {{ todo.dateCreated | date: 'MMM d, y, h:mm:ss a' }}</div>
         <div>Updated: {{ todo.dateUpdated | date: 'MMM d, y, h:mm:ss a' }}</div>
       </div>
