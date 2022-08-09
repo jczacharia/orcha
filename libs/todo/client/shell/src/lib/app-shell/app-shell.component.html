@@ -1,0 +1,8 @@
+<div class="header">
+  <button (click)="logout()">Log Out</button>
+</div>
+<div class="tabs">
+  <div (click)="todos()" [style.background]="activeRoute.includes('todos') ? '#ccc' : ''">Todos</div>
+  <div (click)="profile()" [style.background]="activeRoute.includes('profile') ? '#ccc' : ''">Profile</div>
+</div>
+<router-outlet></router-outlet>

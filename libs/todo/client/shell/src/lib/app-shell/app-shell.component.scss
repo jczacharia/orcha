@@ -1,0 +1,26 @@
+.tabs {
+  display: grid;
+  grid-auto-flow: column;
+  place-content: center;
+
+  div {
+    border: 1px solid #ccc;
+    border-top: none;
+    padding: 1em;
+    cursor: pointer;
+    width: 100px;
+    display: grid;
+    place-content: center;
+
+    &:not(:last-child) {
+      border-right: none;
+    }
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.5em;
+  border-bottom: 1px solid #ccc;
+}

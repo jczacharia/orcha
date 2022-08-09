@@ -2,9 +2,23 @@
   "$schema": "./node_modules/nx/schemas/workspace-schema.json",
   "version": 2,
   "projects": {
+    "angular": "libs/angular",
     "api": "apps/api",
-    "api-interfaces": "libs/api-interfaces",
+    "api-e2e": "apps/api-e2e",
+    "common": "libs/common",
+    "mikro-orm": "libs/mikro-orm",
+    "nestjs": "libs/nestjs",
+    "testing": "libs/testing",
     "todo-app": "apps/todo-app",
-    "todo-app-e2e": "apps/todo-app-e2e"
+    "todo-app-e2e": "apps/todo-app-e2e",
+    "todo-client-domain": "libs/todo/client/domain",
+    "todo-client-shared": "libs/todo/client/shared",
+    "todo-client-shell": "libs/todo/client/shell",
+    "todo-client-util": "libs/todo/client/util",
+    "todo-server-domain": "libs/todo/server/domain",
+    "todo-server-orcha": "libs/todo/server/orcha",
+    "todo-server-services": "libs/todo/server/services",
+    "todo-shared-domain": "libs/todo/shared/domain",
+    "todo-shared-util": "libs/todo/shared/util"
   }
 }

@@ -1,0 +1,6 @@
+<input type="file" (change)="updateProfilePic($event)" #profilePicInp />
+<button (click)="updateProfilePicBtnClicked()">Upload Profile Pic</button>
+<div class="item">
+  <span>Entire Profile to show highly-relational Orcha queries.</span>
+  <pre>{{ profile$ | async | json }}</pre>
+</div>

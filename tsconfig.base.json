@@ -1,6 +1,18 @@
 {
   "compileOnSave": false,
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  },
   "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "strict": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": false,
+    "noErrorTruncation": true,
     "rootDir": ".",
     "sourceMap": true,
     "declaration": false,
@@ -8,14 +20,28 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
+    "esModuleInterop": true,
     "target": "es2015",
     "module": "esnext",
-    "lib": ["es2017", "dom"],
+    "lib": ["es2019", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@orcha/api-interfaces": ["libs/api-interfaces/src/index.ts"]
+      "@orcha/angular": ["libs/angular/src/index.ts"],
+      "@orcha/common": ["libs/common/src/index.ts"],
+      "@orcha/mikro-orm": ["libs/mikro-orm/src/index.ts"],
+      "@orcha/nestjs": ["libs/nestjs/src/index.ts"],
+      "@orcha/testing": ["libs/testing/src/index.ts"],
+      "@orcha/todo/client/domain": ["libs/todo/client/domain/src/index.ts"],
+      "@orcha/todo/client/shared": ["libs/todo/client/shared/src/index.ts"],
+      "@orcha/todo/client/shell": ["libs/todo/client/shell/src/index.ts"],
+      "@orcha/todo/client/util": ["libs/todo/client/util/src/index.ts"],
+      "@orcha/todo/server/domain": ["libs/todo/server/domain/src/index.ts"],
+      "@orcha/todo/server/orcha": ["libs/todo/server/orcha/src/index.ts"],
+      "@orcha/todo/server/services": ["libs/todo/server/services/src/index.ts"],
+      "@orcha/todo/shared/domain": ["libs/todo/shared/domain/src/index.ts"],
+      "@orcha/todo/util": ["libs/todo/util/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

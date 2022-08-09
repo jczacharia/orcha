@@ -1,1 +1,40 @@
 /* You can add global styles to this file, and also import other style files */
+@import '@angular/cdk/overlay-prebuilt.css';
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+}
+
+.item {
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  padding: 1em;
+  display: grid;
+  gap: 1em;
+
+  pre {
+    background: #fafafa;
+    border: 1px solid #cccccc;
+    border-radius: 10px;
+    padding: 1em;
+    margin: 0;
+  }
+}
+
+.cont {
+  display: grid;
+  padding: 1rem;
+}
+
+.buttons {
+  display: grid;
+  grid-auto-flow: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1em;
+}
