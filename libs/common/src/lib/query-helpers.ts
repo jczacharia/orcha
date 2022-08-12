@@ -47,7 +47,7 @@ export const createQuery =
  * You can also insert extra parameters for robust calculations.
  * @example
  * ```typescript
- * const compareVoucherCode = createLogic<Voucher, { code: true }>()(
+ * const compareVoucherCode = createLogic<Voucher>()({ code: true })(
  *   (voucher, compare: number) => voucher.code === compare
  * );
  * const isVoucher999 = compareVoucherCode(voucher, 999);
@@ -56,8 +56,8 @@ export const createQuery =
  * You can also compare two entities using currying.
  * @example
  * ```typescript
- * export const compareTwoTodos = createLogic<Todo, { content: true }>()((todo) => (compare: typeof todo) =>
- *   todo.content === compare.content
+ * export const compareTwoTodos = createLogic<Todo>()({ content: true })(
+ *   (todo) => (compare: typeof todo) => todo.content === compare.content
  * );
  * const todosHaveTheSameContent = compareTwoTodos(todo1)(todo2);
  * ```
@@ -65,6 +65,7 @@ export const createQuery =
  * @returns The function defined in the third curried function argument.
  */
 export const createLogic =
-  <T, Q extends IQuery<T>>() =>
-  <R, K extends unknown[]>(func: (model: IParser<T, Q>, ...a: K) => R) =>
+  <T>() =>
+  <Q extends IQuery<T>>(query: IExactQuery<T, Q>) =>
+  <R, K extends unknown[]>(func: (model: IParser<T, typeof query>, ...a: K) => R) =>
     func;
