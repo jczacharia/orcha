@@ -53,9 +53,15 @@ import { IExactQuery, IQuery } from './query';
  * @param query Reference Query.
  * @param entities Objects to parse.
  */
-export function parseQuery<T, Q extends IQuery<T>>(query: IExactQuery<T, Q>, entities: T): IParser<T, Q>;
-export function parseQuery<T, Q extends IQuery<T>>(query: IExactQuery<T, Q>, entities: T[]): IParser<T[], Q>;
-export function parseQuery<T, Q extends IQuery<T>>(query: IExactQuery<T, Q>, entities: T | T[]) {
+export async function parseQuery<T, Q extends IQuery<T>>(
+  query: IExactQuery<T, Q>,
+  entities: T
+): Promise<IParser<T, Q>>;
+export async function parseQuery<T, Q extends IQuery<T>>(
+  query: IExactQuery<T, Q>,
+  entities: T[]
+): Promise<IParser<T[], Q>>;
+export async function parseQuery<T, Q extends IQuery<T>>(query: IExactQuery<T, Q>, entities: T | T[]) {
   if (!entities) {
     return null;
   }
@@ -64,17 +70,19 @@ export function parseQuery<T, Q extends IQuery<T>>(query: IExactQuery<T, Q>, ent
     query = query[0];
   }
 
-  const remove = (e: T) => {
-    const qKeys = Object.keys(query as object);
-    for (const k of Object.keys(e)) {
+  const remove = async (e: T) => {
+    const qKeys = Object.keys(query) as (keyof T)[];
+    for (const k of Object.keys(e) as (keyof T)[]) {
       if (!qKeys.includes(k)) {
-        delete e[k as keyof T];
+        delete e[k];
+      } else if (e[k] instanceof Promise) {
+        e[k] = await e[k];
       }
     }
 
     for (const [k, q] of Object.entries(query as object)) {
       if (typeof q === 'object') {
-        parseQuery(q, e[k as keyof T]);
+        await parseQuery(q, e[k as keyof T]);
       }
     }
 
@@ -82,10 +90,10 @@ export function parseQuery<T, Q extends IQuery<T>>(query: IExactQuery<T, Q>, ent
   };
 
   if (Array.isArray(entities)) {
-    entities.map((e) => remove(e));
+    entities = await Promise.all(entities.map((e) => remove(e)));
     return entities as unknown as IParser<T[], Q>;
   } else {
-    entities = remove(entities);
+    entities = await remove(entities);
     return entities as unknown as IParser<T, Q>;
   }
 }

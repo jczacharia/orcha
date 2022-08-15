@@ -1,5 +1,6 @@
 import { IPaginate, IPagination } from './pagination';
 import { IAnyRelation } from './relations';
+import { IOrchaView } from './view';
 
 /**
  * Describes the fundamental type for an Orcha Query.
@@ -22,10 +23,13 @@ type IQueryUndefined<T> = T extends undefined
 /* ** Typescript magic ** */
 
 export type IQueryObject<T> = {
-  [K in keyof T]?: NonNullable<T[K]> extends object
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  [K in keyof T]?: NonNullable<T[K]> extends IOrchaView<infer _>
+    ? true
+    : NonNullable<T[K]> extends object
     ? {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        [_ in keyof NonNullable<T[K]>]: NonNullable<T[K]> extends IAnyRelation<infer R, infer _>
+        [_ in keyof NonNullable<T[K]>]: NonNullable<T[K]> extends IAnyRelation<infer R, infer __>
           ? Required<T> extends Required<R>
             ? true
             : IQueryArray<T[K]>

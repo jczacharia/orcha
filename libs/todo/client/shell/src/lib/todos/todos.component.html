@@ -13,7 +13,7 @@
 </div>
 <div class="cont">
   <div *ngIf="!loaded">Loading...</div>
-  <div *ngIf="loaded && todos.length < 1">You have no todos.</div>
+  <div *ngIf="loaded">You have {{ totalTodos }} todos.</div>
   <div *ngIf="loaded">
     <input type="text" placeholder="What needs done?" [formControl]="todo" />
     <button [disabled]="todo.invalid" (click)="create()">Add</button>

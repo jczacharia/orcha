@@ -2,28 +2,6 @@ import { IParser } from './parser';
 import { IExactQuery, IQuery } from './query';
 
 /**
- * Creates a type-safe query object. Note this is a curried function to get around Typescript limitations.
- *
- * Use this when creating Operations.
- *
- * @example
- * ```typescript
- * export const UserQuery = createQuery<User>()({
- *   id: true,
- *   name: true,
- *   items: {
- *     id: true,
- *     title: true,
- *   }
- * });
- * ```
- */
-export const createQuery =
-  <T>() =>
-  <Q extends IQuery<T>>(query: IExactQuery<T, Q>) =>
-    query as Q;
-
-/**
  * Defines a business logic/rule/calculation based on the given query template model.
  * This is useful when your queried data might not be complete in its entirety.
  *
@@ -32,10 +10,8 @@ export const createQuery =
  *
  * @example
  * ```typescript
- * export const calculateVoucherStatus = createLogic<
- *   Voucher,
- *   { dateRedeemed: true; dateRefunded: true }
- * >()((voucher) => {
+ * export const calculateVoucherStatus = createLogic<Voucher>()({ dateRedeemed: true, dateRefunded: true })(
+ *   (voucher) => {
  *     if (voucher.dateRedeemed) return 'redeemed';
  *     if (voucher.dateRefunded) return 'refunded';
  *     return 'active';

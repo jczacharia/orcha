@@ -1,4 +1,4 @@
-import { IManyToOne, IOneToMany, IOneToOne, IOrchaModel } from '@orcha/common';
+import { IOneToMany, IOneToOne, IOrchaModel } from '@orcha/common';
 import { TaggedTodo } from '../tagged-todo';
 import { User } from '../user';
 

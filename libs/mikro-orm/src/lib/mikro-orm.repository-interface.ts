@@ -53,7 +53,7 @@ export abstract class IOrchaMikroOrmRepository<
       const populate = createMikroOrmRelationsArray(orchaQuery);
       const dbRes = await this.repo.findOneOrFail({ id } as FilterQuery<E>, { populate });
       const json = wrap(dbRes).toJSON();
-      return parseQuery<any, any>(orchaQuery, json) as IParser<T, Q>;
+      return parseQuery<any, any>(orchaQuery, json) as Promise<IParser<T, Q>>;
     },
 
     findOne: async <Q extends IQuery<T>>(
@@ -63,7 +63,7 @@ export abstract class IOrchaMikroOrmRepository<
       const populate = createMikroOrmRelationsArray(orchaQuery);
       const dbRes = await this.repo.findOne({ id } as FilterQuery<E>, { populate });
       const json = dbRes ? wrap(dbRes).toJSON() : null;
-      return parseQuery<any, any>(orchaQuery, json) as IParser<T, Q> | null;
+      return parseQuery<any, any>(orchaQuery, json) as Promise<IParser<T, Q> | null>;
     },
 
     findMany: async <Q extends IQuery<T>>(
@@ -73,14 +73,14 @@ export abstract class IOrchaMikroOrmRepository<
       const populate = createMikroOrmRelationsArray(orchaQuery);
       const dbRes = await this.repo.find({ id: ids } as FilterQuery<E>, { populate });
       const json = dbRes.map((e) => wrap(e).toJSON());
-      return parseQuery<any, any>(orchaQuery, json) as IParser<T[], Q>;
+      return parseQuery<any, any>(orchaQuery, json) as Promise<IParser<T[], Q>>;
     },
 
     findAll: async <Q extends IQuery<T>>(orchaQuery: IExactQuery<T, Q>): Promise<IParser<T[], Q>> => {
       const populate = createMikroOrmRelationsArray(orchaQuery);
       const entities = await this.repo.findAll({ populate });
       const json = entities.map((e) => wrap(e).toJSON());
-      return parseQuery<any, any>(orchaQuery, json) as IParser<T[], Q>;
+      return parseQuery<any, any>(orchaQuery, json) as Promise<IParser<T[], Q>>;
     },
 
     find: async <Q extends IQuery<T>>(
@@ -91,7 +91,7 @@ export abstract class IOrchaMikroOrmRepository<
       const populate = createMikroOrmRelationsArray(orchaQuery) as any;
       const entities = await this.repo.find(query, { populate, ...options });
       const json = entities.map((e) => wrap(e).toJSON());
-      return parseQuery<any, any>(orchaQuery, json) as IParser<T[], Q>;
+      return parseQuery<any, any>(orchaQuery, json) as Promise<IParser<T[], Q>>;
     },
 
     paginate: async <Q extends IQuery<T>>(

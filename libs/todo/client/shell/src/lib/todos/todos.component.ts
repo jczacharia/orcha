@@ -17,6 +17,8 @@ export class TodosComponent extends RxJSBaseClass implements OnInit {
   tags: TagStoreModel[] = [];
   loaded = false;
 
+  totalTodos = 0;
+
   tagFilter: 'all' | string = 'all';
 
   constructor(private readonly _app: AppFacade, private readonly _change: ChangeDetectorRef) {
@@ -24,6 +26,11 @@ export class TodosComponent extends RxJSBaseClass implements OnInit {
   }
 
   ngOnInit(): void {
+    this._app.user.selectors.state$.pipe(takeUntil(this.destroy$)).subscribe(({ view }) => {
+      this.totalTodos = view.totalTodos;
+      this._change.markForCheck();
+    });
+
     this._app.todo.selectors.todos$.pipe(takeUntil(this.destroy$)).subscribe(({ todos, loaded }) => {
       this.todos = todos.sort((a, b) =>
         a.dateCreated < b.dateCreated ? -1 : a.dateCreated > b.dateCreated ? 1 : 0

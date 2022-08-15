@@ -1,6 +1,6 @@
 {
   "name": "orcha",
-  "version": "0.6.6",
+  "version": "0.6.12",
   "license": "MIT",
   "scripts": {
     "ng": "nx",
@@ -54,8 +54,11 @@
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
   },
+  "resolutions": {
+    "rxjs": "^7.0.0"
+  },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^14.0.0",
+    "@angular-devkit/build-angular": "~14.0.0",
     "@angular-eslint/eslint-plugin": "^14.0.0",
     "@angular-eslint/eslint-plugin-template": "^14.0.0",
     "@angular-eslint/template-parser": "^14.0.0",

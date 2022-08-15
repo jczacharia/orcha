@@ -28,7 +28,7 @@ export class GatewaysStorage<T extends { id: IdType }, IdType> {
     }
 
     const response: ISubscriptionResult<T, Q, IdType> = {
-      created: parseQuery(newSub.query, res),
+      created: await parseQuery(newSub.query, res),
       updated: [],
       deleted: [],
     };
@@ -68,9 +68,9 @@ export class GatewaysStorage<T extends { id: IdType }, IdType> {
 
     for (const item of currentDbQueryState) {
       if (!sub.ids.includes(item.id)) {
-        response.created.push(parseQuery(sub.query, item) as IParseUndefined<T, Q>); // TODO `as`
+        response.created.push((await parseQuery(sub.query, item)) as IParseUndefined<T, Q>); // TODO `as`
       } else if (triggeredIds.includes(item.id)) {
-        response.updated.push(parseQuery(sub.query, item) as IParseUndefined<T, Q>); // TODO `as`
+        response.updated.push((await parseQuery(sub.query, item)) as IParseUndefined<T, Q>); // TODO `as`
       }
     }
 

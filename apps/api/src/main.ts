@@ -15,6 +15,7 @@ async function bootstrap() {
   const orm = app.get(MikroORM);
   const generator = orm.getSchemaGenerator();
 
+  // await generator.dropSchema();
   await generator.updateSchema();
   console.log('Schema Updated');
 

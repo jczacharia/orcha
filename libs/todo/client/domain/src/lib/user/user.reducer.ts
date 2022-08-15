@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
-import { User, UserQueryModel } from '@orcha/todo/shared/domain';
 import { IParser } from '@orcha/common';
+import { User, UserQueryModel } from '@orcha/todo/shared/domain';
 import * as UserActions from './user.actions';
 
 export const USER_KEY = 'user';
@@ -13,6 +13,7 @@ export interface UserState extends UserStoreModel {
 
 const initialState: UserState = {
   id: '',
+  view: { totalTodos: 0 },
   dateCreated: new Date(),
   dateLastLoggedIn: new Date(),
   loaded: false,

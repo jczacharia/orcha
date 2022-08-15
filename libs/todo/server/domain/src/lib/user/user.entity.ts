@@ -21,6 +21,11 @@ export class UserEntity implements IOrchaMikroOrmEntity<User> {
   @Property({ nullable: true })
   dateLastLoggedIn?: Date;
 
+  @Property({ name: 'view' })
+  async view() {
+    return { totalTodos: await this.todos.loadCount() };
+  }
+
   @OneToMany(() => TodoEntity, (e) => e.user)
   todos = new Collection<IOrchaMikroOrmEntity<Todo>>(this);
 

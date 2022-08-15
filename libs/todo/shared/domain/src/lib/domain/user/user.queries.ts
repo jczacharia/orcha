@@ -5,6 +5,7 @@ export const UserQueryModel = createQuery<User>()({
   id: true,
   dateCreated: true,
   dateLastLoggedIn: true,
+  view: true,
 });
 
 export const LoginQueryModel = createQuery<{ token: string }>()({ token: true });
@@ -14,6 +15,7 @@ export const EntireProfile = createQuery<User>()({
   id: true,
   dateCreated: true,
   dateLastLoggedIn: true,
+  view: true,
   tags: {
     id: true,
     name: true,

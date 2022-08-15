@@ -1,10 +1,12 @@
 export * from './lib/constants';
+export * from './lib/create-logic';
+export * from './lib/create-query';
 export * from './lib/errors';
+export * from './lib/view';
 export * from './lib/gateway';
 export * from './lib/orchestration';
 export * from './lib/pagination';
 export * from './lib/parser';
 export { IExactQuery, IQuery, IQueryModel } from './lib/query';
-export * from './lib/query-helpers';
 export * from './lib/relations';
 export * from './lib/transform';
