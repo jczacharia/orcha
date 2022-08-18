@@ -14,10 +14,7 @@
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "options": {
-        "lintFilePatterns": [
-          "libs/todo/client/shared/**/*.ts",
-          "libs/todo/client/shared/**/*.html"
-        ]
+        "lintFilePatterns": ["libs/todo/client/shared/**/*.ts", "libs/todo/client/shared/**/*.html"]
       }
     }
   },
