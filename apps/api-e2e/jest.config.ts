@@ -1,5 +1,4 @@
 /* eslint-disable */
-/* eslint-disable */
 const jestPresetAngularSerializers = require('jest-preset-angular/build/serializers');
 
 export default {
