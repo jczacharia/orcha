@@ -1,10 +1,8 @@
 import { Collection } from '@mikro-orm/core';
-import { IAnyRelation, IManyToOne, IOneToMany, IOneToOne, IOrchaView } from '@orcha/common';
+import { IAnyRelation, IManyToOne, IOneToMany, IOneToOne } from '@orcha/common';
 
 export type IOrchaMikroOrmEntity<T> = {
-  [K in keyof T]: NonNullable<T[K]> extends IOrchaView<infer R>
-    ? IOrchaView<R>
-    : NonNullable<T[K]> extends object
+  [K in keyof T]: NonNullable<T[K]> extends object
     ?
         | {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -1,5 +1,4 @@
 import { IPagination } from './pagination';
-import { IOrchaView } from './view';
 
 /**
  * Creates a parsed model type based on an Orcha Query type.
@@ -48,9 +47,7 @@ export type IParseArray<T, Q> = T extends Array<infer A> ? IParserObject<A, Q>[]
 export type IParserObject<C, Q> = {
   [K in keyof Q as K extends keyof C ? K : never]: K extends keyof C
     ? Q[K] extends true
-      ? C[K] extends IOrchaView<infer V>
-        ? V
-        : C[K]
+      ? C[K]
       : IParseUndefined<C[K], Q[K]>
     : never;
 };

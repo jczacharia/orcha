@@ -1,4 +1,3 @@
-import { IParser } from './parser';
 import { IExactQuery, IQuery } from './query';
 
 /**

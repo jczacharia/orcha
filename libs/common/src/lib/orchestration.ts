@@ -1,4 +1,6 @@
-import { ORCHA_DTO, ORCHA_FILES, ORCHA_QUERY, ORCHA_TOKEN } from './constants';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { ORCHA_DTO, ORCHA_FILES, ORCHA_TOKEN } from './constants';
 import { IQuery } from './query';
 
 /**
@@ -57,16 +59,10 @@ import { IQuery } from './query';
  * }
  * ```
  */
-export interface IOperation<
-  T,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  D extends Record<string, any> | null = null,
-  F extends File[] | null = null
-> {
-  [ORCHA_QUERY]: IQuery<T>;
+export interface IOperation<T, Q extends IQuery<T>, D = null, F extends File[] | null = null> {
   [ORCHA_TOKEN]: string;
   [ORCHA_DTO]: D | null;
-  [ORCHA_FILES]: F extends null ? null : F;
+  [ORCHA_FILES]: F;
 }
 
 /**
@@ -85,4 +81,4 @@ export interface IOperation<
  * }
  * ```
  */
-export type IOrchestration = Record<keyof unknown, IOperation<unknown>>;
+export type IOrchestration = Record<keyof unknown, IOperation<unknown, any>>;

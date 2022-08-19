@@ -3,6 +3,7 @@
  * This is only a minimal backend to get started.
  */
 
+// import { MikroORM } from '@mikro-orm/core';
 import { MikroORM } from '@mikro-orm/core';
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';

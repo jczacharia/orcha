@@ -15,6 +15,7 @@
     "todo-client-shared": "libs/todo/client/shared",
     "todo-client-shell": "libs/todo/client/shell",
     "todo-client-util": "libs/todo/client/util",
+    "todo-example-app-lib": "libs/todo-example-app-lib",
     "todo-server-domain": "libs/todo/server/domain",
     "todo-server-orcha": "libs/todo/server/orcha",
     "todo-server-services": "libs/todo/server/services",

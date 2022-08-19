@@ -1,34 +1,46 @@
-import { DynamicModule, Global, Module, Type } from '@nestjs/common';
-import { APP_FILTER } from '@nestjs/core';
-import { IGateway, IOrchestration } from '@orcha/common';
+import { DynamicModule, Module, ModuleMetadata, Type } from '@nestjs/common';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
+import { IOrchestration } from '@orcha/common';
 import { OrchaOperationErrorFilter } from './orcha.filter';
+import { OrchaInterceptor } from './orcha.interceptor';
 
 /**
  * Module that imports Orcha NestJS functionalities.
  */
-@Module({
-  providers: [{ provide: APP_FILTER, useClass: OrchaOperationErrorFilter }],
-})
+@Module({})
 export class OrchaNestModule {
   /**
    * Creates an Orcha feature by grouping relevant orchestrations and gateways.
    */
   static forFeature({
     orchestrations,
-    gateways,
+    imports,
+    providers,
   }: {
     orchestrations?: Type<IOrchestration>[];
-    gateways?: Type<IGateway>[];
+    imports?: ModuleMetadata['imports'];
+    providers?: ModuleMetadata['providers'];
   }): DynamicModule {
-    if (orchestrations?.length === 0 && gateways?.length === 0) {
-      throw new Error('Please include at least one Orchestration or Gateway in the OrchaModule.');
+    if (orchestrations?.length === 0) {
+      throw new Error('Must include at least one Orchestration in the OrchaModule.');
     }
 
     return {
       module: OrchaNestModule,
-      providers: gateways,
       controllers: orchestrations,
-      exports: gateways,
+      imports: [...(imports ? imports : [])],
+      providers: [
+        {
+          provide: APP_INTERCEPTOR,
+          useClass: OrchaInterceptor,
+        },
+        {
+          provide: APP_FILTER,
+          useClass: OrchaOperationErrorFilter,
+        },
+        ...(providers ? providers : []),
+      ],
+      exports: providers,
     };
   }
 }

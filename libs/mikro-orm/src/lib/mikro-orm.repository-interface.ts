@@ -9,9 +9,7 @@ import {
   ORCHA_PAGINATE,
   parseQuery,
 } from '@orcha/common';
-import { Socket } from 'socket.io';
 import { createMikroOrmRelationsArray } from './relations.transform';
-import { GatewaysStorage } from './subscription-storage';
 
 /**
  * Inherits all repository functionalities required to perform CRUD operations on an entity.
@@ -21,31 +19,9 @@ export abstract class IOrchaMikroOrmRepository<
   E,
   IdType extends string | number = T extends IOrchaModel<infer ID> ? ID : never
 > {
-  readonly gatewaysStorage = new GatewaysStorage<T, IdType>();
-
   constructor(public repo: EntityRepository<E>, public orm: MikroORM) {}
 
   readonly orcha = {
-    subscriptions: {
-      querySubscription: async <Q extends IQuery<T>>(
-        socket: Socket,
-        channel: string,
-        orchaQuery: IExactQuery<T, Q>,
-        options: FilterQuery<E>
-      ) => {
-        const listener = async () => {
-          const populate = createMikroOrmRelationsArray(orchaQuery);
-          const entities = await this.repo.find(options, { populate });
-          return entities.map((e) => wrap(e).toJSON() as unknown as T);
-        };
-        return this.gatewaysStorage.provisionSubscription({ socket, channel, listener, query: orchaQuery });
-      },
-
-      onDisconnect: (socket: Socket) => {
-        return this.gatewaysStorage.removeListener(socket);
-      },
-    },
-
     findOneOrFail: async <Q extends IQuery<T>>(
       id: IdType,
       orchaQuery: IExactQuery<T, Q>

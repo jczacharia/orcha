@@ -1,9 +1,12 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
-import { ServerOrchaModule } from '@orcha/todo/server/orcha';
-import { environment } from '@orcha/todo/shared/domain';
+import { environment } from '@todo-example-app-lib/shared';
+import { UserModule } from './domain/user/user.module';
 
 @Module({
-  imports: [ServerOrchaModule, MikroOrmModule.forRoot(environment.mikroOrmConfig)],
+  imports: [
+    MikroOrmModule.forRoot(environment.mikroOrmConfig),
+    UserModule,
+  ],
 })
 export class AppModule {}
