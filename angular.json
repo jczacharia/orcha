@@ -11,15 +11,6 @@
     "testing": "libs/testing",
     "todo-app": "apps/todo-app",
     "todo-app-e2e": "apps/todo-app-e2e",
-    "todo-client-domain": "libs/todo/client/domain",
-    "todo-client-shared": "libs/todo/client/shared",
-    "todo-client-shell": "libs/todo/client/shell",
-    "todo-client-util": "libs/todo/client/util",
-    "todo-example-app-lib": "libs/todo-example-app-lib",
-    "todo-server-domain": "libs/todo/server/domain",
-    "todo-server-orcha": "libs/todo/server/orcha",
-    "todo-server-services": "libs/todo/server/services",
-    "todo-shared-domain": "libs/todo/shared/domain",
-    "todo-shared-util": "libs/todo/shared/util"
+    "todo-example-app-lib": "libs/todo-example-app-lib"
   }
 }

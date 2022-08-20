@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@angular/core';
 import { ORCHA_TOKEN_LOCAL_STORAGE_KEY } from './orcha.module';
 
 /**
- * Class to set your Orcha auth token used in each HTTP and Websocket request.
+ * Class to set your Orcha auth token used in each HTTP request.
  */
 @Injectable()
 export class OrchaAuthTokenLocalStorage {

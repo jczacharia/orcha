@@ -1,13 +1,13 @@
 import { INestApplication } from '@nestjs/common';
-import { IUserOrchestration, OrchaTodoExampleAppOrchestrations } from '@orcha/todo/shared/domain';
 import {
   createNestjsTestOrchestration,
   ITestOrchestration,
   TestOperation,
   TestOrchestration,
 } from '@orcha/testing';
+import { IUserOrchestration, USER_ORCHESTRATION_NAME } from '@todo-example-app-lib/shared';
 
-@TestOrchestration(OrchaTodoExampleAppOrchestrations.user)
+@TestOrchestration(USER_ORCHESTRATION_NAME)
 class UserOrchestration implements ITestOrchestration<IUserOrchestration> {
   @TestOperation()
   signUp!: ITestOrchestration<IUserOrchestration>['signUp'];

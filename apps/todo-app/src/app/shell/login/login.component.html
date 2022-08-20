@@ -1,0 +1,8 @@
+<div [formGroup]="loginForm" class="cont">
+  <h2>Login</h2>
+  <input formControlName="email" placeholder="Email" />
+  <input formControlName="password" placeholder="Password" type="password" />
+  <button [disabled]="loginForm.invalid" (click)="login()">Login</button>
+  <br />
+  <button (click)="signUpPage()">No account? Sign Up</button>
+</div>

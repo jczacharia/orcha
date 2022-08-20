@@ -1,11 +1,9 @@
 import { Collection, Entity, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
-import { IOrchaMikroOrmEntity } from '@orcha/mikro-orm';
-import { Tag, Todo, User } from '@todo-example-app-lib/shared';
 import { TagEntity } from '../tag/tag.entity';
 import { TodoEntity } from '../todo/todo.entity';
 
 @Entity()
-export class UserEntity implements IOrchaMikroOrmEntity<User> {
+export class UserEntity {
   @PrimaryKey()
   id!: string;
 
@@ -24,9 +22,14 @@ export class UserEntity implements IOrchaMikroOrmEntity<User> {
   @Property({ nullable: true })
   dateLastLoggedIn?: Date;
 
+  @Property({ name: 'view' })
+  async view() {
+    return { totalTodos: await this.todos.loadCount() };
+  }
+
   @OneToMany(() => TodoEntity, (e) => e.user)
-  todos = new Collection<IOrchaMikroOrmEntity<Todo>>(this);
+  todos = new Collection<TodoEntity>(this);
 
   @OneToMany(() => TagEntity, (e) => e.user)
-  tags = new Collection<IOrchaMikroOrmEntity<Tag>>(this);
+  tags = new Collection<TagEntity>(this);
 }

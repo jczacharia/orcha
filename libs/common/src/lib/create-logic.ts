@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { IParser } from './parser';
 import { IExactQuery, IQuery } from './query';
 
@@ -54,7 +56,6 @@ import { IExactQuery, IQuery } from './query';
  */
 export const createLogic =
   <T>() =>
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   <Q extends IQuery<T>>(query: IExactQuery<T, Q>) =>
   <R, K extends unknown[]>(func: (model: IParser<T, Q>, ...a: K) => R) =>
     func;

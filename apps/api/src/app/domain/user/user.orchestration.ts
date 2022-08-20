@@ -1,4 +1,4 @@
-import { IServerOrchestration, ServerOperation, ServerOrchestration } from '@orcha/nestjs';
+import { IServerOrchestration, Operation, OrchestrationController } from '@orcha/nestjs';
 import { UserService } from '@todo-example-app-lib/server';
 import {
   IUserOrchestration,
@@ -7,26 +7,26 @@ import {
   USER_ORCHESTRATION_NAME,
 } from '@todo-example-app-lib/shared';
 
-@ServerOrchestration(USER_ORCHESTRATION_NAME)
+@OrchestrationController(USER_ORCHESTRATION_NAME)
 export class UserOrchestration implements IServerOrchestration<IUserOrchestration> {
-  constructor(private readonly _user: UserService) {}
+  constructor(private user: UserService) {}
 
-  @ServerOperation()
+  @Operation()
   login(_: string, dto: LoginDto) {
-    return this._user.login(dto);
+    return this.user.login(dto);
   }
 
-  @ServerOperation()
+  @Operation()
   signUp(_: string, dto: SignUpDto) {
-    return this._user.signUp(dto);
+    return this.user.signUp(dto);
   }
 
-  @ServerOperation()
+  @Operation()
   getProfile(token: string) {
-    return this._user.getProfile(token);
+    return this.user.getProfile(token);
   }
 
-  @ServerOperation()
+  @Operation()
   updateProfilePic(token: string, _: null, file: Express.Multer.File[]) {
     console.log(file);
     return {} as any;

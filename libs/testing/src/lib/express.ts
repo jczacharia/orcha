@@ -2,32 +2,22 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import { Type } from '@angular/core';
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { ClientGateway, ClientOperation, ClientOrchestration, ClientSubscription } from '@orcha/angular';
 import {
-  IExactQuery,
-  IGateway,
+  ClientOperation,
+  ClientOrchestration,
   IOperation,
   IOrchestration,
-  IPaginate,
   IParser,
   IQuery,
-  ISubscription,
-  ISubscriptionResult,
   ORCHA,
+  OrchaResponse,
   ORCHA_DTO,
   ORCHA_FILES,
-  ORCHA_PAGINATE,
-  ORCHA_QUERY,
   ORCHA_TOKEN,
-  subscriptionChannelErrorRoute,
-  __ORCHA_GATEWAY_NAME,
   __ORCHA_OPERATIONS,
-  __ORCHA_ORCHESTRATION_NAME,
-  __ORCHA_SUBSCRIPTIONS,
+  __ORCHA_ORCHESTRATION_NAME
 } from '@orcha/common';
 import 'multer';
-import { Observable, Subject } from 'rxjs';
-import * as io from 'socket.io-client';
 import * as request from 'supertest';
 
 type ITestResponse<T> = Omit<request.Response, 'body'> & {
@@ -71,15 +61,8 @@ export const TestOperation = ClientOperation;
  * ```
  */
 export const TestOrchestration = ClientOrchestration;
-export const TestGateway = ClientGateway;
-export const TestSubscription = ClientSubscription;
 
-export type ITestOperation<
-  T,
-  D extends Record<string, unknown> | null = null,
-  F extends File | File[] | null = null
-> = <Q extends IQuery<T>>(
-  query: IExactQuery<T, Q>,
+export type ITestOperation<T, Q extends IQuery<T>, D = null, F extends File[] | null = null> = (
   token: string,
   ...args: D extends null
     ? F extends null
@@ -88,20 +71,12 @@ export type ITestOperation<
     : F extends null
     ? [dto: D]
     : [dto: D, files: F]
-) => Promise<ITestResponse<IParser<T, Q>>>;
+) => Promise<ITestResponse<OrchaResponse<IParser<T, Q>>>>;
 
 export type ITestOrchestration<O extends IOrchestration> = {
-  [K in keyof O]: O[K] extends IOperation<infer T, infer D, infer F> ? ITestOperation<T, D, F> : never;
-};
-
-export type ITestSubscription<T, D> = <Q extends IQuery<T>>(
-  query: Q,
-  token: string,
-  ...dto: D extends null ? [] : [dto: D]
-) => Observable<ISubscriptionResult<T, Q>>;
-
-export type ITestGateway<O extends IGateway> = {
-  [K in keyof O]: O[K] extends ISubscription<infer T, infer D> ? ITestSubscription<T, D> : never;
+  [K in keyof O]: O[K] extends IOperation<infer T, infer Q, infer D, infer F>
+    ? ITestOperation<T, Q, D, F>
+    : never;
 };
 
 /**
@@ -124,24 +99,15 @@ export function createNestjsTestOrchestration<O extends Type<IOrchestration>>(
   }
 
   for (const operation of opsKeys) {
-    const testOperation = async (
-      query: Record<keyof unknown, unknown>,
-      token: string,
-      dto: Record<keyof unknown, unknown>,
-      paginate: IPaginate,
-      files: File[]
-    ) => {
+    const testOperation = async (token: string, dto: Record<keyof unknown, unknown>, files: File[]) => {
       const req = request.default(app.getHttpServer()).post(`/${ORCHA}/${name}/${operation}`);
 
-      req.field(ORCHA_QUERY, JSON.stringify(query));
       req.field(ORCHA_TOKEN, token ?? '');
 
       if (dto) {
         req.field(ORCHA_DTO, JSON.stringify(dto));
       }
-      if (paginate) {
-        req.field(ORCHA_PAGINATE, JSON.stringify(paginate));
-      }
+
       if (files) {
         files.forEach((file) => req.attach(ORCHA_FILES, Buffer.from('dummy'), file.name));
       }
@@ -152,56 +118,4 @@ export function createNestjsTestOrchestration<O extends Type<IOrchestration>>(
     operations[operation] = testOperation;
   }
   return operations;
-}
-
-export function createNestjsTestGateway<G extends Type<IGateway>>(
-  app: INestApplication,
-  gateway: G
-): ITestGateway<InstanceType<G>> {
-  const gatewayName = gateway.prototype[__ORCHA_GATEWAY_NAME]; // aka namespace
-  const wsUrl = `http://localhost:80/${gatewayName}`;
-  const subscriptions = gateway.prototype[__ORCHA_SUBSCRIPTIONS];
-  const subKeys = Object.keys(subscriptions);
-
-  if (subKeys.length > 0) {
-    const socket = (io as any).io(wsUrl);
-
-    socket.on('exception', (d: unknown) => {
-      console.error(d);
-    });
-
-    socket.on('connect', () => {
-      console.log('Orcha Testing Websockets Connected.');
-    });
-
-    for (const channel of subKeys) {
-      const subject = new Subject<any>();
-
-      socket.on(channel, (d: unknown) => {
-        subject.next(d);
-      });
-
-      socket.on(subscriptionChannelErrorRoute(channel), (d: unknown) => {
-        subject.error(d);
-      });
-
-      const clientSubscription: ITestSubscription<{}, {}> = (
-        query: Record<string, unknown>,
-        token: string,
-        dto: unknown
-      ) => {
-        const body: ISubscription<unknown, any> = {
-          [ORCHA_DTO]: dto,
-          [ORCHA_QUERY]: query,
-          [ORCHA_TOKEN]: token,
-        };
-        socket.emit(channel, body);
-        return subject.asObservable();
-      };
-
-      subscriptions[channel] = clientSubscription;
-    }
-  }
-
-  return subscriptions;
 }

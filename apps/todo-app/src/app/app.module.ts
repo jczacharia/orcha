@@ -6,15 +6,19 @@ import { RouterModule } from '@angular/router';
 import { EffectsModule } from '@ngrx/effects';
 import { ActionReducer, StoreModule, USER_PROVIDED_META_REDUCERS } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
-import { ClientSharedDataAccessModule } from '@orcha/todo/client/domain';
-import { environment } from '@orcha/todo/shared/domain';
 import { OrchaAngularModule } from '@orcha/angular';
+import { OrchaOperationError } from '@orcha/common';
+import { environment } from '@todo-example-app-lib/shared';
 import { AppComponent } from './app.component';
+import { DomainModule } from './domain/domain.module';
 
 const ngrxDebugFactory = <T>() => {
   return (reducer: ActionReducer<T>): ActionReducer<T> => {
     return (state, action) => {
       const result = reducer(state, action);
+      if (action.type.includes('@ngrx/')) {
+        return result;
+      }
       console.groupCollapsed(action.type);
       console.log('prev state', state);
       console.log('action', action);
@@ -25,12 +29,24 @@ const ngrxDebugFactory = <T>() => {
   };
 };
 
+const ngrxErrorFactory = <T>() => {
+  return (reducer: ActionReducer<T>): ActionReducer<T> => {
+    return (state, action) => {
+      const result = reducer(state, action);
+      if (action.type.includes('Error')) {
+        alert(`${action.type.split(']')[1]}: ${(action as any).error.error.message}`);
+      }
+      return result;
+    };
+  };
+};
+
 @NgModule({
   declarations: [AppComponent],
   imports: [
     BrowserModule,
     HttpClientModule,
-    ClientSharedDataAccessModule,
+    DomainModule,
     OrchaAngularModule.forRoot({
       apiUrl: environment.apiUrl,
       wsUrl: environment.wsUrl,
@@ -39,7 +55,7 @@ const ngrxDebugFactory = <T>() => {
     RouterModule.forRoot([
       {
         path: '',
-        loadChildren: () => import('@orcha/todo/client/shell').then((m) => m.ClientShellModule),
+        loadChildren: () => import('./shell/shell.module').then((m) => m.ShellModule),
       },
     ]),
     StoreModule.forRoot([], {
@@ -59,12 +75,10 @@ const ngrxDebugFactory = <T>() => {
     BrowserAnimationsModule,
   ],
   providers: [
-    environment.production
-      ? []
-      : {
-          provide: USER_PROVIDED_META_REDUCERS,
-          useFactory: () => [ngrxDebugFactory()],
-        },
+    {
+      provide: USER_PROVIDED_META_REDUCERS,
+      useFactory: () => [ngrxErrorFactory(), ...(environment.production ? [] : [ngrxDebugFactory()])],
+    },
   ],
   bootstrap: [AppComponent],
 })

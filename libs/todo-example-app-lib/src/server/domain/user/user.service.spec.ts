@@ -1,8 +1,8 @@
-import { IParser, parseQuery } from '@orcha/common';
-import { EntireProfile, User } from '@todo-example-app-lib/shared';
+import { parseQuery } from '@orcha/common';
+import { TestOrchaBaseRepositoryAdapter } from '@orcha/testing';
 import { FirebaseScrypt } from 'firebase-scrypt';
-import { IExactQuery, IQuery } from 'libs/common/src/lib/query';
 import { nanoid } from 'nanoid';
+import { EntireProfile, User } from '../../../shared/domain/user';
 import { AuthPort, Sign } from '../auth';
 import { UserRepoPort } from './user-repo.port';
 import { UserService } from './user.service';
@@ -65,21 +65,19 @@ describe('UserService', () => {
     it('should get profile', async () => {
       const { token } = await signUp('a@a.com', 'password');
       const user = await userRepo.findByEmailOrFail('a@a.com');
-      const userParsed = await parseQuery(EntireProfile, user);
+      const userParsed = parseQuery(user, EntireProfile);
       const profile = await userService.getProfile(token);
       expect(userParsed).toMatchObject(profile);
     });
   });
 });
 
-class TestUserRepo implements UserRepoPort {
-  users = new Map<User['id'], User>();
-
+class TestUserRepo extends TestOrchaBaseRepositoryAdapter<User> implements UserRepoPort {
   async findByEmail(email: string): Promise<User | null> {
     let foundUser: User | null = null;
-    for (const user of this.users) {
-      if (user[1].email === email) {
-        foundUser = user[1];
+    for (const user of this.entities.values()) {
+      if (user.email === email) {
+        foundUser = user;
         break;
       }
     }
@@ -87,50 +85,12 @@ class TestUserRepo implements UserRepoPort {
   }
 
   async findByEmailOrFail(email: string): Promise<User> {
-    for (const user of this.users) {
-      if (user[1].email === email) {
-        return user[1];
+    for (const user of this.entities.values()) {
+      if (user.email === email) {
+        return user;
       }
     }
     throw new Error(`User with email "${email}" not found.`);
-  }
-
-  async createUser(email: string, passwordHash: string, salt: string): Promise<User> {
-    const user: User = {
-      id: 'newUserId',
-      email,
-      passwordHash,
-      salt,
-      dateCreated: new Date(),
-      tags: [],
-      todos: [],
-    };
-    this.users.set(user.id, user);
-    return user;
-  }
-
-  async findOne(id: string): Promise<User | null> {
-    return this.users.get(id) ?? null;
-  }
-
-  async findOneOrFail(id: string): Promise<User> {
-    const user = this.users.get(id);
-    if (!user) throw new Error(`User with ID "${id}" not found.`);
-    return user;
-  }
-
-  async updateOnce(id: string, model: Partial<User>): Promise<User> {
-    const user = await this.findOneOrFail(id);
-    this.users.set(id, { ...user, ...model });
-    return this.findOneOrFail(id);
-  }
-
-  async orchaFindOne<Q extends IQuery<User>>(
-    id: string,
-    query: IExactQuery<User, Q>
-  ): Promise<IParser<User, IExactQuery<User, Q>>> {
-    const user = await this.findOneOrFail(id);
-    return parseQuery(query, user);
   }
 }
 

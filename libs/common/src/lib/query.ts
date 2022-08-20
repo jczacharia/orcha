@@ -1,4 +1,4 @@
-import { IPaginate, IPagination } from './pagination';
+import { IPagination } from './pagination';
 import { IAnyRelation } from './relations';
 
 /**
@@ -9,7 +9,7 @@ export type IQueryModel = { [k: string]: true | IQueryModel };
 /**
  * Create a primitive Orcha Query from a model.
  */
-export type IQuery<T> = T extends IPagination<infer P> ? IQueryArray<P> & IPaginate : IQueryArray<T>;
+export type IQuery<T> = T extends IPagination<infer P> ? IQueryArray<P> : IQueryArray<T>;
 
 type IQueryArray<T> = T extends Array<infer A> ? IQueryUndefined<A> : IQueryUndefined<T>;
 
@@ -38,11 +38,7 @@ export type IQueryObject<T> = {
 /**
  * Utility type or an Orcha Query that only allows properties that are specified in the model `T`.
  */
-export type IExactQuery<T, Q> = T extends IPagination<infer P>
-  ? IExactQueryArray<P & IPaginate, Q> & IPaginate
-  : IExactQueryArray<T, Q>;
-
-type IExactQueryArray<T, Q> = T extends Array<infer A> ? IExactQueryObject<A, Q> : IExactQueryObject<T, Q>;
+export type IExactQuery<T, Q> = T extends Array<infer A> ? IExactQueryObject<A, Q> : IExactQueryObject<T, Q>;
 
 type IExactQueryObject<T, Q> = Q & {
   [K in keyof Q]: K extends keyof T ? IExactQuery<T[K], Q[K]> : never;

@@ -1,31 +1,24 @@
+import 'reflect-metadata';
+
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpEventType } from '@angular/common/http';
 import { InjectionToken, Injector, ModuleWithProviders, NgModule, Provider, Type } from '@angular/core';
 import {
-  IGateway,
   IOrchestration,
-  ISubscription,
   ORCHA,
   ORCHA_DTO,
   ORCHA_FILES,
-  ORCHA_QUERY,
   ORCHA_TOKEN,
-  subscriptionChannelErrorRoute,
-  __ORCHA_GATEWAY_NAME,
   __ORCHA_OPERATIONS,
   __ORCHA_ORCHESTRATION_NAME,
-  __ORCHA_SUBSCRIPTIONS,
 } from '@orcha/common';
-import 'reflect-metadata';
-import { filter, map, Subject } from 'rxjs';
-import io, { Socket } from 'socket.io-client';
+import { filter, map } from 'rxjs';
 import { OrchaAuthTokenLocalStorage } from './auth-token.storage';
-import { IClientOperation, IClientSubscription } from './client';
+import { IClientOperation } from './client';
 
 export const ORCHA_TOKEN_LOCAL_STORAGE_KEY = new InjectionToken<string>('ORCHA_TOKEN_LOCAL_STORAGE_KEY');
 
 const ORCHA_API_URL = new InjectionToken<string>('ORCHA_API_URL');
-const ORCHA_WS_URL = new InjectionToken<string>('ORCHA_WS_URL');
 const ORCHA_TOKEN_RETRIEVER = new InjectionToken<() => string>('ORCHA_TOKEN_RETRIEVER');
 
 export function __getAuthTokenFactory(storage: OrchaAuthTokenLocalStorage) {
@@ -49,20 +42,15 @@ export class OrchaAngularFeatureModule {
   imports: [CommonModule],
 })
 export class OrchaAngularModule {
-  static socket: typeof Socket | null = null;
-
   /**
    * Initializes Orcha's core Angular functionalities.
    */
   static forRoot({
     apiUrl,
-    wsUrl,
     authTokenLocalStorageKey,
   }: {
     /** The base URL of your Orcha server for HTTP requests. */
     apiUrl: string;
-    /** The base URL of your Orcha server for Websocket requests. */
-    wsUrl: string;
     /** Unique key name of where your auth token is stored in local storage. */
     authTokenLocalStorageKey: string;
   }): ModuleWithProviders<OrchaAngularRootModule> {
@@ -73,10 +61,6 @@ export class OrchaAngularModule {
         {
           provide: ORCHA_API_URL,
           useValue: apiUrl,
-        },
-        {
-          provide: ORCHA_WS_URL,
-          useValue: wsUrl,
         },
         {
           provide: ORCHA_TOKEN_LOCAL_STORAGE_KEY,
@@ -96,10 +80,8 @@ export class OrchaAngularModule {
    */
   static forFeature({
     orchestrations,
-    gateways,
   }: {
     orchestrations?: Type<IOrchestration>[];
-    gateways?: Type<IGateway>[];
   }): ModuleWithProviders<OrchaAngularFeatureModule> {
     const ors: Provider[] =
       orchestrations?.map(
@@ -110,18 +92,9 @@ export class OrchaAngularModule {
         })
       ) ?? [];
 
-    const gates =
-      gateways?.map(
-        (s): Provider => ({
-          provide: s,
-          useFactory: (injector: Injector) => OrchaAngularModule.createGateway(injector, s),
-          deps: [Injector],
-        })
-      ) ?? [];
-
     return {
       ngModule: OrchaAngularFeatureModule,
-      providers: [...ors, ...gates],
+      providers: ors,
     };
   }
 
@@ -141,13 +114,13 @@ export class OrchaAngularModule {
     const apiUrl = injector.get(ORCHA_API_URL);
     const http = injector.get(HttpClient);
     for (const funcName of opsKeys) {
-      const clientOperation: IClientOperation<Record<string, unknown>, Record<string, unknown>, File[]> = (
-        query: Record<string, unknown>,
-        dto: Record<string, unknown>,
-        files: File[]
-      ) => {
+      const clientOperation: IClientOperation<
+        Record<string, unknown>,
+        any,
+        Record<string, unknown>,
+        File[]
+      > = (dto: Record<string, unknown>, files: File[]) => {
         const body = new FormData();
-        body.set(ORCHA_QUERY, JSON.stringify(query));
 
         const token = injector.get(ORCHA_TOKEN_RETRIEVER)();
         body.set(ORCHA_TOKEN, token);
@@ -155,9 +128,11 @@ export class OrchaAngularModule {
         if (dto) {
           body.set(ORCHA_DTO, JSON.stringify(dto));
         }
+
         if (files) {
           files.forEach((file) => body.append(ORCHA_FILES, file, file.name));
         }
+
         const url = `${apiUrl}/${ORCHA}/${name}/${funcName}`;
         return (
           http
@@ -188,56 +163,5 @@ export class OrchaAngularModule {
       operations[funcName] = clientOperation;
     }
     return operations;
-  }
-
-  static createGateway(injector: Injector, gateway: Type<IGateway>) {
-    const wsUrl = injector.get(ORCHA_WS_URL);
-    const gatewayName: string = gateway.prototype[__ORCHA_GATEWAY_NAME];
-    const subscriptions = gateway.prototype[__ORCHA_SUBSCRIPTIONS];
-    const subKeys = Object.keys(subscriptions);
-
-    if (subKeys.length > 0) {
-      const socket = io(`${wsUrl}/${gatewayName}`);
-
-      socket.on('exception', (d: unknown) => {
-        console.error(d);
-      });
-
-      socket.on('connect', () => {
-        console.log('Orcha Websockets Connected.');
-      });
-
-      for (const channel of subKeys) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const subject = new Subject<any>();
-
-        socket.on(channel, (d: unknown) => {
-          subject.next(d);
-        });
-
-        socket.on(subscriptionChannelErrorRoute(channel), (d: unknown) => {
-          subject.error(d);
-        });
-
-        const clientSubscription: IClientSubscription<Record<string, unknown>, Record<string, unknown>> = (
-          query: Record<string, unknown>,
-          dto: Record<string, unknown>
-        ) => {
-          const token = injector.get(ORCHA_TOKEN_RETRIEVER)();
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const body: ISubscription<unknown, any> = {
-            [ORCHA_DTO]: dto,
-            [ORCHA_QUERY]: query,
-            [ORCHA_TOKEN]: token,
-          };
-          socket.emit(channel, body);
-          return subject.asObservable();
-        };
-
-        subscriptions[channel] = clientSubscription;
-      }
-    }
-
-    return subscriptions;
   }
 }

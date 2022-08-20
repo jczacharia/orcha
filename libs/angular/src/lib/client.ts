@@ -1,26 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { HttpEvent } from '@angular/common/http';
-import {
-  IExactQuery,
-  IGateway,
-  IOperation,
-  IOrchestration,
-  IParser,
-  IQuery,
-  ISubscription,
-  ISubscriptionResult,
-} from '@orcha/common';
+import { IOperation, IOrchestration, IParser, IQuery, OrchaResponse } from '@orcha/common';
 import { Observable } from 'rxjs';
 
 /**
  * Implements a Client Operation from an `IOperation`.
  */
-export type IClientOperation<
-  T,
-  D extends Record<string, any> | null = null,
-  F extends File[] | null = null
-> = <Q extends IQuery<T>>(
-  query: IExactQuery<T, Q>,
+export type IClientOperation<T, Q extends IQuery<T>, D = null, F extends File | File[] | null = null> = (
   ...args: D extends null
     ? F extends null
       ? []
@@ -28,22 +14,29 @@ export type IClientOperation<
     : F extends null
     ? [dto: D]
     : [dto: D, files: F]
-) => Observable<F extends null ? IParser<T, Q> : HttpEvent<IParser<T, Q>>>;
+) => Observable<IResponse<T, Q, F>>;
+
+type IResponse<T, Q, F> = F extends null
+  ? OrchaResponse<AllDatesToStrings<IParser<T, Q>>>
+  : HttpEvent<OrchaResponse<AllDatesToStrings<IParser<T, Q>>>>;
+
+export type IExtractOperationReturnSchema<R> = R extends IOperation<infer T, infer Q, any, any>
+  ? AllDatesToStrings<IParser<T, Q>>
+  : unknown;
+
+type AllDatesToStrings<T> = {
+  [K in keyof T]: NonNullable<T[K]> extends Date
+    ? (null extends T[K] ? string | null : string) | (undefined extends T[K] ? string | undefined : string)
+    : T[K] extends object
+    ? AllDatesToStrings<T[K]>
+    : T[K];
+};
 
 /**
  * Implements a Client Orchestration from an `IOrchestration`.
  */
 export type IClientOrchestration<O extends IOrchestration> = {
-  [K in keyof O]: O[K] extends IOperation<infer T, infer D, infer F> ? IClientOperation<T, D, F> : never;
-};
-
-export type IClientSubscription<T, D> = <Q extends IQuery<T>>(
-  query: IExactQuery<T, Q>,
-  ...dto: D extends null ? [dto?: undefined | null] : [D]
-) => Observable<ISubscriptionResult<T, Q>>;
-
-export type IClientGateway<Gateways extends IGateway> = {
-  [K in keyof Gateways]: Gateways[K] extends ISubscription<infer T, infer Props>
-    ? IClientSubscription<T, Props>
+  [K in keyof O]: O[K] extends IOperation<infer T, infer Q, infer D, infer F>
+    ? IClientOperation<T, Q, D, F>
     : never;
 };

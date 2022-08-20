@@ -1,14 +1,16 @@
 import { INestApplication } from '@nestjs/common';
-import { ITodoOrchestration, OrchaTodoExampleAppOrchestrations } from '@orcha/todo/shared/domain';
 import {
   createNestjsTestOrchestration,
   ITestOrchestration,
   TestOperation,
   TestOrchestration,
 } from '@orcha/testing';
+import { ITodoOrchestration, TODO_ORCHESTRATION_NAME } from '@todo-example-app-lib/shared';
 
-@TestOrchestration(OrchaTodoExampleAppOrchestrations.todo)
+@TestOrchestration(TODO_ORCHESTRATION_NAME)
 class TodoOrchestration implements ITestOrchestration<ITodoOrchestration> {
+  @TestOperation()
+  getMine!: ITestOrchestration<ITodoOrchestration>['getMine'];
   @TestOperation()
   create!: ITestOrchestration<ITodoOrchestration>['create'];
   @TestOperation()
@@ -20,7 +22,7 @@ class TodoOrchestration implements ITestOrchestration<ITodoOrchestration> {
   @TestOperation()
   untag!: ITestOrchestration<ITodoOrchestration>['untag'];
   @TestOperation()
-  paginate!: ITestOrchestration<ITodoOrchestration>['paginate'];
+  paginateAll!: ITestOrchestration<ITodoOrchestration>['paginateAll'];
 }
 
 export function createTodoOrchestration(app: INestApplication) {

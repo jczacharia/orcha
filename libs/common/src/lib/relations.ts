@@ -1,4 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+
+import { ORCHA_ID } from './constants';
 
 /**
  * Extends your entity model with the Orcha `id` key.
@@ -12,7 +15,7 @@
  * }
  * ```
  */
-export type IOrchaModel<IdType extends string | number> = { id: IdType };
+export type IOrchaModel<IdType extends string | number> = { [ORCHA_ID]: IdType };
 
 /**
  * Creates a One-to-One relationship with another entity.
@@ -79,7 +82,7 @@ export type IAnyRelation<Relation, SelfKey extends keyof Relation> =
 /**
  * Filter an entity to only have its fields (no relations).
  */
-export type IProps<T> = {
+export type IProps<T extends IOrchaModel<any>> = {
   [K in keyof T as NonNullable<T[K]> extends object
     ? {
         [_ in keyof NonNullable<T[K]>]: NonNullable<T[K]> extends IAnyRelation<infer R, infer _>
@@ -94,7 +97,7 @@ export type IProps<T> = {
 /**
  * Filter an entity to only have relations (no fields).
  */
-export type IRelations<T> = {
+export type IRelations<T extends IOrchaModel<any>> = {
   [K in keyof T as NonNullable<T[K]> extends object
     ? {
         [_ in keyof NonNullable<T[K]>]: NonNullable<T[K]> extends IAnyRelation<infer R, infer _>
@@ -107,20 +110,24 @@ export type IRelations<T> = {
 };
 
 /**
- * Utility type when upserting an entity to a database function.
+ * Utility type when creating an entity to a repository function.
  */
-export type IUpsertEntity<T> = {
-  [K in keyof T]: NonNullable<T[K]> extends object
+export type ICreateEntity<T extends IOrchaModel<any>> = {
+  [K in keyof T]: K extends typeof ORCHA_ID
+    ? T[typeof ORCHA_ID]
+    : NonNullable<T[K]> extends object
     ? {
         [_ in keyof NonNullable<T[K]>]: NonNullable<T[K]> extends IAnyRelation<infer R, infer _>
           ? Required<T> extends Required<R>
             ? T[K]
             : T[K] extends Array<infer A>
             ? A extends IOrchaModel<infer IdType>
-              ? (IUpsertEntity<A> | IdType)[]
+              ? (ICreateEntity<A> | IdType)[]
               : never
             : NonNullable<T[K]> extends IOrchaModel<infer IdType>
-            ? IUpsertEntity<T[K]> | IdType | { id: IdType }
+            ? T[K] extends IOrchaModel<any>
+              ? ICreateEntity<T[K]> | IdType | { id: IdType }
+              : never
             : never
           : T[K];
       }[keyof NonNullable<T[K]>]
@@ -128,6 +135,6 @@ export type IUpsertEntity<T> = {
 };
 
 /**
- * Utility type when updating an entity to a database function.
+ * Utility type when updating an entity to a repository function.
  */
-export type IUpdateEntity<T> = Omit<Partial<IUpsertEntity<T>>, 'id'>;
+export type IUpdateEntity<T extends IOrchaModel<any>> = Omit<Partial<ICreateEntity<T>>, typeof ORCHA_ID>;

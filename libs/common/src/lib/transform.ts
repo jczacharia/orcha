@@ -5,6 +5,7 @@ import { IExactQuery, IQuery } from './query';
  * Manually parse an Orcha Query.
  *
  * This will recursively go through all `entities` and remove values that are not specified in the query.
+ * (The object returned is a new object instance.)
  *
  * @example
  * ```ts
@@ -14,7 +15,7 @@ import { IExactQuery, IQuery } from './query';
  *     name: true,
  *   },
  * });
- * const parsed = parseQuery(query, [
+ * const parsed = parseQuery([
  *   {
  *     id: 1,
  *     extraField: 'field',
@@ -31,7 +32,7 @@ import { IExactQuery, IQuery } from './query';
  *       initial: 'L',
  *     },
  *   },
- * ]);
+ * ], query);
  *
  * // output:
  * // [
@@ -52,16 +53,11 @@ import { IExactQuery, IQuery } from './query';
  *
  * @param query Reference Query.
  * @param entities Objects to parse.
+ * @returns A parsed objected based on the query. The object returned is a new object instance.
  */
-export async function parseQuery<T, Q extends IQuery<T>>(
-  query: IExactQuery<T, Q>,
-  entities: T
-): Promise<IParser<T, Q>>;
-export async function parseQuery<T, Q extends IQuery<T>>(
-  query: IExactQuery<T, Q>,
-  entities: T[]
-): Promise<IParser<T[], Q>>;
-export async function parseQuery<T, Q extends IQuery<T>>(query: IExactQuery<T, Q>, entities: T | T[]) {
+export function parseQuery<T, Q extends IQuery<T>>(entities: T, query: IExactQuery<T, Q>): IParser<T, Q>;
+export function parseQuery<T, Q extends IQuery<T>>(entities: T[], query: IExactQuery<T, Q>): IParser<T[], Q>;
+export function parseQuery<T, Q extends IQuery<T>>(entities: T | T[], query: IExactQuery<T, Q>) {
   if (!entities) {
     return null;
   }
@@ -70,19 +66,17 @@ export async function parseQuery<T, Q extends IQuery<T>>(query: IExactQuery<T, Q
     query = query[0];
   }
 
-  const remove = async (e: T) => {
+  const remove = (e: T) => {
     const qKeys = Object.keys(query) as (keyof T)[];
     for (const k of Object.keys(e) as (keyof T)[]) {
       if (!qKeys.includes(k)) {
         delete e[k];
-      } else if (e[k] instanceof Promise) {
-        e[k] = await e[k];
       }
     }
 
     for (const [k, q] of Object.entries(query as object)) {
       if (typeof q === 'object') {
-        await parseQuery(q, e[k as keyof T]);
+        parseQuery(e[k as keyof T], q);
       }
     }
 
@@ -90,10 +84,12 @@ export async function parseQuery<T, Q extends IQuery<T>>(query: IExactQuery<T, Q
   };
 
   if (Array.isArray(entities)) {
-    entities = await Promise.all(entities.map((e) => remove(e)));
+    entities = [...entities];
+    entities = entities.map((e) => remove(e));
     return entities as unknown as IParser<T[], Q>;
   } else {
-    entities = await remove(entities);
+    entities = { ...entities };
+    entities = remove(entities);
     return entities as unknown as IParser<T, Q>;
   }
 }

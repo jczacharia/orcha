@@ -1,3 +1,4 @@
+import { IExactQuery, IQuery } from '@orcha/common';
 import { nanoid } from 'nanoid';
 import { EntireProfile, LoginDto, SignUpDto, User } from '../../../shared/domain/user';
 import { AuthPort } from '../auth/auth.port';
@@ -18,8 +19,7 @@ export class UserService {
       throw new Error(`Incorrect password.`);
     }
 
-    user.dateLastLoggedIn = new Date();
-    await this.userRepo.updateProps(user.id, { dateLastLoggedIn: new Date() });
+    await this.userRepo.updateOne(user.id, { dateLastLoggedIn: new Date() }, {});
 
     const token = this.auth.sign({ userId: user.id });
     return { token };
@@ -35,15 +35,25 @@ export class UserService {
     const salt = nanoid();
     const passwordHash = await this.auth.hash(password, salt);
 
-    const user = await this.userRepo.createUser(email, passwordHash, salt);
+    const user = await this.userRepo.createOne(
+      {
+        id: nanoid(),
+        dateCreated: new Date(),
+        email,
+        passwordHash,
+        salt,
+        tags: [],
+        todos: [],
+      },
+      { id: true }
+    );
 
     const token = this.auth.sign({ userId: user.id });
     return { token };
   }
 
   async getProfile(token: string) {
-    const userId = await this.verifyUserToken(token);
-    return this.userRepo.orchaFindOneOrFail(userId, EntireProfile);
+    return this.verifyUserToken(token, EntireProfile);
   }
 
   /**
@@ -51,7 +61,7 @@ export class UserService {
    * @param token User auth token.
    * @returns The user entity associated with the token.
    */
-  async verifyUserToken(token?: string) {
+  async verifyUserToken<Q extends IQuery<User>>(token: string, query: IExactQuery<User, Q>) {
     if (!token) {
       throw new Error(`Unable to verify authentication token. No Token given.`);
     }
@@ -69,8 +79,7 @@ export class UserService {
     }
 
     try {
-      await this.userRepo.findOneOrFail(userId);
-      return userId;
+      return await this.userRepo.findOneOrFail(userId, query);
     } catch (error) {
       console.error(error);
       throw new Error(`Auth token validation failed: No user found with id "${userId}".`);

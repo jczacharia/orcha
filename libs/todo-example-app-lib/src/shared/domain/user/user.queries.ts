@@ -3,6 +3,7 @@ import { User } from './user.model';
 
 export const EntireProfile = createQuery<User>()({
   id: true,
+  email: true,
   dateCreated: true,
   dateLastLoggedIn: true,
   tags: {

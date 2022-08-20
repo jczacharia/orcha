@@ -23,42 +23,19 @@
     "esModuleInterop": true,
     "target": "es2015",
     "module": "esnext",
-    "lib": [
-      "es2019",
-      "dom"
-    ],
+    "lib": ["es2019", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@orcha/angular": [
-        "libs/angular/src/index.ts"
-      ],
-      "@orcha/common": [
-        "libs/common/src/index.ts"
-      ],
-      "@orcha/mikro-orm": [
-        "libs/mikro-orm/src/index.ts"
-      ],
-      "@orcha/nestjs": [
-        "libs/nestjs/src/index.ts"
-      ],
-      "@orcha/testing": [
-        "libs/testing/src/index.ts"
-      ],
-      "@todo-example-app-lib/client": [
-        "libs/todo-example-app-lib/src/client/index.ts"
-      ],
-      "@todo-example-app-lib/server": [
-        "libs/todo-example-app-lib/src/server/index.ts"
-      ],
-      "@todo-example-app-lib/shared": [
-        "libs/todo-example-app-lib/src/shared/index.ts"
-      ]
+      "@orcha/angular": ["libs/angular/src/index.ts"],
+      "@orcha/common": ["libs/common/src/index.ts"],
+      "@orcha/mikro-orm": ["libs/mikro-orm/src/index.ts"],
+      "@orcha/nestjs": ["libs/nestjs/src/index.ts"],
+      "@orcha/testing": ["libs/testing/src/index.ts"],
+      "@todo-example-app-lib/server": ["libs/todo-example-app-lib/src/server/index.ts"],
+      "@todo-example-app-lib/shared": ["libs/todo-example-app-lib/src/shared/index.ts"]
     }
   },
-  "exclude": [
-    "node_modules",
-    "tmp"
-  ]
+  "exclude": ["node_modules", "tmp"]
 }
