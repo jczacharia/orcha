@@ -1,4 +1,12 @@
-import { EntityRepository, FilterQuery, FindOptions, MikroORM, wrap } from '@mikro-orm/core';
+import {
+  EntityRepository,
+  FilterQuery,
+  FindOneOptions,
+  FindOneOrFailOptions,
+  FindOptions,
+  MikroORM,
+  wrap,
+} from '@mikro-orm/core';
 import {
   ICreateEntity,
   IExactQuery,
@@ -12,6 +20,7 @@ import {
   OrchaBaseRepositoryPort,
   parseQuery,
 } from '@orcha/common';
+import { IOrchaMikroOrmEntity } from './mikro-orm-orcha-entity';
 import { createMikroOrmPopulateArray } from './populate';
 
 /**
@@ -19,7 +28,7 @@ import { createMikroOrmPopulateArray } from './populate';
  */
 export abstract class IOrchaMikroOrmRepository<
   T extends IOrchaModel<IdType>,
-  E,
+  E extends IOrchaMikroOrmEntity<T>,
   IdType extends string | number = T extends IOrchaModel<infer ID> ? ID : never
 > implements OrchaBaseRepositoryPort<T, IdType>
 {
@@ -29,28 +38,32 @@ export abstract class IOrchaMikroOrmRepository<
     const populate = createMikroOrmPopulateArray(query);
     const entity = await this.repo.findOne({ id } as FilterQuery<E>, { populate });
     const json = entity ? wrap(entity).toJSON() : null;
-    return parseQuery<any, any>(json, query) as Promise<IParser<T, Q> | null>;
+    return parseQuery<any, any>(json, query) as IParser<T, Q> | null;
   }
 
   async findOneOrFail<Q extends IQuery<T>>(id: IdType, query: IExactQuery<T, Q>): Promise<IParser<T, Q>> {
     const populate = createMikroOrmPopulateArray(query);
     const entity = await this.repo.findOneOrFail({ id } as FilterQuery<E>, { populate });
     const json = wrap(entity).toJSON();
-    return parseQuery<any, any>(json, query) as Promise<IParser<T, Q>>;
+    return parseQuery<any, any>(json, query) as IParser<T, Q>;
   }
 
   async findMany<Q extends IQuery<T>>(ids: IdType[], query: IExactQuery<T, Q>): Promise<IParser<T[], Q>> {
     const populate = createMikroOrmPopulateArray(query);
     const entities = await this.repo.find({ id: { $in: ids } } as FilterQuery<E>, { populate });
     const json = entities.map((e) => wrap(e).toJSON());
-    return parseQuery<any, any>(json, query) as Promise<IParser<T[], Q>>;
+    return parseQuery<any, any>(json, query) as IParser<T[], Q>;
   }
 
   async findAll<Q extends IQuery<T>>(query: IExactQuery<T, Q>): Promise<IParser<T[], Q>> {
     const populate = createMikroOrmPopulateArray(query);
     const entities = await this.repo.findAll({ populate });
     const json = entities.map((e) => wrap(e).toJSON());
-    return parseQuery<any, any>(json, query) as Promise<IParser<T[], Q>>;
+    return parseQuery<any, any>(json, query) as IParser<T[], Q>;
+  }
+
+  async countAll(): Promise<number> {
+    return this.repo.count();
   }
 
   async createOne<Q extends IQuery<T>>(
@@ -68,7 +81,7 @@ export abstract class IOrchaMikroOrmRepository<
   ): Promise<IParser<T[], Q>> {
     const entities = models.map((m) => this.repo.create(m as any));
     await this.repo.persistAndFlush(entities);
-    const ids = models.map((m) => m.id);
+    const ids = models.map((m) => m.id as IdType);
     return this.findMany(ids, query);
   }
 
@@ -135,30 +148,59 @@ export abstract class IOrchaMikroOrmRepository<
 
   /** Helpers for advance querying. */
   readonly orchaMikro = {
+    findOneOrFail: async <Q extends IQuery<T>>(
+      filter: FilterQuery<E>,
+      query: IExactQuery<T, Q>,
+      options?: Omit<FindOneOrFailOptions<E, any>, 'populate'>
+    ): Promise<IParser<T, Q>> => {
+      const populate = createMikroOrmPopulateArray(query);
+      const dbRes = await this.repo.findOneOrFail(filter, { ...options, populate });
+      const json = wrap(dbRes).toJSON();
+      return parseQuery<any, any>(json, query) as IParser<T, Q>;
+    },
+
+    findOne: async <Q extends IQuery<T>>(
+      filter: FilterQuery<E>,
+      query: IExactQuery<T, Q>,
+      options?: Omit<FindOneOptions<E, any>, 'populate'>
+    ): Promise<IParser<T, Q> | null> => {
+      const populate = createMikroOrmPopulateArray(query);
+      const dbRes = await this.repo.findOne(filter, { ...options, populate });
+      const json = dbRes ? wrap(dbRes).toJSON() : null;
+      return parseQuery<any, any>(json, query) as IParser<T, Q> | null;
+    },
+
     find: async <Q extends IQuery<T>>(
-      orchaQuery: IExactQuery<T, Q>,
-      query: FilterQuery<E>,
-      options?: Omit<FindOptions<E>, 'populate'>
+      filter: FilterQuery<E>,
+      query: IExactQuery<T, Q>,
+      options?: Omit<FindOptions<E, any>, 'populate'>
     ): Promise<IParser<T[], Q>> => {
-      const populate = createMikroOrmPopulateArray(orchaQuery) as any;
-      const entities = await this.repo.find(query, { populate, ...options });
+      const populate = createMikroOrmPopulateArray(query) as any;
+      const entities = await this.repo.find(filter, { ...options, populate });
       const json = entities.map((e) => wrap(e).toJSON());
-      return parseQuery<any, any>(orchaQuery, json) as Promise<IParser<T[], Q>>;
+      return parseQuery<any, any>(json, query) as IParser<T[], Q>;
+    },
+
+    findAndCount: async <Q extends IQuery<T>>(
+      filter: FilterQuery<E>,
+      query: IExactQuery<T, Q>,
+      options?: Omit<FindOptions<E, any>, 'populate'>
+    ): Promise<[IParser<T[], Q>, number]> => {
+      const populate = createMikroOrmPopulateArray(query) as any;
+      const [entities, count] = await this.repo.findAndCount(filter, { ...options, populate });
+      const json = entities.map((e) => wrap(e).toJSON());
+      return [parseQuery<any, any>(json, query) as IParser<T[], Q>, count];
     },
 
     paginate: async <Q extends IQuery<T>>(
-      paginate: IPaginate,
-      orchaQuery: IExactQuery<T, Q> & IPaginate,
-      options?: FilterQuery<E>
+      filter: FilterQuery<E>,
+      query: IExactQuery<T, Q>,
+      options?: Omit<FindOptions<E, any>, 'populate'>
     ): Promise<IPagination<IParser<T, Q>>> => {
-      const populate = createMikroOrmPopulateArray(orchaQuery as IExactQuery<T, Q>);
-      const [entities, count] = await this.repo.findAndCount(options || ({} as FilterQuery<E>), {
-        populate,
-        limit: paginate.limit,
-        offset: paginate.offset,
-      });
+      const populate = createMikroOrmPopulateArray(query as IExactQuery<T, Q>);
+      const [entities, count] = await this.repo.findAndCount(filter, { ...options, populate });
       const json = entities.map((e) => wrap(e).toJSON());
-      return { items: parseQuery<any, any>(json, orchaQuery) as any, count };
+      return { items: parseQuery<any, any>(json, query) as any, count };
     },
   };
 }

@@ -12,6 +12,8 @@ export abstract class OrchaBaseRepositoryPort<
   abstract findMany<Q extends IQuery<T>>(ids: IdType[], query: IExactQuery<T, Q>): Promise<IParser<T[], Q>>;
   abstract findAll<Q extends IQuery<T>>(query: IExactQuery<T, Q>): Promise<IParser<T[], Q>>;
 
+  abstract countAll(): Promise<number>;
+
   abstract createOne<Q extends IQuery<T>>(
     model: ICreateEntity<T>,
     query: IExactQuery<T, Q>

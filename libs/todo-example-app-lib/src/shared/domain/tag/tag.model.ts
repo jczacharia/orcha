@@ -7,5 +7,4 @@ export interface Tag extends IOrchaModel<string> {
   dateCreated: Date | string;
   dateUpdated: Date | string;
   user: IManyToOne<User, 'tags'>;
-  taggedTodos: IOneToMany<TaggedTodo, 'tag'>;
 }

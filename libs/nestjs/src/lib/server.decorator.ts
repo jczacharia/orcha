@@ -9,7 +9,7 @@ import {
   UseInterceptors,
   ValidationError,
   ValidationPipe,
-  ValidationPipeOptions,
+  ValidationPipeOptions
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ORCHA, ORCHA_DTO, ORCHA_FILES, ORCHA_TOKEN } from '@orcha/common';
@@ -45,7 +45,7 @@ import { ORCHA, ORCHA_DTO, ORCHA_FILES, ORCHA_TOKEN } from '@orcha/common';
  *
  * @param name Name of orchestration class.
  */
-export function OrchestrationController(name: string | number): ClassDecorator {
+export function ServerOrchestrationController(name: string | number): ClassDecorator {
   return function (target: Function) {
     Controller(`${ORCHA}/${name}`)(target);
   };
@@ -110,7 +110,7 @@ const validationPipeOptions: ValidationPipeOptions = {
  * }
  * ```
  */
-export function Operation(): MethodDecorator {
+export function ServerOperation(): MethodDecorator {
   return function <T>(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) {
     Body(ORCHA_TOKEN)(target, propertyKey, 0);
     Body(ORCHA_DTO, { transform }, new ValidationPipe(validationPipeOptions))(target, propertyKey, 1);

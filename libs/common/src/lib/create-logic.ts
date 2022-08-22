@@ -37,7 +37,7 @@ import { IExactQuery, IQuery } from './query';
  * You can also compare two entities using currying.
  * @example
  * ```typescript
- * export const calcCompareTwoVouchers = createLogic<Voucher>()({ id: true })(
+ * export const calcCompareTwoVouchers = createLogic<Voucher>()({})(
  *   (todo) => (compare: typeof todo) => todo.id === compare.id
  * );
  * const compareTwoVouchers = calcCompareTwoVouchers({ id: '1' })({ id: '1' }); // true
@@ -46,8 +46,8 @@ import { IExactQuery, IQuery } from './query';
  *
  * You can also curry `createLogic` functions!
  * @example
- * export const calcUserHasVoucher = createLogic<Voucher>()({ id: true })((voucher) =>
- *   createLogic<User>()({ vouchers: { id: true } })((user) => user.vouchers.some((v) => v.id === voucher.id))
+ * export const calcUserHasVoucher = createLogic<Voucher>()({})((voucher) =>
+ *   createLogic<User>()({ vouchers: {} })((user) => user.vouchers.some((v) => v.id === voucher.id))
  * );
  * const userHasVoucher1 = calcUserHasVoucher({ id: 'voucherId' })({ vouchers: [{ id: 'voucherId' }] }); // true
  * const userHasVoucher2 = calcUserHasVoucher({ id: 'voucherId' })({ vouchers: [{ id: 'otherId' }] }); // false

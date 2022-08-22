@@ -26,7 +26,7 @@ export const TagReducer = createReducer(
   on(TagActions.readTagsSuccess, (state, { tags }): TagState => {
     return {
       ...state,
-      tags: tagsAdapter.upsertMany(tags, state.tags),
+      tags: tagsAdapter.setAll(tags, state.tags),
       loaded: true,
     };
   })

@@ -1,9 +1,11 @@
 import { Collection, Entity, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
+import { IOrchaMikroOrmEntity } from '@orcha/mikro-orm';
+import { User } from '@todo-example-app-lib/shared';
 import { TagEntity } from '../tag/tag.entity';
 import { TodoEntity } from '../todo/todo.entity';
 
 @Entity()
-export class UserEntity {
+export class UserEntity implements IOrchaMikroOrmEntity<User> {
   @PrimaryKey()
   id!: string;
 

@@ -112,27 +112,28 @@ export type IRelations<T extends IOrchaModel<any>> = {
 /**
  * Utility type when creating an entity to a repository function.
  */
-export type ICreateEntity<T extends IOrchaModel<any>> = {
+export type ICreateEntity<T extends IOrchaModel<any>> = AllUndefinedAreAlsoNull<{
   [K in keyof T]: K extends typeof ORCHA_ID
     ? T[typeof ORCHA_ID]
     : NonNullable<T[K]> extends object
     ? {
         [_ in keyof NonNullable<T[K]>]: NonNullable<T[K]> extends IAnyRelation<infer R, infer _>
           ? Required<T> extends Required<R>
-            ? T[K]
+            ? AllUndefinedAreAlsoNull<T[K]>
             : T[K] extends Array<infer A>
             ? A extends IOrchaModel<infer IdType>
-              ? (ICreateEntity<A> | IdType)[]
+              ? (ICreateEntity<A> | IdType)[] | undefined
               : never
             : NonNullable<T[K]> extends IOrchaModel<infer IdType>
-            ? T[K] extends IOrchaModel<any>
-              ? ICreateEntity<T[K]> | IdType | { id: IdType }
+            ? NonNullable<T[K]> extends IOrchaModel<any>
+              ? ICreateEntity<NonNullable<T[K]>> | IdType
               : never
             : never
-          : T[K];
+          : AllUndefinedAreAlsoNull<T[K]>;
       }[keyof NonNullable<T[K]>]
     : T[K];
-};
+}>;
+type AllUndefinedAreAlsoNull<T> = { [K in keyof T]: undefined extends T[K] ? T[K] | null : T[K] };
 
 /**
  * Utility type when updating an entity to a repository function.

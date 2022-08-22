@@ -1,5 +1,5 @@
 import { IPaginate } from '@orcha/common';
-import { IServerOrchestration, Operation, OrchestrationController } from '@orcha/nestjs';
+import { IServerOrchestration, ServerOperation, ServerOrchestrationController } from '@orcha/nestjs';
 import { TodoService } from '@todo-example-app-lib/server';
 import {
   CreateTodoDto,
@@ -11,41 +11,41 @@ import {
   UpdateTodoDto,
 } from '@todo-example-app-lib/shared';
 
-@OrchestrationController(TODO_ORCHESTRATION_NAME)
+@ServerOrchestrationController(TODO_ORCHESTRATION_NAME)
 export class TodoOrchestration implements IServerOrchestration<ITodoOrchestration> {
   constructor(private todo: TodoService) {}
 
-  @Operation()
+  @ServerOperation()
   getMine(token: string) {
     return this.todo.getMine(token);
   }
 
-  @Operation()
+  @ServerOperation()
   create(token: string, dto: CreateTodoDto) {
     return this.todo.create(token, dto);
   }
 
-  @Operation()
+  @ServerOperation()
   update(token: string, dto: UpdateTodoDto) {
     return this.todo.update(token, dto);
   }
 
-  @Operation()
+  @ServerOperation()
   delete(token: string, dto: DeleteTodoDto) {
     return this.todo.delete(token, dto);
   }
 
-  @Operation()
+  @ServerOperation()
   tag(token: string, dto: TagDto) {
     return this.todo.tag(token, dto);
   }
 
-  @Operation()
+  @ServerOperation()
   untag(token: string, dto: UnTagDto) {
     return this.todo.untag(token, dto);
   }
 
-  @Operation()
+  @ServerOperation()
   paginateAll(token: string, paginate: IPaginate) {
     return this.todo.paginateAll(token, paginate);
   }

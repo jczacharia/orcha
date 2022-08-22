@@ -1,3 +1,4 @@
+import { ORCHA_ID } from './constants';
 import { IPagination } from './pagination';
 import { IAnyRelation } from './relations';
 
@@ -23,7 +24,7 @@ type IQueryUndefined<T> = T extends undefined
 
 export type IQueryObject<T> = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  [K in keyof T]?: NonNullable<T[K]> extends object
+  [K in keyof T as K extends typeof ORCHA_ID ? never : K]?: NonNullable<T[K]> extends object
     ? {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         [_ in keyof NonNullable<T[K]>]: NonNullable<T[K]> extends IAnyRelation<infer R, infer __>
@@ -41,5 +42,5 @@ export type IQueryObject<T> = {
 export type IExactQuery<T, Q> = T extends Array<infer A> ? IExactQueryObject<A, Q> : IExactQueryObject<T, Q>;
 
 type IExactQueryObject<T, Q> = Q & {
-  [K in keyof Q]: K extends keyof T ? IExactQuery<T[K], Q[K]> : never;
+  [K in keyof Q]: K extends keyof Omit<T, typeof ORCHA_ID> ? IExactQuery<T[K], Q[K]> : never;
 };

@@ -1,9 +1,11 @@
 import { Collection, Entity, ManyToOne, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
+import { IOrchaMikroOrmEntity } from '@orcha/mikro-orm';
+import { Todo } from '@todo-example-app-lib/shared';
 import { TaggedTodoEntity } from '../tagged-todo/tagged-todo.entity';
 import { UserEntity } from '../user/user.entity';
 
 @Entity()
-export class TodoEntity {
+export class TodoEntity implements IOrchaMikroOrmEntity<Todo> {
   @PrimaryKey({ autoincrement: true })
   id!: number;
 

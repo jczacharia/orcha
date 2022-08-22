@@ -12,7 +12,7 @@
     "strict": true,
     "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": false,
-    "noErrorTruncation": true,
+    "noErrorTruncation": false,
     "rootDir": ".",
     "sourceMap": true,
     "declaration": false,

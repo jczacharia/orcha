@@ -44,11 +44,16 @@ export class TestOrchaBaseRepositoryAdapter<
     return parseQuery(entities, query);
   }
 
+  async countAll(): Promise<number> {
+    return this.entities.size;
+  }
+
   async createOne<Q extends IQuery<T>>(
     model: ICreateEntity<T>,
     query: IExactQuery<T, Q>
   ): Promise<IParser<T, Q>> {
-    this.entities.set(model.id, model as T);
+    model.id;
+    this.entities.set(model.id as IdType, model as T);
     return parseQuery(model as T, query);
   }
 
@@ -56,7 +61,7 @@ export class TestOrchaBaseRepositoryAdapter<
     models: ICreateEntity<T>[],
     query: IExactQuery<T, Q>
   ): Promise<IParser<T[], Q>> {
-    models.forEach((m) => this.entities.set(m.id, m as T));
+    models.forEach((m) => this.entities.set(m.id as IdType, m as T));
     return parseQuery(models as T[], query);
   }
 

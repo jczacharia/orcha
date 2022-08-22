@@ -8,7 +8,7 @@ export class UserService {
   constructor(private userRepo: UserRepoPort, private auth: AuthPort) {}
 
   async login({ email, password }: LoginDto) {
-    const user = await this.userRepo.findByEmail(email);
+    const user = await this.userRepo.findByEmail(email, { passwordHash: true, salt: true });
 
     if (!user) {
       throw new Error(`User with email "${email}" does not exist.`);
@@ -26,9 +26,9 @@ export class UserService {
   }
 
   async signUp({ email, password }: SignUpDto) {
-    const conflictingUser = await this.userRepo.findByEmail(email);
+    const conflictingUser = await this.userRepo.findByEmail(email, { email: true });
 
-    if (conflictingUser?.email) {
+    if (conflictingUser) {
       throw new Error(`User with email "${conflictingUser.email}" already exists.`);
     }
 
@@ -45,7 +45,7 @@ export class UserService {
         tags: [],
         todos: [],
       },
-      { id: true }
+      {}
     );
 
     const token = this.auth.sign({ userId: user.id });

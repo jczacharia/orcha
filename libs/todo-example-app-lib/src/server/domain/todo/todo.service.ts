@@ -22,7 +22,7 @@ export class TodoService {
   ) {}
 
   async getMine(token: string) {
-    const user = await this.user.verifyUserToken(token, { id: true });
+    const user = await this.user.verifyUserToken(token, {});
     return this.todoRepo.getByUser(user.id, TodoQueryModel);
   }
 
@@ -32,7 +32,7 @@ export class TodoService {
    * @param dto Specs for creating the new todo entity.
    */
   async create(token: string, dto: CreateTodoDto) {
-    const user = await this.user.verifyUserToken(token, { id: true });
+    const user = await this.user.verifyUserToken(token, {});
     const newTodo = await this.todoRepo.createOne(
       {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -44,7 +44,7 @@ export class TodoService {
         taggedTodos: [],
         user: user.id,
       },
-      { id: true }
+      {}
     );
     return this.todoRepo.findOneOrFail(newTodo.id, TodoQueryModel);
   }
@@ -55,13 +55,12 @@ export class TodoService {
    * @param dto Id of todo to update.
    */
   async update(token: string, dto: UpdateTodoDto) {
-    const user = await this.user.verifyUserToken(token, { id: true });
+    const user = await this.user.verifyUserToken(token, {});
     const todo = await this.todoRepo.findOneOrFail(dto.todoId, {
-      id: true,
       dateUpdated: true,
       content: true,
       done: true,
-      user: { id: true },
+      user: {},
     });
 
     if (user.id !== todo.user.id) {
@@ -85,9 +84,9 @@ export class TodoService {
    * @param dto Id of todo to delete.
    */
   async delete(token: string, dto: DeleteTodoDto) {
-    const user = await this.user.verifyUserToken(token, { id: true });
+    const user = await this.user.verifyUserToken(token, {});
     const todo = await this.todoRepo.findOneOrFail(dto.todoId, {
-      user: { id: true },
+      user: {},
     });
 
     if (user.id !== todo.user.id) {
@@ -104,17 +103,16 @@ export class TodoService {
    * @param dto Link the todo Id and the Tag name.
    */
   async tag(token: string, dto: TagDto) {
-    const user = await this.user.verifyUserToken(token, { id: true });
+    const user = await this.user.verifyUserToken(token, {});
     const todo = await this.todoRepo.findOneOrFail(dto.todoId, {
-      id: true,
-      user: { id: true },
+      user: {},
     });
 
     if (todo.user.id !== user.id) {
       throw new Error('You cannot add a tag to someone elses todo.');
     }
 
-    const tagAlreadyExists = await this.tagRepo.findByNameAndUser(dto.tagName, user.id, { id: true });
+    const tagAlreadyExists = await this.tagRepo.findByNameAndUser(dto.tagName, user.id, {});
 
     if (!tagAlreadyExists) {
       await this.tagRepo.createOne(
@@ -158,14 +156,13 @@ export class TodoService {
    * @param dto Link the todo Id and the Tag name.
    */
   async untag(token: string, dto: UnTagDto) {
-    const user = await this.user.verifyUserToken(token, { id: true });
+    const user = await this.user.verifyUserToken(token, {});
     const taggedTodo = await this.taggedTodoRepo.findOneOrFail(dto.taggedTodoId, {
-      id: true,
-      todo: { id: true },
-      tag: { id: true },
+      todo: {},
+      tag: {},
     });
 
-    const todo = await this.todoRepo.findOneOrFail(taggedTodo.todo.id, { user: { id: true } });
+    const todo = await this.todoRepo.findOneOrFail(taggedTodo.todo.id, { user: {} });
     if (todo.user.id !== user.id) {
       throw new Error('You cannot untag someone elses todo.');
     }

@@ -1,6 +1,6 @@
-import { EntityRepository, MikroORM, wrap } from '@mikro-orm/core';
+import { EntityRepository, MikroORM } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { IProps } from '@orcha/common';
+import { IExactQuery, IParser, IQuery } from '@orcha/common';
 import { IOrchaMikroOrmRepository } from '@orcha/mikro-orm';
 import { UserRepoPort } from '@todo-example-app-lib/server';
 import { User } from '@todo-example-app-lib/shared';
@@ -11,16 +11,17 @@ export class UserRepoAdapter extends IOrchaMikroOrmRepository<User, UserEntity> 
     super(repo, orm);
   }
 
-  async findByEmail(email: string): Promise<IProps<User> | null> {
-    const user = await this.repo.findOne({ email });
-    if (!user) {
-      return null;
-    }
-    return wrap(user).toJSON();
+  findByEmail<Q extends IQuery<User>>(
+    email: string,
+    query: IExactQuery<User, Q>
+  ): Promise<IParser<User, Q> | null> {
+    return this.orchaMikro.findOne({ email }, query);
   }
 
-  async findByEmailOrFail(email: string): Promise<IProps<User>> {
-    const user = await this.repo.findOneOrFail({ email });
-    return wrap(user).toJSON();
+  findByEmailOrFail<Q extends IQuery<User>>(
+    email: string,
+    query: IExactQuery<User, Q>
+  ): Promise<IParser<User, Q>> {
+    return this.orchaMikro.findOneOrFail({ email }, query);
   }
 }

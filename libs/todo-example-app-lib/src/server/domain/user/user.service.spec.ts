@@ -1,4 +1,4 @@
-import { parseQuery } from '@orcha/common';
+import { IExactQuery, IParser, IQuery, parseQuery } from '@orcha/common';
 import { TestOrchaBaseRepositoryAdapter } from '@orcha/testing';
 import { FirebaseScrypt } from 'firebase-scrypt';
 import { nanoid } from 'nanoid';
@@ -53,10 +53,12 @@ describe('UserService', () => {
     });
     it('should update user Date when logging in', async () => {
       await signUp('a@a.com', 'password');
-      const { dateLastLoggedIn } = await userRepo.findByEmailOrFail('a@a.com');
+      const { dateLastLoggedIn } = await userRepo.findByEmailOrFail('a@a.com', { dateLastLoggedIn: true });
       expect(dateLastLoggedIn).toBeFalsy();
       await userService.login({ email: 'a@a.com', password: 'password' });
-      const { dateLastLoggedIn: dl2 } = await userRepo.findByEmailOrFail('a@a.com');
+      const { dateLastLoggedIn: dl2 } = await userRepo.findByEmailOrFail('a@a.com', {
+        dateLastLoggedIn: true,
+      });
       expect(dl2).not.toBe(dateLastLoggedIn);
     });
   });
@@ -64,16 +66,18 @@ describe('UserService', () => {
   describe('getProfile', () => {
     it('should get profile', async () => {
       const { token } = await signUp('a@a.com', 'password');
-      const user = await userRepo.findByEmailOrFail('a@a.com');
-      const userParsed = parseQuery(user, EntireProfile);
+      const user = await userRepo.findByEmailOrFail('a@a.com', EntireProfile);
       const profile = await userService.getProfile(token);
-      expect(userParsed).toMatchObject(profile);
+      expect(user).toMatchObject(profile);
     });
   });
 });
 
 class TestUserRepo extends TestOrchaBaseRepositoryAdapter<User> implements UserRepoPort {
-  async findByEmail(email: string): Promise<User | null> {
+  async findByEmail<Q extends IQuery<User>>(
+    email: string,
+    query: IExactQuery<User, Q>
+  ): Promise<IParser<User, Q> | null> {
     let foundUser: User | null = null;
     for (const user of this.entities.values()) {
       if (user.email === email) {
@@ -81,13 +85,19 @@ class TestUserRepo extends TestOrchaBaseRepositoryAdapter<User> implements UserR
         break;
       }
     }
-    return foundUser;
+    if (!foundUser) {
+      return null;
+    }
+    return parseQuery(foundUser, query);
   }
 
-  async findByEmailOrFail(email: string): Promise<User> {
+  async findByEmailOrFail<Q extends IQuery<User>>(
+    email: string,
+    query: IExactQuery<User, Q>
+  ): Promise<IParser<User, Q>> {
     for (const user of this.entities.values()) {
       if (user.email === email) {
-        return user;
+        return parseQuery(user, query);
       }
     }
     throw new Error(`User with email "${email}" not found.`);

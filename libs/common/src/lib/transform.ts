@@ -1,3 +1,4 @@
+import { ORCHA_ID } from './constants';
 import { IParser } from './parser';
 import { IExactQuery, IQuery } from './query';
 
@@ -10,7 +11,6 @@ import { IExactQuery, IQuery } from './query';
  * @example
  * ```ts
  * const query = createQuery<{ id: string; data: { name: string } }>()({
- *   id: true,
  *   data: {
  *     name: true,
  *   },
@@ -68,8 +68,9 @@ export function parseQuery<T, Q extends IQuery<T>>(entities: T | T[], query: IEx
 
   const remove = (e: T) => {
     const qKeys = Object.keys(query) as (keyof T)[];
+
     for (const k of Object.keys(e) as (keyof T)[]) {
-      if (!qKeys.includes(k)) {
+      if (k !== ORCHA_ID && !qKeys.includes(k)) {
         delete e[k];
       }
     }

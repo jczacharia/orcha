@@ -1,8 +1,8 @@
-import { EntityRepository, MikroORM, wrap } from '@mikro-orm/core';
+import { EntityRepository, MikroORM } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { Injectable } from '@nestjs/common';
-import { IExactQuery, IParser, IQuery, parseQuery } from '@orcha/common';
-import { createMikroOrmPopulateArray, IOrchaMikroOrmRepository } from '@orcha/mikro-orm';
+import { IExactQuery, IParser, IQuery } from '@orcha/common';
+import { IOrchaMikroOrmRepository } from '@orcha/mikro-orm';
 import { TagRepoPort } from '@todo-example-app-lib/server';
 import { Tag } from '@todo-example-app-lib/shared';
 import { TagEntity } from './tag.entity';
@@ -18,22 +18,13 @@ export class TagRepoAdapter extends IOrchaMikroOrmRepository<Tag, TagEntity> imp
     userId: string,
     query: IExactQuery<Tag, Q>
   ): Promise<IParser<Tag, Q> | null> {
-    const populate = createMikroOrmPopulateArray(query);
-    const entity = await this.repo.findOne({ name: tagName, user: { id: userId } }, { populate });
-    if (!entity) {
-      return null;
-    }
-    const json = wrap(entity).toJSON();
-    return parseQuery(json, query);
+    return this.orchaMikro.findOne({ name: tagName, user: { id: userId } }, query);
   }
 
   async findByUser<Q extends IQuery<Tag>>(
     userId: string,
     query: IExactQuery<Tag, Q>
   ): Promise<IParser<Tag[], Q>> {
-    const populate = createMikroOrmPopulateArray(query);
-    const entities = await this.repo.find({ user: { id: userId } }, { populate });
-    const json = entities.map((e) => wrap(e).toJSON());
-    return parseQuery(json, query);
+    return this.orchaMikro.find({ user: { id: userId } }, query);
   }
 }

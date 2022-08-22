@@ -8,10 +8,8 @@ import { IExactQuery, IQuery } from './query';
  * @example
  * ```typescript
  * export const UserQuery = createQuery<User>()({
- *   id: true,
  *   name: true,
  *   items: {
- *     id: true,
  *     title: true,
  *   }
  * });

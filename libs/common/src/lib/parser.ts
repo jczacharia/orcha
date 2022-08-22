@@ -1,4 +1,7 @@
+/* eslint-disable @typescript-eslint/ban-types */
+import { ORCHA_ID } from './constants';
 import { IPagination } from './pagination';
+import { IOrchaModel } from './relations';
 
 /**
  * Creates a parsed model type based on an Orcha Query type.
@@ -7,10 +10,8 @@ import { IPagination } from './pagination';
  * type IUserModel = IParser<
  *   User,
  *   {
- *     id: true;
  *     name: true;
  *     items: {
- *       id: true;
  *       title: true;
  *     };
  *   }
@@ -20,10 +21,8 @@ import { IPagination } from './pagination';
  * Example using `createQuery`.
  * ```ts
  * const UserQueryModel = createQuery<User>()({
- *   id: true,
  *   name: true,
  *   items: {
- *     id: true,
  *     title: true,
  *   }
  * });
@@ -50,4 +49,4 @@ export type IParserObject<C, Q> = {
       ? C[K]
       : IParseUndefined<C[K], Q[K]>
     : never;
-};
+} & (C extends IOrchaModel<infer ID> ? { [ORCHA_ID]: ID } : {});

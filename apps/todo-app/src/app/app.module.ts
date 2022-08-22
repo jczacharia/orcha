@@ -7,7 +7,6 @@ import { EffectsModule } from '@ngrx/effects';
 import { ActionReducer, StoreModule, USER_PROVIDED_META_REDUCERS } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { OrchaAngularModule } from '@orcha/angular';
-import { OrchaOperationError } from '@orcha/common';
 import { environment } from '@todo-example-app-lib/shared';
 import { AppComponent } from './app.component';
 import { DomainModule } from './domain/domain.module';
@@ -47,11 +46,7 @@ const ngrxErrorFactory = <T>() => {
     BrowserModule,
     HttpClientModule,
     DomainModule,
-    OrchaAngularModule.forRoot({
-      apiUrl: environment.apiUrl,
-      wsUrl: environment.wsUrl,
-      authTokenLocalStorageKey: 'todo-app',
-    }),
+    OrchaAngularModule.forRoot({ apiUrl: environment.apiUrl, authTokenLocalStorageKey: 'todo-app' }),
     RouterModule.forRoot([
       {
         path: '',
