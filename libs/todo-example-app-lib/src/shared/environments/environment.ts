@@ -4,7 +4,6 @@ export const environment: Env = {
   production: false,
   host: 'localhost',
   apiUrl: `http://localhost:3333`,
-  wsUrl: `http://localhost:80`,
   mikroOrmConfig: {
     autoLoadEntities: true,
     dbName: 'orcha-todo-example-app',
@@ -13,5 +12,6 @@ export const environment: Env = {
     port: 5432,
     user: 'postgres',
     password: '1Qazxsw2',
+    allowGlobalContext: false,
   },
 };

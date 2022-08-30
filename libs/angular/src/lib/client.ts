@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { HttpEvent } from '@angular/common/http';
-import { IOperation, IOrchestration, IParser, IQuery, OrchaResponse } from '@orcha/common';
+import { IController, IOperation, IParserSerialized, IQuery, OrchaResponse } from '@orcha/common';
 import { Observable } from 'rxjs';
 
 /**
@@ -17,25 +17,13 @@ export type IClientOperation<T, Q extends IQuery<T>, D = null, F extends File | 
 ) => Observable<IResponse<T, Q, F>>;
 
 type IResponse<T, Q, F> = F extends null
-  ? OrchaResponse<AllDatesToStrings<IParser<T, Q>>>
-  : HttpEvent<OrchaResponse<AllDatesToStrings<IParser<T, Q>>>>;
-
-export type IExtractOperationReturnSchema<R> = R extends IOperation<infer T, infer Q, any, any>
-  ? AllDatesToStrings<IParser<T, Q>>
-  : unknown;
-
-type AllDatesToStrings<T> = {
-  [K in keyof T]: NonNullable<T[K]> extends Date
-    ? (null extends T[K] ? string | null : string) | (undefined extends T[K] ? string | undefined : string)
-    : T[K] extends object
-    ? AllDatesToStrings<T[K]>
-    : T[K];
-};
+  ? OrchaResponse<IParserSerialized<T, Q>>
+  : HttpEvent<OrchaResponse<IParserSerialized<T, Q>>>;
 
 /**
- * Implements a Client Orchestration from an `IOrchestration`.
+ * Implements a Client Controller from an `IController`.
  */
-export type IClientOrchestration<O extends IOrchestration> = {
+export type IClientController<O extends IController> = {
   [K in keyof O]: O[K] extends IOperation<infer T, infer Q, infer D, infer F>
     ? IClientOperation<T, Q, D, F>
     : never;

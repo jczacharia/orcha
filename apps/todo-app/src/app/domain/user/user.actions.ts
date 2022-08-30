@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { OrchaOperationError } from '@orcha/common';
+import { ServerOperationError } from '@orcha/common';
 import { LoginDto, SignUpDto } from '@todo-example-app-lib/shared';
 import { UserStoreModel } from './user.reducer';
 
@@ -22,7 +22,7 @@ export const userLoginSuccess = createAction(
 
 export const userLoginError = createAction(
   '[User] User Login Error',
-  props<{ error: OrchaOperationError }>()
+  props<{ error: ServerOperationError }>()
 );
 
 /*
@@ -39,7 +39,7 @@ export const userSignUpSuccess = createAction('[User] User SignUp Success', prop
 
 export const userSignUpError = createAction(
   '[User] User SignUp Error',
-  props<{ error: OrchaOperationError }>()
+  props<{ error: ServerOperationError }>()
 );
 
 /*
@@ -59,7 +59,7 @@ export const getProfileSuccess = createAction(
 
 export const getProfileError = createAction(
   '[User] Get Profile Error',
-  props<{ error: OrchaOperationError }>()
+  props<{ error: ServerOperationError }>()
 );
 
 /*
@@ -79,5 +79,5 @@ export const updateProfilePicSuccess = createAction(
 
 export const updateProfilePicError = createAction(
   '[User] Change Profile Pic Error',
-  props<{ error: OrchaOperationError }>()
+  props<{ error: ServerOperationError }>()
 );

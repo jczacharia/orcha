@@ -1,6 +1,6 @@
 import { IExactQuery, IQuery } from '@orcha/common';
 import { nanoid } from 'nanoid';
-import { EntireProfile, LoginDto, SignUpDto, User } from '../../../shared/domain/user';
+import { EntireProfile, LoginDto, SignUpDto, UpdateUserProfileDto, User } from '../../../shared/domain/user';
 import { AuthPort } from '../auth/auth.port';
 import { UserRepoPort } from './user-repo.port';
 
@@ -39,6 +39,7 @@ export class UserService {
       {
         id: nanoid(),
         dateCreated: new Date(),
+        dateUpdated: new Date(),
         email,
         passwordHash,
         salt,
@@ -50,6 +51,18 @@ export class UserService {
 
     const token = this.auth.sign({ userId: user.id });
     return { token };
+  }
+
+  async updateProfile(token: string, dto: UpdateUserProfileDto) {
+    const user = await this.verifyUserToken(token, {});
+    return this.userRepo.updateOne(
+      user.id,
+      {
+        ...dto,
+        dateUpdated: new Date(),
+      },
+      EntireProfile
+    );
   }
 
   async getProfile(token: string) {

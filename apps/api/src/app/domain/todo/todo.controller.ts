@@ -1,18 +1,18 @@
 import { IPaginate } from '@orcha/common';
-import { IServerOrchestration, ServerOperation, ServerOrchestrationController } from '@orcha/nestjs';
+import { IServerController, ServerController, ServerOperation } from '@orcha/nestjs';
 import { TodoService } from '@todo-example-app-lib/server';
 import {
   CreateTodoDto,
   DeleteTodoDto,
-  ITodoOrchestration,
+  ITodoController,
   TagDto,
-  TODO_ORCHESTRATION_NAME,
+  TODO_CONTROLLER_NAME,
   UnTagDto,
   UpdateTodoDto,
 } from '@todo-example-app-lib/shared';
 
-@ServerOrchestrationController(TODO_ORCHESTRATION_NAME)
-export class TodoOrchestration implements IServerOrchestration<ITodoOrchestration> {
+@ServerController(TODO_CONTROLLER_NAME)
+export class TodoController implements IServerController<ITodoController> {
   constructor(private todo: TodoService) {}
 
   @ServerOperation()

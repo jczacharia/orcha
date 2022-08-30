@@ -2,6 +2,7 @@
 import { ORCHA_ID } from './constants';
 import { IPagination } from './pagination';
 import { IOrchaModel } from './relations';
+import { RecursivelyConvertDatesToStrings } from './util';
 
 /**
  * Creates a parsed model type based on an Orcha Query type.
@@ -50,3 +51,5 @@ export type IParserObject<C, Q> = {
       : IParseUndefined<C[K], Q[K]>
     : never;
 } & (C extends IOrchaModel<infer ID> ? { [ORCHA_ID]: ID } : {});
+
+export type IParserSerialized<T, Q> = RecursivelyConvertDatesToStrings<IParser<T, Q>>;

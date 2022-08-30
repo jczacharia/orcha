@@ -1,14 +1,14 @@
-import { IServerOrchestration, ServerOperation, ServerOrchestrationController } from '@orcha/nestjs';
+import { IServerController, ServerOperation, ServerController } from '@orcha/nestjs';
 import { UserService } from '@todo-example-app-lib/server';
 import {
-  IUserOrchestration,
+  IUserController,
   LoginDto,
   SignUpDto,
-  USER_ORCHESTRATION_NAME,
+  USER_CONTROLLER_NAME,
 } from '@todo-example-app-lib/shared';
 
-@ServerOrchestrationController(USER_ORCHESTRATION_NAME)
-export class UserOrchestration implements IServerOrchestration<IUserOrchestration> {
+@ServerController(USER_CONTROLLER_NAME)
+export class UserController implements IServerController<IUserController> {
   constructor(private user: UserService) {}
 
   @ServerOperation()

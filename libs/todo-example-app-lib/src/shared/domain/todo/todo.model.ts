@@ -5,8 +5,8 @@ import { User } from '../user';
 export interface Todo extends IOrchaModel<number> {
   content: string;
   done: boolean;
-  dateCreated: Date | string;
-  dateUpdated: Date | string;
+  dateCreated: Date;
+  dateUpdated: Date;
   user: IOneToOne<User, 'todos'>;
   taggedTodos: IOneToMany<TaggedTodo, 'todo'>;
 }

@@ -7,6 +7,4 @@ export abstract class TaggedTodoRepoPort extends OrchaBaseRepositoryPort<TaggedT
     tagId: string,
     query: IExactQuery<TaggedTodo, Q>
   ): Promise<IParser<TaggedTodo, Q> | null>;
-
-  abstract deleteTaggedTodoAndLonelyTags(taggedTodoId: TaggedTodo['id']): Promise<TaggedTodo['id']>;
 }

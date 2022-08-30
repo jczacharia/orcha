@@ -5,6 +5,10 @@ export const EntireProfile = createQuery<User>()({
   email: true,
   dateCreated: true,
   dateLastLoggedIn: true,
+  firstName: true,
+  middleName: true,
+  lastName: true,
+  phone: true,
   tags: {
     name: true,
     dateCreated: true,

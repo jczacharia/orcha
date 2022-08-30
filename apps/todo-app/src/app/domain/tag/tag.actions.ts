@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { OrchaOperationError } from '@orcha/common';
+import { ServerOperationError } from '@orcha/common';
 import { TagStoreModel } from './tag.reducer';
 
 /*
@@ -14,4 +14,4 @@ export const readTags = createAction('[Tags] Read Tags');
 
 export const readTagsSuccess = createAction('[Tags] Read Tags Success', props<{ tags: TagStoreModel[] }>());
 
-export const readTagsError = createAction('[Tags] Read Tags Error', props<{ error: OrchaOperationError }>());
+export const readTagsError = createAction('[Tags] Read Tags Error', props<{ error: ServerOperationError }>());

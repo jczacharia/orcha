@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { IPaginate, OrchaOperationError } from '@orcha/common';
+import { IPaginate, ServerOperationError } from '@orcha/common';
 import { UpdateTodoDto } from '@todo-example-app-lib/shared';
 import { TodoStoreModel } from './todo.reducer';
 
@@ -20,7 +20,7 @@ export const readTodosSuccess = createAction(
 
 export const readTodosError = createAction(
   '[Todos] Read Todos Error',
-  props<{ error: OrchaOperationError }>()
+  props<{ error: ServerOperationError }>()
 );
 
 /*
@@ -40,7 +40,7 @@ export const createTodoSuccess = createAction(
 
 export const createTodoError = createAction(
   '[Todos] Create Todo Error',
-  props<{ error: OrchaOperationError }>()
+  props<{ error: ServerOperationError }>()
 );
 
 /*
@@ -56,7 +56,7 @@ export const deleteTodoSuccess = createAction('[Todos] Delete Todo Success', pro
 
 export const deleteTodoError = createAction(
   '[Todos] Delete Todo Error',
-  props<{ error: OrchaOperationError }>()
+  props<{ error: ServerOperationError }>()
 );
 
 /*
@@ -75,7 +75,7 @@ export const updateTodoSuccess = createAction(
 
 export const updateTodoError = createAction(
   '[Todos] Update Todo Error',
-  props<{ error: OrchaOperationError }>()
+  props<{ error: ServerOperationError }>()
 );
 
 /*
@@ -89,7 +89,7 @@ export const tagTodo = createAction('[Todos] Tag Todo', props<{ todo: TodoStoreM
 
 export const tagTodoSuccess = createAction('[Todos] Tag Todo Success', props<{ todo: TodoStoreModel }>());
 
-export const tagTodoError = createAction('[Todos] Tag Todo Error', props<{ error: OrchaOperationError }>());
+export const tagTodoError = createAction('[Todos] Tag Todo Error', props<{ error: ServerOperationError }>());
 
 /*
   _   _    _____          
@@ -104,7 +104,7 @@ export const untagTodoSuccess = createAction('[Todos] UnTag Todo Success', props
 
 export const untagTodoError = createAction(
   '[Todos] UnTag Todo Error',
-  props<{ error: OrchaOperationError }>()
+  props<{ error: ServerOperationError }>()
 );
 
 /*
@@ -123,5 +123,5 @@ export const paginateTodosSuccess = createAction(
 
 export const paginateTodosError = createAction(
   '[Todos] Paginate Todos Error',
-  props<{ error: OrchaOperationError }>()
+  props<{ error: ServerOperationError }>()
 );

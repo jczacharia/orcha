@@ -24,15 +24,4 @@ export class TodoRepoAdapter extends IOrchaMikroOrmRepository<Todo, TodoEntity> 
   ): Promise<IParser<Todo[], Q>> {
     return this.orchaMikro.find({ user: { id: userId } }, query);
   }
-
-  async deleteTodoAndLonelyTags(todoId: Todo['id']): Promise<Todo['id']> {
-    const todo = await this.repo.findOneOrFail(todoId, { populate: ['taggedTodos'] });
-    todo.taggedTodos.removeAll();
-    this.repo.remove(todo);
-    const tags = await this.tagRepo.findAll({ populate: ['taggedTodos'] });
-    const lonelyTags = tags.filter((tag) => tag.taggedTodos.length === 0);
-    this.tagRepo.remove(lonelyTags);
-    await this.repo.flush();
-    return todoId;
-  }
 }

@@ -4,7 +4,8 @@ import { User } from '../user';
 
 export interface Tag extends IOrchaModel<string> {
   name: string;
-  dateCreated: Date | string;
-  dateUpdated: Date | string;
+  dateCreated: Date;
+  dateUpdated: Date;
   user: IManyToOne<User, 'tags'>;
+  taggedTodos: IOneToMany<TaggedTodo, 'tag'>;
 }

@@ -7,7 +7,7 @@ import { IQuery } from './query';
  * Creates an Operation model for HTTP endpoint calls.
  *
  * An Operation exposes the server to the outside world via an HTTP POST endpoint.
- * An endpoint's route is described as: `/orcha/<orchestration name>/<operation name>`.
+ * An endpoint's route is described as: `/orcha/<controller name>/<operation name>`.
  * Each Operation name should describe what the Operation does.
  * An Operation can either mutate or read data.
  *
@@ -17,7 +17,7 @@ import { IQuery } from './query';
  * @example Single, multiple, and paginate.
  * ```ts
  * import { IOperation, IPagination } from '@orcha/common';
- * interface ITodoOrchestration {
+ * interface ITodoController {
  *   getSingleEntity: IOperation<Todo>;
  *   getMultipleEntities: IOperation<Todo[]>;
  *   paginateEntities: IOperation<IPagination<Todo>>;
@@ -33,7 +33,7 @@ import { IQuery } from './query';
  *   @IsString() // This decorator is used on the backend to ensure the content property is a string.
  *   content!: string;
  * }
- * interface ITodoOrchestration {
+ * interface ITodoController {
  *   create: IOperation<Todo, CreateTodoDto>;
  *   delete: IOperation<{ deletedTodoId: string }, { todoId: string }>; // Doesn't have to have validation.
  * }
@@ -44,14 +44,14 @@ import { IQuery } from './query';
  * @example Upload picture for Todo entity.
  * ```ts
  * import { IOperation } from '@orcha/common';
- * interface IExampleOrchestration {
+ * interface IExampleController {
  *   uploadTodoPhoto: IOperation<Todo, null, File[]>;
  * }
  * ```
  *
  * @example User Example
  * ```ts
- * interface IUserOrchestration {
+ * interface IUserController {
  *   login: IOperation<{ token: string }, LoginDto>; // DTO contains username and password.
  *   getUserData: IOperation<User>;
  *   uploadProfilePic: IOperation<{ url: string }, null, File[]>;
@@ -66,14 +66,14 @@ export interface IOperation<T, Q extends IQuery<T>, D = null, F extends File[] |
 }
 
 /**
- * Creates an Orchestration model for a group of domain related Operations under HTTP endpoints.
+ * Creates an Controller model for a group of domain related Operations under HTTP endpoints.
  *
- * An Orchestration groups many Operations under a single parent endpoint.
- * An endpoint looks as follows: `/orcha/<orchestration name>/<operation name>`.
+ * An Controller groups many Operations under a single parent endpoint.
+ * An endpoint looks as follows: `/orcha/<controller name>/<operation name>`.
  *
  * @example
  * ```ts
- * interface IUserOrchestration {
+ * interface IUserController {
  *   login: IOperation<{ token: string }, LoginDto>; // DTO contains username and password.
  *   getUserData: IOperation<User>;
  *   uploadProfilePic: IOperation<{ url: string }, null, File[]>;
@@ -81,4 +81,4 @@ export interface IOperation<T, Q extends IQuery<T>, D = null, F extends File[] |
  * }
  * ```
  */
-export type IOrchestration = Record<keyof unknown, IOperation<unknown, any>>;
+export type IController = Record<keyof unknown, IOperation<unknown, any>>;

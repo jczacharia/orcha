@@ -4,9 +4,9 @@ import { Type } from '@angular/core';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import {
   ClientOperation,
-  ClientOrchestration,
+  ClientController,
   IOperation,
-  IOrchestration,
+  IController,
   IParser,
   IQuery,
   ORCHA,
@@ -15,7 +15,7 @@ import {
   ORCHA_FILES,
   ORCHA_TOKEN,
   __ORCHA_OPERATIONS,
-  __ORCHA_ORCHESTRATION_NAME
+  __ORCHA_CONTROLLER_NAME
 } from '@orcha/common';
 import 'multer';
 import * as request from 'supertest';
@@ -27,40 +27,40 @@ type ITestResponse<T> = Omit<request.Response, 'body'> & {
 };
 
 /**
- * Decorates a Test Orchestration's method with a Test Operation.
+ * Decorates a Test Controller's method with a Test Operation.
  *
  * @example
  * ```ts
- * @TestOrchestration(OrchaTodoExampleAppOrchestrations.user)
- * class UserOrchestration implements ITestOrchestration<IUserOrchestration> {
+ * @TestController(OrchaTodoExampleAppControllers.user)
+ * class UserController implements ITestController<IUserController> {
  *   @TestOperation()
- *   signUp!: ITestOrchestration<IUserOrchestration>['signUp'];
+ *   signUp!: ITestController<IUserController>['signUp'];
  *   @TestOperation()
- *   login!: ITestOrchestration<IUserOrchestration>['login'];
+ *   login!: ITestController<IUserController>['login'];
  *   @TestOperation()
- *   getProfile!: ITestOrchestration<IUserOrchestration>['getProfile'];
+ *   getProfile!: ITestController<IUserController>['getProfile'];
  * }
  * ```
  */
 export const TestOperation = ClientOperation;
 
 /**
- * Decorates a class to be a Test Orchestration.
+ * Decorates a class to be a Test Controller.
  *
  * @example
  * ```ts
- * @TestOrchestration(OrchaTodoExampleAppOrchestrations.user)
- * class UserOrchestration implements ITestOrchestration<IUserOrchestration> {
+ * @TestController(OrchaTodoExampleAppControllers.user)
+ * class UserController implements ITestController<IUserController> {
  *   @TestOperation()
- *   signUp!: ITestOrchestration<IUserOrchestration>['signUp'];
+ *   signUp!: ITestController<IUserController>['signUp'];
  *   @TestOperation()
- *   login!: ITestOrchestration<IUserOrchestration>['login'];
+ *   login!: ITestController<IUserController>['login'];
  *   @TestOperation()
- *   getProfile!: ITestOrchestration<IUserOrchestration>['getProfile'];
+ *   getProfile!: ITestController<IUserController>['getProfile'];
  * }
  * ```
  */
-export const TestOrchestration = ClientOrchestration;
+export const TestController = ClientController;
 
 export type ITestOperation<T, Q extends IQuery<T>, D = null, F extends File[] | null = null> = (
   token: string,
@@ -73,28 +73,28 @@ export type ITestOperation<T, Q extends IQuery<T>, D = null, F extends File[] | 
     : [dto: D, files: F]
 ) => Promise<ITestResponse<OrchaResponse<IParser<T, Q>>>>;
 
-export type ITestOrchestration<O extends IOrchestration> = {
+export type ITestController<O extends IController> = {
   [K in keyof O]: O[K] extends IOperation<infer T, infer Q, infer D, infer F>
     ? ITestOperation<T, Q, D, F>
     : never;
 };
 
 /**
- * Create a Test Orchestration from an Express NestJS application.
+ * Create a Test Controller from an Express NestJS application.
  */
-export function createNestjsTestOrchestration<O extends Type<IOrchestration>>(
+export function createNestjsTestController<O extends Type<IController>>(
   app: INestApplication,
-  orchestration: O
-): ITestOrchestration<InstanceType<O>> {
-  const name = orchestration.prototype[__ORCHA_ORCHESTRATION_NAME];
-  const operations = orchestration.prototype[__ORCHA_OPERATIONS];
+  controller: O
+): ITestController<InstanceType<O>> {
+  const name = controller.prototype[__ORCHA_CONTROLLER_NAME];
+  const operations = controller.prototype[__ORCHA_OPERATIONS];
   const opsKeys = Object.keys(operations);
 
   if (!name) {
     throw new Error(
-      `No orchestration orchestration name found for orchestration with names of "${opsKeys.join(
+      `No controller controller name found for controller with names of "${opsKeys.join(
         ', '
-      )}"\nDid you remember to add @TestOrchestration(<name here>)?`
+      )}"\nDid you remember to add @TestController(<name here>)?`
     );
   }
 

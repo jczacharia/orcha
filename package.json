@@ -1,6 +1,6 @@
 {
   "name": "orcha",
-  "version": "0.7.8",
+  "version": "0.8.5",
   "license": "MIT",
   "scripts": {
     "ng": "nx",
@@ -8,7 +8,7 @@
     "start": "nx serve",
     "test": "nx test",
     "build": "ts-node ./tools/scripts/build.ts",
-    "deploy": "npm run deploy:angular && npm run deploy:common && npm run deploy:nestjs && npm run deploy:testing && npm run deploy:mikro-orm",
+    "deploy": "npm run build && npm run deploy:angular && npm run deploy:common && npm run deploy:nestjs && npm run deploy:testing && npm run deploy:mikro-orm",
     "deploy:angular": "cd dist/libs/angular && npm publish --access public",
     "deploy:common": "cd dist/libs/common && npm publish --access public",
     "deploy:nestjs": "cd dist/libs/nestjs && npm publish --access public",

@@ -1,11 +1,11 @@
 import { createReducer, on } from '@ngrx/store';
-import { IExtractOperationReturnSchema } from '@orcha/angular';
-import { IUserOrchestration } from '@todo-example-app-lib/shared';
+import { IParserSerialized } from '@orcha/common';
+import { EntireProfile, User } from '@todo-example-app-lib/shared';
 import * as UserActions from './user.actions';
 
 export const USER_KEY = 'user';
 
-export type UserStoreModel = IExtractOperationReturnSchema<IUserOrchestration['getProfile']>;
+export type UserStoreModel = IParserSerialized<User, typeof EntireProfile>;
 
 export interface UserState extends UserStoreModel {
   loaded: boolean;

@@ -4,13 +4,13 @@ import { CommonModule } from '@angular/common';
 import { HttpClient, HttpEventType } from '@angular/common/http';
 import { InjectionToken, Injector, ModuleWithProviders, NgModule, Provider, Type } from '@angular/core';
 import {
-  IOrchestration,
+  IController,
   ORCHA,
   ORCHA_DTO,
   ORCHA_FILES,
   ORCHA_TOKEN,
   __ORCHA_OPERATIONS,
-  __ORCHA_ORCHESTRATION_NAME,
+  __ORCHA_CONTROLLER_NAME,
 } from '@orcha/common';
 import { filter, map } from 'rxjs';
 import { OrchaAuthTokenLocalStorage } from './auth-token.storage';
@@ -27,12 +27,12 @@ export function __getAuthTokenFactory(storage: OrchaAuthTokenLocalStorage) {
 }
 
 @NgModule({})
-export class OrchaAngularRootModule {}
+export class OrchaRootModule {}
 
 @NgModule({})
-export class OrchaAngularFeatureModule {
+export class OrchaFeatureModule {
   // Forces Root module to be create before feature module.
-  constructor(protected readonly root: OrchaAngularRootModule) {}
+  constructor(protected readonly root: OrchaRootModule) {}
 }
 
 /**
@@ -41,7 +41,7 @@ export class OrchaAngularFeatureModule {
 @NgModule({
   imports: [CommonModule],
 })
-export class OrchaAngularModule {
+export class OrchaModule {
   /**
    * Initializes Orcha's core Angular functionalities.
    */
@@ -53,9 +53,9 @@ export class OrchaAngularModule {
     apiUrl: string;
     /** Unique key name of where your auth token is stored in local storage. */
     authTokenLocalStorageKey: string;
-  }): ModuleWithProviders<OrchaAngularRootModule> {
+  }): ModuleWithProviders<OrchaRootModule> {
     return {
-      ngModule: OrchaAngularRootModule,
+      ngModule: OrchaRootModule,
       providers: [
         OrchaAuthTokenLocalStorage,
         {
@@ -76,38 +76,38 @@ export class OrchaAngularModule {
   }
 
   /**
-   * Creates an Orcha feature by grouping relevant orchestrations, gateways, and interceptors.
+   * Creates an Orcha feature by grouping relevant controllers, gateways, and interceptors.
    */
   static forFeature({
-    orchestrations,
+    controllers,
   }: {
-    orchestrations?: Type<IOrchestration>[];
-  }): ModuleWithProviders<OrchaAngularFeatureModule> {
+    controllers?: Type<IController>[];
+  }): ModuleWithProviders<OrchaFeatureModule> {
     const ors: Provider[] =
-      orchestrations?.map(
+      controllers?.map(
         (o): Provider => ({
           provide: o,
-          useFactory: (injector: Injector) => OrchaAngularModule.createOrchestration(injector, o),
+          useFactory: (injector: Injector) => OrchaModule.createController(injector, o),
           deps: [Injector],
         })
       ) ?? [];
 
     return {
-      ngModule: OrchaAngularFeatureModule,
+      ngModule: OrchaFeatureModule,
       providers: ors,
     };
   }
 
-  static createOrchestration(injector: Injector, orchestration: Type<IOrchestration>) {
-    const name = orchestration.prototype[__ORCHA_ORCHESTRATION_NAME];
-    const operations = orchestration.prototype[__ORCHA_OPERATIONS];
+  static createController(injector: Injector, controller: Type<IController>) {
+    const name = controller.prototype[__ORCHA_CONTROLLER_NAME];
+    const operations = controller.prototype[__ORCHA_OPERATIONS];
     const opsKeys = Object.keys(operations);
 
     if (!name) {
       throw new Error(
-        `No name found for orchestration with orchestration names of "${opsKeys.join(
+        `No name found for controller with controller names of "${opsKeys.join(
           ', '
-        )}"\nDid you remember to add @ClientOrchestration(<name here>)?`
+        )}"\nDid you remember to add @ClientController(<name here>)?`
       );
     }
 

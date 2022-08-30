@@ -67,30 +67,27 @@ export function parseQuery<T, Q extends IQuery<T>>(entities: T | T[], query: IEx
   }
 
   const remove = (e: T) => {
-    const qKeys = Object.keys(query) as (keyof T)[];
+    const obj: any = {};
 
+    const qKeys = Object.keys(query) as (keyof T)[];
     for (const k of Object.keys(e) as (keyof T)[]) {
-      if (k !== ORCHA_ID && !qKeys.includes(k)) {
-        delete e[k];
+      if (k === ORCHA_ID || qKeys.includes(k)) {
+        obj[k] = e[k];
       }
     }
 
     for (const [k, q] of Object.entries(query as object)) {
       if (typeof q === 'object') {
-        parseQuery(e[k as keyof T], q);
+        obj[k] = parseQuery(obj[k], q);
       }
     }
 
-    return e;
+    return obj;
   };
 
   if (Array.isArray(entities)) {
-    entities = [...entities];
-    entities = entities.map((e) => remove(e));
-    return entities as unknown as IParser<T[], Q>;
+    return entities.map((e) => remove(e)) as unknown as IParser<T[], Q>;
   } else {
-    entities = { ...entities };
-    entities = remove(entities);
-    return entities as unknown as IParser<T, Q>;
+    return remove(entities) as unknown as IParser<T, Q>;
   }
 }

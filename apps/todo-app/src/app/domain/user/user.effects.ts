@@ -6,7 +6,7 @@ import { fetch, pessimisticUpdate } from '@nrwl/angular';
 import { OrchaAuthTokenLocalStorage } from '@orcha/angular';
 import { filter, map, of, tap } from 'rxjs';
 import * as UserActions from './user.actions';
-import { UserOrchestration } from './user.orchestration';
+import { UserController } from './user.controller';
 
 @Injectable()
 export class UserEffects {
@@ -113,7 +113,7 @@ export class UserEffects {
 
   constructor(
     private readonly _actions$: Actions,
-    private readonly _user: UserOrchestration,
+    private readonly _user: UserController,
     private readonly _router: Router,
     private readonly _authTokenStorage: OrchaAuthTokenLocalStorage
   ) {}

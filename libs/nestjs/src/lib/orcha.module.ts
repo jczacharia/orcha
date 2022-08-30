@@ -1,6 +1,6 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
-import { OrchaOperationErrorFilter } from './orcha.filter';
+import { ServerOperationErrorFilter } from './orcha.filter';
 import { OrchaInterceptor } from './orcha.interceptor';
 
 /**
@@ -9,7 +9,7 @@ import { OrchaInterceptor } from './orcha.interceptor';
 @Module({})
 export class OrchaNestModule {
   /**
-   * Creates an Orcha feature by grouping relevant orchestrations and gateways.
+   * Creates an Orcha feature by grouping relevant controllers and gateways.
    */
   static forRoot(): DynamicModule {
     return {
@@ -21,7 +21,7 @@ export class OrchaNestModule {
         },
         {
           provide: APP_FILTER,
-          useClass: OrchaOperationErrorFilter,
+          useClass: ServerOperationErrorFilter,
         },
       ],
     };

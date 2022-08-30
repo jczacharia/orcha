@@ -12,6 +12,11 @@ export abstract class OrchaBaseRepositoryPort<
   abstract findMany<Q extends IQuery<T>>(ids: IdType[], query: IExactQuery<T, Q>): Promise<IParser<T[], Q>>;
   abstract findAll<Q extends IQuery<T>>(query: IExactQuery<T, Q>): Promise<IParser<T[], Q>>;
 
+  abstract paginateAll<Q extends IQuery<T>>(
+    paginate: IPaginate,
+    query: IExactQuery<T, Q>
+  ): Promise<IPagination<IParser<T, Q>>>;
+
   abstract countAll(): Promise<number>;
 
   abstract createOne<Q extends IQuery<T>>(
@@ -35,9 +40,41 @@ export abstract class OrchaBaseRepositoryPort<
 
   abstract deleteOne(id: IdType): Promise<IdType>;
   abstract deleteMany(ids: IdType[]): Promise<IdType[]>;
+}
 
-  abstract paginateAll<Q extends IQuery<T>>(
-    paginate: IPaginate,
-    query: IExactQuery<T, Q>
-  ): Promise<IPagination<IParser<T, Q>>>;
+export abstract class OrchaDbTransactionalPort {
+  abstract runInTransaction(fn: (t: OrchaDbTransactionalPort) => Promise<void>): Promise<void>;
+
+  abstract create<
+    T extends IOrchaModel<IdType>,
+    IdType extends string | number = T extends IOrchaModel<infer ID> ? ID : never
+  >(repo: OrchaBaseRepositoryPort<T, IdType>, model: ICreateEntity<T>): Promise<void>;
+
+  abstract createMany<
+    T extends IOrchaModel<IdType>,
+    IdType extends string | number = T extends IOrchaModel<infer ID> ? ID : never
+  >(repo: OrchaBaseRepositoryPort<T, IdType>, models: ICreateEntity<T>[]): Promise<void>;
+
+  abstract update<
+    T extends IOrchaModel<IdType>,
+    IdType extends string | number = T extends IOrchaModel<infer ID> ? ID : never
+  >(repo: OrchaBaseRepositoryPort<T, IdType>, id: IdType, model: ICreateEntity<T>): Promise<void>;
+
+  abstract updateMany<
+    T extends IOrchaModel<IdType>,
+    IdType extends string | number = T extends IOrchaModel<infer ID> ? ID : never
+  >(
+    repo: OrchaBaseRepositoryPort<T, IdType>,
+    models: { id: IdType; changes: ICreateEntity<T> }[]
+  ): Promise<void>;
+
+  abstract delete<
+    T extends IOrchaModel<IdType>,
+    IdType extends string | number = T extends IOrchaModel<infer ID> ? ID : never
+  >(repo: OrchaBaseRepositoryPort<T, IdType>, id: IdType): Promise<void>;
+
+  abstract deleteMany<
+    T extends IOrchaModel<IdType>,
+    IdType extends string | number = T extends IOrchaModel<infer ID> ? ID : never
+  >(repo: OrchaBaseRepositoryPort<T, IdType>, ids: IdType[]): Promise<void>;
 }

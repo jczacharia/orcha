@@ -1,8 +1,8 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logger } from '@nestjs/common';
-import { ORCHA, OrchaOperationError } from '@orcha/common';
+import { ORCHA, ServerOperationError } from '@orcha/common';
 
 @Catch()
-export class OrchaOperationErrorFilter implements ExceptionFilter {
+export class ServerOperationErrorFilter implements ExceptionFilter {
   catch(exception: HttpException, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
@@ -13,7 +13,7 @@ export class OrchaOperationErrorFilter implements ExceptionFilter {
 
     const operation = (request.url as string).split(`${ORCHA}/`)[1];
 
-    const errorResponse: OrchaOperationError = {
+    const errorResponse: ServerOperationError = {
       statusCode: status,
       timestamp: new Date().toISOString(),
       operation,

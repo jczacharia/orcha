@@ -53,16 +53,16 @@ export class TestOrchaBaseRepositoryAdapter<
     query: IExactQuery<T, Q>
   ): Promise<IParser<T, Q>> {
     model.id;
-    this.entities.set(model.id as IdType, model as T);
-    return parseQuery(model as T, query);
+    this.entities.set(model.id as IdType, model as unknown as T);
+    return parseQuery(model as unknown as T, query);
   }
 
   async createMany<Q extends IQuery<T>>(
     models: ICreateEntity<T>[],
     query: IExactQuery<T, Q>
   ): Promise<IParser<T[], Q>> {
-    models.forEach((m) => this.entities.set(m.id as IdType, m as T));
-    return parseQuery(models as T[], query);
+    models.forEach((m) => this.entities.set(m.id as IdType, m as unknown as T));
+    return parseQuery(models as unknown as T[], query);
   }
 
   async updateOne<Q extends IQuery<T>>(

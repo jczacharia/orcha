@@ -15,12 +15,12 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { ORCHA, ORCHA_DTO, ORCHA_FILES, ORCHA_TOKEN } from '@orcha/common';
 
 /**
- * Decorates a NestJS class (Orchestration) of Operations to receive inbound requests and produce responses.
+ * Decorates a NestJS class (Controller) of Operations to receive inbound requests and produce responses.
  *
  * @example
  * ```ts
- * @ServerOrchestration('user')
- * export class UserOrchestration implements IServerOrchestration<IUserOrchestration> {
+ * @ServerController('user')
+ * export class UserController implements IServerController<IUserController> {
  *   constructor(private readonly _user: UserService) {}
  *
  *   // `/orcha/user/login`
@@ -43,9 +43,9 @@ import { ORCHA, ORCHA_DTO, ORCHA_FILES, ORCHA_TOKEN } from '@orcha/common';
  * }
  * ```
  *
- * @param name Name of orchestration class.
+ * @param name Name of controller class.
  */
-export function ServerOrchestrationController(name: string | number): ClassDecorator {
+export function ServerController(name: string | number): ClassDecorator {
   return function (target: Function) {
     Controller(`${ORCHA}/${name}`)(target);
   };
@@ -80,14 +80,14 @@ const validationPipeOptions: ValidationPipeOptions = {
 };
 
 /**
- * Maps an Orchestrations method to an Orchestration endpoint.
+ * Maps an Controllers method to an Controller endpoint.
  *
  * @note It is highly advised to use the `validateQuery` option in `options` for endpoint security.
  *
  * @example
  * ```ts
- * @ServerOrchestration('user')
- * export class UserOrchestration implements IServerOrchestration<IUserOrchestration> {
+ * @ServerController('user')
+ * export class UserController implements IServerController<IUserController> {
  *   constructor(private readonly _user: UserService) {}
  *
  *   // `/orcha/user/login`

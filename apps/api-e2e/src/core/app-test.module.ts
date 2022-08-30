@@ -4,15 +4,13 @@ import 'reflect-metadata';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { OrchaNestModule } from '@orcha/nestjs';
-import { TodoModule } from '../../../api/src/app/domain/todo/todo.module';
-import { UserModule } from '../../../api/src/app/domain/user/user.module';
+import { DomainModule } from '../../../api/src/app/domain/domain.module';
 
 jest.setTimeout(20000);
 
 @Module({
   imports: [
-    UserModule,
-    TodoModule,
+    DomainModule,
     OrchaNestModule.forRoot(),
     MikroOrmModule.forRoot({
       autoLoadEntities: true,

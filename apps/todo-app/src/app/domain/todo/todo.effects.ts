@@ -3,7 +3,7 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, map, of, switchMap } from 'rxjs';
 import * as TagActions from '../tag/tag.actions';
 import * as TodoActions from './todo.actions';
-import { TodoOrchestration } from './todo.orchestration';
+import { TodoController } from './todo.controller';
 
 // TODO fetch and pessimisticUpdate
 
@@ -130,5 +130,5 @@ export class TodoEffects {
     )
   );
 
-  constructor(private readonly _actions$: Actions, private readonly _todoOrcha: TodoOrchestration) {}
+  constructor(private readonly _actions$: Actions, private readonly _todoOrcha: TodoController) {}
 }

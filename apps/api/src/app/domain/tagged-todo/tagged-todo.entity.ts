@@ -12,9 +12,9 @@ export class TaggedTodoEntity implements IOrchaMikroOrmEntity<TaggedTodo> {
   @Property()
   dateLinked!: Date;
 
-  @ManyToOne(() => TodoEntity)
+  @ManyToOne(() => TodoEntity, { nullable: true })
   todo!: TodoEntity;
 
-  @ManyToOne(() => TagEntity)
+  @ManyToOne(() => TagEntity, { nullable: true })
   tag!: TagEntity;
 }

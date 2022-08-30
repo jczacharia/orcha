@@ -1,19 +1,19 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { ITestOrchestration } from '@orcha/testing';
+import { ITestController } from '@orcha/testing';
 import { TagRepoPort, TodoRepoPort } from '@todo-example-app-lib/server';
-import { ITodoOrchestration, IUserOrchestration } from '@todo-example-app-lib/shared';
+import { ITodoController, IUserController } from '@todo-example-app-lib/shared';
 import { AppTestModule } from '../../core/app-test.module';
 import { DatabaseService } from '../../core/database.service';
-import { createUserOrchestration } from '../user/user.orchestration';
-import { createTodoOrchestration } from './todo.orchestration';
+import { createUserController } from '../user/user.controller';
+import { createTodoController } from './todo.controller';
 
-describe('Todo Orchestration Integration Tests', () => {
+describe('Todo Controller Integration Tests', () => {
   let app: INestApplication;
   let db: DatabaseService;
 
-  let userOrcha: ITestOrchestration<IUserOrchestration>;
-  let todoOrcha: ITestOrchestration<ITodoOrchestration>;
+  let userOrcha: ITestController<IUserController>;
+  let todoOrcha: ITestController<ITodoController>;
 
   let todoRepo: TodoRepoPort;
   let tagRepo: TagRepoPort;
@@ -31,8 +31,8 @@ describe('Todo Orchestration Integration Tests', () => {
     app = moduleRef.createNestApplication();
     db = moduleRef.get(DatabaseService);
 
-    userOrcha = createUserOrchestration(app);
-    todoOrcha = createTodoOrchestration(app);
+    userOrcha = createUserController(app);
+    todoOrcha = createTodoController(app);
 
     todoRepo = moduleRef.get(TodoRepoPort);
     tagRepo = moduleRef.get(TagRepoPort);

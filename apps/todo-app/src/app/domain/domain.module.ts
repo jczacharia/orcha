@@ -2,16 +2,16 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
-import { OrchaAngularModule } from '@orcha/angular';
+import { OrchaModule } from '@orcha/angular';
 import { AppFacade } from './app.facade';
 import { TagEffects } from './tag/tag.effects';
-import { TagOrchestration } from './tag/tag.orchestration';
+import { TagController } from './tag/tag.controller';
 import { TagReducer, TAG_KEY } from './tag/tag.reducer';
 import { TodoEffects } from './todo/todo.effects';
-import { TodoOrchestration } from './todo/todo.orchestration';
+import { TodoController } from './todo/todo.controller';
 import { TodoReducer, TODO_KEY } from './todo/todo.reducer';
 import { UserEffects } from './user/user.effects';
-import { UserOrchestration } from './user/user.orchestration';
+import { UserController } from './user/user.controller';
 import { UserReducer, USER_KEY } from './user/user.reducer';
 
 @NgModule({
@@ -21,8 +21,8 @@ import { UserReducer, USER_KEY } from './user/user.reducer';
     StoreModule.forFeature(TODO_KEY, TodoReducer),
     StoreModule.forFeature(TAG_KEY, TagReducer),
     EffectsModule.forFeature([UserEffects, TodoEffects, TagEffects]),
-    OrchaAngularModule.forFeature({
-      orchestrations: [UserOrchestration, TodoOrchestration, TagOrchestration],
+    OrchaModule.forFeature({
+      controllers: [UserController, TodoController, TagController],
     }),
   ],
   providers: [AppFacade],

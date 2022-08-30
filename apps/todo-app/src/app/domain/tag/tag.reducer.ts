@@ -1,13 +1,12 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createReducer, on } from '@ngrx/store';
-import { IExtractOperationReturnSchema } from '@orcha/angular';
-import { ITagOrchestration } from '@todo-example-app-lib/shared';
-import { UnArray } from '../../util/unarray';
+import { IParserSerialized } from '@orcha/common';
+import { Tag, TagQueryModel } from '@todo-example-app-lib/shared';
 import * as TagActions from './tag.actions';
 
 export const TAG_KEY = 'tag';
 
-export type TagStoreModel = UnArray<IExtractOperationReturnSchema<ITagOrchestration['getMine']>>;
+export type TagStoreModel = IParserSerialized<Tag, typeof TagQueryModel>;
 
 export interface TagState {
   tags: EntityState<TagStoreModel>;

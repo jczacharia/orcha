@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, ElementRef, ViewChild } from '@angular/core';
-import { EntireProfile } from '@todo-example-app-lib/shared';
 import { AppFacade } from '../../domain/app.facade';
-import { UserOrchestration } from '../../domain/user/user.orchestration';
+import { UserController } from '../../domain/user/user.controller';
 
 function parseOneFile(event: Event) {
   const target = event.target as HTMLInputElement;
@@ -36,7 +35,7 @@ export class ProfileComponent {
 
   readonly profile$ = this.user.getProfile();
 
-  constructor(private user: UserOrchestration, private app: AppFacade) {}
+  constructor(private user: UserController, private app: AppFacade) {}
 
   updateProfilePicBtnClicked() {
     this.profilePicInp.nativeElement.click();

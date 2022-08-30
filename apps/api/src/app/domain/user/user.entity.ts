@@ -9,6 +9,18 @@ export class UserEntity implements IOrchaMikroOrmEntity<User> {
   @PrimaryKey()
   id!: string;
 
+  @Property({ nullable: true })
+  firstName!: string;
+
+  @Property({ nullable: true })
+  middleName!: string;
+
+  @Property({ nullable: true })
+  lastName!: string;
+
+  @Property({ nullable: true })
+  phone!: string;
+
   @Property({ unique: true })
   email!: string;
 
@@ -21,8 +33,11 @@ export class UserEntity implements IOrchaMikroOrmEntity<User> {
   @Property()
   dateCreated!: Date;
 
-  @Property({ nullable: true })
-  dateLastLoggedIn?: Date;
+  @Property()
+  dateUpdated!: Date;
+
+  @Property({ columnType: 'timestamp with time zone', nullable: true })
+  dateLastLoggedIn!: Date;
 
   @Property({ name: 'view' })
   async view() {

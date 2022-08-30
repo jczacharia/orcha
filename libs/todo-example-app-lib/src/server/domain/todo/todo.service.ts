@@ -1,4 +1,4 @@
-import { IPaginate } from '@orcha/common';
+import { IPaginate, OrchaDbTransactionalPort } from '@orcha/common';
 import { nanoid } from 'nanoid';
 import {
   CreateTodoDto,
@@ -18,7 +18,8 @@ export class TodoService {
     private user: UserService,
     private todoRepo: TodoRepoPort,
     private tagRepo: TagRepoPort,
-    private taggedTodoRepo: TaggedTodoRepoPort
+    private taggedTodoRepo: TaggedTodoRepoPort,
+    private transaction: OrchaDbTransactionalPort
   ) {}
 
   async getMine(token: string) {
@@ -41,10 +42,10 @@ export class TodoService {
         dateCreated: new Date(),
         dateUpdated: new Date(),
         done: false,
-        taggedTodos: [],
         user: user.id,
+        taggedTodos: [],
       },
-      {}
+      { user: {} }
     );
     return this.todoRepo.findOneOrFail(newTodo.id, TodoQueryModel);
   }
@@ -86,6 +87,7 @@ export class TodoService {
   async delete(token: string, dto: DeleteTodoDto) {
     const user = await this.user.verifyUserToken(token, {});
     const todo = await this.todoRepo.findOneOrFail(dto.todoId, {
+      taggedTodos: {},
       user: {},
     });
 
@@ -93,7 +95,21 @@ export class TodoService {
       throw new Error('You cannot delete a todo item for another user.');
     }
 
-    await this.todoRepo.deleteTodoAndLonelyTags(dto.todoId);
+    const tags = await this.tagRepo.findAll({ taggedTodos: { todo: {} } });
+    const lonelyTags = tags.filter((tag) => tag.taggedTodos.every((t) => t.todo.id === dto.todoId));
+
+    await this.transaction.runInTransaction(async (db) => {
+      await db.deleteMany(
+        this.taggedTodoRepo,
+        todo.taggedTodos.map((t) => t.id)
+      );
+      await db.deleteMany(
+        this.tagRepo,
+        lonelyTags.map((s) => s.id)
+      );
+      await db.delete(this.todoRepo, todo.id);
+    });
+
     return { deletedId: dto.todoId };
   }
 
@@ -167,7 +183,18 @@ export class TodoService {
       throw new Error('You cannot untag someone elses todo.');
     }
 
-    await this.taggedTodoRepo.deleteTaggedTodoAndLonelyTags(taggedTodo.id);
+    const tags = await this.tagRepo.findAll({ taggedTodos: {} });
+    const lonelyTags = tags.filter(
+      (tag) => tag.taggedTodos.length === 1 && tag.taggedTodos[0].id === dto.taggedTodoId
+    );
+
+    await this.transaction.runInTransaction(async (db) => {
+      await db.delete(this.taggedTodoRepo, taggedTodo.id);
+      await db.deleteMany(
+        this.tagRepo,
+        lonelyTags.map((s) => s.id)
+      );
+    });
 
     return this.todoRepo.findOneOrFail(taggedTodo.todo.id, TodoQueryModel);
   }

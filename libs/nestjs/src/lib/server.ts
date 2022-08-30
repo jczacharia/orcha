@@ -1,6 +1,6 @@
 import 'multer';
 
-import { IOperation, IOrchestration, IParser, IQuery } from '@orcha/common';
+import { IOperation, IController, IParser, IQuery } from '@orcha/common';
 
 /**
  * Implements a Server Operation from an `IOperation`.
@@ -17,9 +17,9 @@ export type IServerOperation<T, Q extends IQuery<T>, D = null, F extends File | 
 ) => Promise<IParser<T, Q>>;
 
 /**
- * Implements a Server Orchestration from an `IOrchestration`.
+ * Implements a Server Controller from an `IController`.
  */
-export type IServerOrchestration<O extends IOrchestration> = {
+export type IServerController<O extends IController> = {
   [K in keyof O]: O[K] extends IOperation<infer T, infer Q, infer D, infer F>
     ? IServerOperation<T, Q, D, F>
     : never;

@@ -6,6 +6,4 @@ export abstract class TodoRepoPort extends OrchaBaseRepositoryPort<Todo> {
     userId: string,
     query: IExactQuery<Todo, Q>
   ): Promise<IParser<Todo[], Q>>;
-
-  abstract deleteTodoAndLonelyTags(todoId: Todo['id']): Promise<Todo['id']>;
 }

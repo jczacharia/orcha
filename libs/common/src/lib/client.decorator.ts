@@ -3,58 +3,58 @@
 
 import {
   __ORCHA_OPERATIONS,
-  __ORCHA_ORCHESTRATION_NAME,
-  __ORCHA_ORCHESTRATION_PLACEHOLDER,
+  __ORCHA_CONTROLLER_NAME,
+  __ORCHA_CONTROLLER_PLACEHOLDER,
 } from './constants';
 
 /**
- * Decorates an Angular class (Orchestration) of Operations under a single parent endpoint.
- * An endpoint looks as follows: `/orcha/<orchestration name>/<operation name>`.
+ * Decorates an Angular class (Controller) of Operations under a single parent endpoint.
+ * An endpoint looks as follows: `/orcha/<controller name>/<operation name>`.
  *
  * @example
  * ```ts
- * @ClientOrchestration('user')
- * export class UserOrchestration implements IClientOrchestration<IUserOrchestration> {
+ * @ClientController('user')
+ * export class UserController implements IClientController<IUserController> {
  *   @ClientOperation() // `/orcha/user/signUp`
- *   signUp!: IClientOrchestration<IUserOrchestration>['signUp'];
+ *   signUp!: IClientController<IUserController>['signUp'];
  *   @ClientOperation() // `/orcha/user/login`
- *   login!: IClientOrchestration<IUserOrchestration>['login'];
+ *   login!: IClientController<IUserController>['login'];
  *   @ClientOperation() // `/orcha/user/getProfile`
- *   getProfile!: IClientOrchestration<IUserOrchestration>['getProfile'];
+ *   getProfile!: IClientController<IUserController>['getProfile'];
  * }
  * ```
  *
- * @param name Name of the Orchestration.
+ * @param name Name of the Controller.
  */
-export function ClientOrchestration(name: string): ClassDecorator {
+export function ClientController(name: string): ClassDecorator {
   return function (target: Function) {
-    target.prototype[__ORCHA_ORCHESTRATION_NAME] = name;
+    target.prototype[__ORCHA_CONTROLLER_NAME] = name;
   };
 }
 
 /**
- * Decorates a method of an Orchestration to be an Operation under a single HTTP endpoint.
- * An endpoint looks as follows: `/orcha/<orchestration name>/<operation name>`.
+ * Decorates a method of an Controller to be an Operation under a single HTTP endpoint.
+ * An endpoint looks as follows: `/orcha/<controller name>/<operation name>`.
  *
  * @example
  * ```ts
- * @ClientOrchestration('user')
- * export class UserOrchestration implements IClientOrchestration<IUserOrchestration> {
+ * @ClientController('user')
+ * export class UserController implements IClientController<IUserController> {
  *   @ClientOperation() // `/orcha/user/signUp`
- *   signUp!: IClientOrchestration<IUserOrchestration>['signUp'];
+ *   signUp!: IClientController<IUserController>['signUp'];
  *   @ClientOperation() // `/orcha/user/login`
- *   login!: IClientOrchestration<IUserOrchestration>['login'];
+ *   login!: IClientController<IUserController>['login'];
  *   @ClientOperation() // `/orcha/user/getProfile`
- *   getProfile!: IClientOrchestration<IUserOrchestration>['getProfile'];
+ *   getProfile!: IClientController<IUserController>['getProfile'];
  * }
  * ```
  */
 export function ClientOperation(): PropertyDecorator {
   return function (target: any, propertyKey: string | symbol) {
-    const orchestration = target[__ORCHA_OPERATIONS];
-    if (!orchestration) {
+    const controller = target[__ORCHA_OPERATIONS];
+    if (!controller) {
       target[__ORCHA_OPERATIONS] = {};
     }
-    target[__ORCHA_OPERATIONS][propertyKey] = __ORCHA_ORCHESTRATION_PLACEHOLDER;
+    target[__ORCHA_OPERATIONS][propertyKey] = __ORCHA_CONTROLLER_PLACEHOLDER;
   };
 }

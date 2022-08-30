@@ -3,7 +3,7 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, of, switchMap } from 'rxjs';
 import * as TodoActions from '../todo/todo.actions';
 import * as TagActions from './tag.actions';
-import { TagOrchestration } from './tag.orchestration';
+import { TagController } from './tag.controller';
 
 @Injectable()
 export class TagEffects {
@@ -23,5 +23,5 @@ export class TagEffects {
     )
   );
 
-  constructor(private readonly _actions$: Actions, private readonly tag: TagOrchestration) {}
+  constructor(private readonly _actions$: Actions, private readonly tag: TagController) {}
 }
