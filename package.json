@@ -1,6 +1,6 @@
 {
   "name": "orcha",
-  "version": "0.8.5",
+  "version": "0.8.8",
   "license": "MIT",
   "scripts": {
     "ng": "nx",

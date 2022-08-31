@@ -6,5 +6,6 @@
     "Orcha",
     "Todos",
     "unarray"
-  ]
+  ],
+  "typescript.tsdk": "node_modules\\typescript\\lib"
 }

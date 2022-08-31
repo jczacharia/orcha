@@ -38,8 +38,8 @@ export abstract class OrchaBaseRepositoryPort<
     query: IExactQuery<T, Q>
   ): Promise<IParser<T[], Q>>;
 
-  abstract deleteOne(id: IdType): Promise<IdType>;
-  abstract deleteMany(ids: IdType[]): Promise<IdType[]>;
+  abstract deleteOne<Q extends IQuery<T>>(id: IdType, query?: IExactQuery<T, Q>): Promise<IdType>;
+  abstract deleteMany<Q extends IQuery<T>>(ids: IdType[], query?: IExactQuery<T, Q>): Promise<IdType[]>;
 }
 
 export abstract class OrchaDbTransactionalPort {

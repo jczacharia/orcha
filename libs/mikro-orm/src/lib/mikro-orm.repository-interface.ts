@@ -90,7 +90,8 @@ export abstract class IOrchaMikroOrmRepository<
     changes: IUpdateEntity<T>,
     query: IExactQuery<T, Q>
   ): Promise<IParser<T, Q>> {
-    const entity = await this.repo.findOneOrFail({ id } as FilterQuery<E>);
+    const populate = createMikroOrmPopulateArray(query);
+    const entity = await this.repo.findOneOrFail({ id } as FilterQuery<E>, { populate });
     this.deleteAllUndefined(changes);
     wrap(entity).assign(changes as any);
     await this.repo.persistAndFlush(entity);
@@ -101,7 +102,10 @@ export abstract class IOrchaMikroOrmRepository<
     models: { id: IdType; changes: IUpdateEntity<T> }[],
     query: IExactQuery<T, Q>
   ): Promise<IParseUndefined<T, Q>[]> {
-    const entities = await this.repo.find({ id: { $in: models.map((m) => m.id) } } as FilterQuery<E>);
+    const populate = createMikroOrmPopulateArray(query);
+    const entities = await this.repo.find({ id: { $in: models.map((m) => m.id) } } as FilterQuery<E>, {
+      populate,
+    });
     for (const e of entities) {
       const changes = models.find((m) => m.id === (e as any).id);
       if (changes) {
@@ -116,14 +120,16 @@ export abstract class IOrchaMikroOrmRepository<
     );
   }
 
-  async deleteOne(id: IdType): Promise<IdType> {
-    const entity = await this.repo.findOneOrFail({ id } as FilterQuery<E>);
+  async deleteOne<Q extends IQuery<T>>(id: IdType, query?: IExactQuery<T, Q>): Promise<IdType> {
+    const populate = query ? createMikroOrmPopulateArray(query) : [];
+    const entity = await this.repo.findOneOrFail({ id } as FilterQuery<E>, { populate });
     await this.repo.removeAndFlush(entity);
     return id;
   }
 
-  async deleteMany(ids: IdType[]): Promise<IdType[]> {
-    const entities = await this.repo.find({ id: { $in: ids } } as FilterQuery<E>);
+  async deleteMany<Q extends IQuery<T>>(ids: IdType[], query?: IExactQuery<T, Q>): Promise<IdType[]> {
+    const populate = query ? createMikroOrmPopulateArray(query) : [];
+    const entities = await this.repo.find({ id: { $in: ids } } as FilterQuery<E>, { populate });
     await this.repo.removeAndFlush(entities);
     return ids;
   }

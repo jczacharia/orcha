@@ -100,10 +100,6 @@ export class TodoService {
 
     await this.transaction.runInTransaction(async (db) => {
       await db.deleteMany(
-        this.taggedTodoRepo,
-        todo.taggedTodos.map((t) => t.id)
-      );
-      await db.deleteMany(
         this.tagRepo,
         lonelyTags.map((s) => s.id)
       );
@@ -188,13 +184,7 @@ export class TodoService {
       (tag) => tag.taggedTodos.length === 1 && tag.taggedTodos[0].id === dto.taggedTodoId
     );
 
-    await this.transaction.runInTransaction(async (db) => {
-      await db.delete(this.taggedTodoRepo, taggedTodo.id);
-      await db.deleteMany(
-        this.tagRepo,
-        lonelyTags.map((s) => s.id)
-      );
-    });
+    await this.tagRepo.deleteMany(lonelyTags.map((s) => s.id));
 
     return this.todoRepo.findOneOrFail(taggedTodo.todo.id, TodoQueryModel);
   }
