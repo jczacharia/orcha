@@ -1,4 +1,5 @@
 import { Collection, Entity, ManyToOne, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
+import { ORCHA_VIEW } from '@orcha/common';
 import { IOrchaMikroOrmEntity } from '@orcha/mikro-orm';
 import { Todo } from '@todo-example-app-lib/shared';
 import { TaggedTodoEntity } from '../tagged-todo/tagged-todo.entity';
@@ -26,4 +27,9 @@ export class TodoEntity implements IOrchaMikroOrmEntity<Todo> {
 
   @OneToMany(() => TaggedTodoEntity, (e) => e.todo, { orphanRemoval: true })
   taggedTodos = new Collection<TaggedTodoEntity>(this);
+
+  @Property({ name: ORCHA_VIEW })
+  async [ORCHA_VIEW]() {
+    return { numOfTaggedTodos: await this.taggedTodos.loadCount() };
+  }
 }

@@ -9,7 +9,7 @@ import {
   UseInterceptors,
   ValidationError,
   ValidationPipe,
-  ValidationPipeOptions
+  ValidationPipeOptions,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ORCHA, ORCHA_DTO, ORCHA_FILES, ORCHA_TOKEN } from '@orcha/common';
@@ -63,7 +63,18 @@ const validationPipeOptions: ValidationPipeOptions = {
   transform: true,
   exceptionFactory: (validationErrors: ValidationError[] = []) => {
     const errorStr = validationErrors
-      .map(({ constraints }) => {
+      .map((err) => {
+        let constraints: Record<string, string> = {};
+        const recurse = (e: ValidationError) => {
+          constraints = { ...constraints, ...e.constraints };
+          if (!e.children) {
+            return;
+          }
+          for (const child of e.children) {
+            recurse(child);
+          }
+        };
+        recurse(err);
         const errors: string[] = [];
         if (constraints) {
           for (const constraint of Object.values(constraints)) {

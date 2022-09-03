@@ -121,6 +121,6 @@ export class TestOrchaBaseRepositoryAdapter<
     query: IExactQuery<T, Q>
   ): Promise<IPagination<IParser<T, Q>>> {
     const entities = [...this.entities.values()].slice(paginate.offset, paginate.limit);
-    return { items: parseQuery(entities, query) as IParser<T, Q>[], count: this.entities.size };
+    return { items: (await parseQuery(entities, query)) as IParser<T, Q>[], count: this.entities.size };
   }
 }

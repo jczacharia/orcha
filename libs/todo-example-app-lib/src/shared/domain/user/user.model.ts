@@ -1,4 +1,4 @@
-import { IOneToMany, IOrchaModel } from '@orcha/common';
+import { IOneToMany, IOrchaModel, ORCHA_VIEW } from '@orcha/common';
 import { Tag } from '../tag';
 import { Todo } from '../todo';
 
@@ -16,4 +16,6 @@ export interface User extends IOrchaModel<string> {
   dateLastLoggedIn: Date | undefined;
   todos: IOneToMany<Todo, 'user'>;
   tags: IOneToMany<Tag, 'user'>;
+
+  [ORCHA_VIEW]: { numOfTodos: number };
 }

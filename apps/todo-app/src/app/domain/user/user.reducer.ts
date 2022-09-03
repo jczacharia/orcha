@@ -11,15 +11,7 @@ export interface UserState extends UserStoreModel {
   loaded: boolean;
 }
 
-const initialState: UserState = {
-  id: '',
-  email: '',
-  dateCreated: '',
-  dateLastLoggedIn: '',
-  tags: [],
-  todos: [],
-  loaded: false,
-};
+const initialState: UserState = {} as UserState;
 
 export const UserReducer = createReducer(
   initialState,

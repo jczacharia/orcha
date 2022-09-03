@@ -1,4 +1,4 @@
-import { ORCHA_ID } from './constants';
+import { ORCHA_ID, ORCHA_VIEW } from './constants';
 import { IParser } from './parser';
 import { IExactQuery, IQuery } from './query';
 
@@ -55,9 +55,15 @@ import { IExactQuery, IQuery } from './query';
  * @param entities Objects to parse.
  * @returns A parsed objected based on the query. The object returned is a new object instance.
  */
-export function parseQuery<T, Q extends IQuery<T>>(entities: T, query: IExactQuery<T, Q>): IParser<T, Q>;
-export function parseQuery<T, Q extends IQuery<T>>(entities: T[], query: IExactQuery<T, Q>): IParser<T[], Q>;
-export function parseQuery<T, Q extends IQuery<T>>(entities: T | T[], query: IExactQuery<T, Q>) {
+export async function parseQuery<T, Q extends IQuery<T>>(
+  entities: T,
+  query: IExactQuery<T, Q>
+): Promise<IParser<T, Q>>;
+export async function parseQuery<T, Q extends IQuery<T>>(
+  entities: T[],
+  query: IExactQuery<T, Q>
+): Promise<IParser<T[], Q>>;
+export async function parseQuery<T, Q extends IQuery<T>>(entities: T | T[], query: IExactQuery<T, Q>) {
   if (!entities) {
     return null;
   }
@@ -66,19 +72,19 @@ export function parseQuery<T, Q extends IQuery<T>>(entities: T | T[], query: IEx
     query = query[0];
   }
 
-  const remove = (e: T) => {
+  const remove = async (e: T) => {
     const obj: any = {};
 
     const qKeys = Object.keys(query) as (keyof T)[];
     for (const k of Object.keys(e) as (keyof T)[]) {
       if (k === ORCHA_ID || qKeys.includes(k)) {
-        obj[k] = e[k];
+        obj[k] = e[k] instanceof Promise ? await e[k] : e[k];
       }
     }
 
     for (const [k, q] of Object.entries(query as object)) {
       if (typeof q === 'object') {
-        obj[k] = parseQuery(obj[k], q);
+        obj[k] = await parseQuery(obj[k], q);
       }
     }
 
@@ -86,7 +92,7 @@ export function parseQuery<T, Q extends IQuery<T>>(entities: T | T[], query: IEx
   };
 
   if (Array.isArray(entities)) {
-    return entities.map((e) => remove(e)) as unknown as IParser<T[], Q>;
+    return Promise.all(entities.map((e) => remove(e))) as unknown as IParser<T[], Q>;
   } else {
     return remove(entities) as unknown as IParser<T, Q>;
   }

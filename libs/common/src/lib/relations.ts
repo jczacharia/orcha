@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { ORCHA_ID } from './constants';
-import { NullToOptional } from './util';
+import { ORCHA_ID, ORCHA_VIEW } from './constants';
 
 /**
  * Extends your entity model with the Orcha `id` key.
@@ -33,7 +32,7 @@ export type IOrchaModel<IdType extends string | number> = { [ORCHA_ID]: IdType }
  * ```
  */
 export type IOneToOne<Relation, SelfKey extends keyof Relation> = {
-  [K in keyof Relation as SelfKey extends K ? never : K]: Relation[K];
+  [K in keyof Relation]: Relation[K];
 };
 
 /**
@@ -51,7 +50,7 @@ export type IOneToOne<Relation, SelfKey extends keyof Relation> = {
  * ```
  */
 export type IOneToMany<Relation, SelfKey extends keyof Relation> = {
-  [K in keyof Relation as SelfKey extends K ? never : K]: Relation[K];
+  [K in keyof Relation]: Relation[K];
 }[];
 
 /**
@@ -69,7 +68,7 @@ export type IOneToMany<Relation, SelfKey extends keyof Relation> = {
  * ```
  */
 export type IManyToOne<Relation, SelfKey extends keyof Relation> = {
-  [K in keyof Relation as SelfKey extends K ? never : K]: Relation[K];
+  [K in keyof Relation]: Relation[K];
 };
 
 /**
@@ -83,10 +82,10 @@ export type IAnyRelation<Relation, SelfKey extends keyof Relation> =
 /**
  * Filter an entity to only have its fields (no relations).
  */
-export type IProps<T extends IOrchaModel<any>> = {
+export type IProps<T> = {
   [K in keyof T as NonNullable<T[K]> extends object
-    ? NonNullable<T[K]> extends IAnyRelation<infer R, infer _>
-      ? Required<T> extends Required<R>
+    ? NonNullable<T[K]> extends IAnyRelation<infer R, infer RK>
+      ? Required<T> extends Required<Omit<R, RK>>
         ? K
         : never
       : K
@@ -96,10 +95,10 @@ export type IProps<T extends IOrchaModel<any>> = {
 /**
  * Filter an entity to only have relations (no fields).
  */
-export type IRelations<T extends IOrchaModel<any>> = {
+export type IRelations<T> = {
   [K in keyof T as NonNullable<T[K]> extends object
-    ? NonNullable<T[K]> extends IAnyRelation<infer R, infer _>
-      ? Required<T> extends Required<R>
+    ? NonNullable<T[K]> extends IAnyRelation<infer R, infer RK>
+      ? Required<T> extends Required<Omit<R, RK>>
         ? never
         : K
       : never
@@ -109,38 +108,41 @@ export type IRelations<T extends IOrchaModel<any>> = {
 /**
  * Utility type when creating an entity to a repository function.
  */
-export type ICreateEntity<T extends IOrchaModel<any>> = (T extends IOrchaModel<infer ID>
-  ? { [ORCHA_ID]: ID }
-  : never) &
-  NullToOptional<
-    AllUndefinedAreAlsoNull<{
-      [K in keyof T]: NonNullable<T[K]> extends Date
-        ? T[K] | string
-        : NonNullable<T[K]> extends object
-        ? NonNullable<T[K]> extends IAnyRelation<infer R, infer _>
-          ? Required<T> extends Required<R>
-            ? T[K]
-            : T[K] extends Array<infer A>
-            ? A extends IOrchaModel<infer IdType>
-              ? (ICreateEntity<A> | IdType)[]
-              : never
-            : NonNullable<T[K]> extends IOrchaModel<infer IdType>
-            ?
-                | (null extends T[K]
-                    ? ICreateEntity<NonNullable<T[K]>> | undefined
-                    : ICreateEntity<NonNullable<T[K]>>)
-                | IdType
-            : never
-          : T[K]
-        : T[K];
-    }>
-  >;
+export type ICreateEntity<T> = Omit<
+  {
+    [K in keyof IProps<T> as null extends T[K] ? K : undefined extends T[K] ? K : never]?: T[K] | null;
+  } & {
+    [K in keyof IProps<T> as null extends T[K] ? never : undefined extends T[K] ? never : K]: T[K];
+  } & {
+    [K in keyof IRelations<T> as null extends T[K]
+      ? K
+      : undefined extends T[K]
+      ? K
+      : never]?: CreateEntityRelations<T[K], T> | null;
+  } & {
+    [K in keyof IRelations<T> as null extends T[K]
+      ? never
+      : undefined extends T[K]
+      ? never
+      : K]: CreateEntityRelations<T[K], T>;
+  },
+  typeof ORCHA_VIEW
+> &
+  (T extends IOrchaModel<infer ID> ? { [ORCHA_ID]: ID } : { [ORCHA_ID]: string | number });
 
-declare type AllUndefinedAreAlsoNull<T> = {
-  [K in keyof T]: undefined extends T[K] ? T[K] | null : T[K];
+type CreateEntityRelations<T, R> = T extends Array<infer A>
+  ? A extends IOrchaModel<infer Id>
+    ? (Id | ICreateEntity<OmitParentRelations<A, R>>)[]
+    : never
+  : T extends IOrchaModel<infer Id>
+  ? Id | ICreateEntity<OmitParentRelations<T, R>>
+  : never;
+
+type OmitParentRelations<T, R> = {
+  [K in keyof T as T[K] extends IAnyRelation<R, infer _> ? never : K]: T[K];
 };
 
 /**
  * Utility type when updating an entity to a repository function.
  */
-export type IUpdateEntity<T extends IOrchaModel<any>> = Omit<Partial<ICreateEntity<T>>, typeof ORCHA_ID>;
+export type IUpdateEntity<T> = Omit<Partial<ICreateEntity<T>>, typeof ORCHA_ID>;

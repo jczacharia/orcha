@@ -20,19 +20,13 @@ type IQueryUndefined<T> = T extends undefined
   ? IQueryObject<NonNullable<T>> | null
   : IQueryObject<T>;
 
-/* ** Typescript magic ** */
-
 export type IQueryObject<T> = {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   [K in keyof T as K extends typeof ORCHA_ID ? never : K]?: NonNullable<T[K]> extends object
-    ? {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        [_ in keyof NonNullable<T[K]>]: NonNullable<T[K]> extends IAnyRelation<infer R, infer __>
-          ? Required<T> extends Required<R>
-            ? true
-            : IQueryArray<T[K]>
-          : true;
-      }[keyof NonNullable<T[K]>]
+    ? NonNullable<T[K]> extends IAnyRelation<infer R, infer RK>
+      ? Required<T> extends Required<Omit<R, RK>>
+        ? true
+        : IQueryArray<T[K]>
+      : true
     : true;
 };
 
