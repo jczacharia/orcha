@@ -1,4 +1,4 @@
-import { ORCHA_ID, ORCHA_VIEW } from './constants';
+import { ORCHA_ID } from './constants';
 import { IParser } from './parser';
 import { IExactQuery, IQuery } from './query';
 
@@ -6,7 +6,8 @@ import { IExactQuery, IQuery } from './query';
  * Manually parse an Orcha Query.
  *
  * This will recursively go through all `entities` and remove values that are not specified in the query.
- * (The object returned is a new object instance.)
+ * The object returned is a new object instance.
+ * This function is async so any values in `T` that are `instanceof Promise` will be resolved.
  *
  * @example
  * ```ts
@@ -15,13 +16,14 @@ import { IExactQuery, IQuery } from './query';
  *     name: true,
  *   },
  * });
- * const parsed = parseQuery([
+ * const parsed = await parseQuery([
  *   {
  *     id: 1,
  *     extraField: 'field',
  *     data: {
  *       name: 'James',
  *       initial: 'J',
+ *       comments: 
  *     },
  *   },
  *   {

@@ -1,9 +1,7 @@
-import { Injectable } from '@nestjs/common';
 import { TagQueryModel } from '../../../shared/domain/tag/tag.queries';
 import { UserService } from '../user/user.service';
 import { TagRepoPort } from './tag-repo.port';
 
-@Injectable()
 export class TagService {
   constructor(private user: UserService, private tagRepo: TagRepoPort) {}
 

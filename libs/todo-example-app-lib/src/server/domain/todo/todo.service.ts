@@ -103,7 +103,7 @@ export class TodoService {
         this.tagRepo,
         lonelyTags.map((s) => s.id)
       );
-      await db.delete(this.todoRepo, todo.id);
+      await db.deleteOne(this.todoRepo, todo.id);
     });
 
     return { deletedId: dto.todoId };

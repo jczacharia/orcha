@@ -76,7 +76,7 @@ export class OrchaModule {
   }
 
   /**
-   * Creates an Orcha feature by grouping relevant controllers, gateways, and interceptors.
+   * Creates an Orcha feature by grouping relevant controllers.
    */
   static forFeature({
     controllers,

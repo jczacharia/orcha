@@ -9,7 +9,7 @@ import { OrchaInterceptor } from './orcha.interceptor';
 @Module({})
 export class OrchaNestModule {
   /**
-   * Creates an Orcha feature by grouping relevant controllers and gateways.
+   * Creates an Orcha feature by grouping relevant controllers.
    */
   static forRoot(): DynamicModule {
     return {

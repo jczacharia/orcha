@@ -20,7 +20,7 @@ export class OrchaMikroOrmTransactional implements OrchaDbTransactionalPort {
     }
   }
 
-  async create<
+  async createOne<
     T extends IOrchaModel<IdType>,
     E extends IOrchaMikroOrmEntity<T>,
     IdType extends string | number = T extends IOrchaModel<infer ID extends string | number> ? ID : never
@@ -35,11 +35,11 @@ export class OrchaMikroOrmTransactional implements OrchaDbTransactionalPort {
     IdType extends string | number = T extends IOrchaModel<infer ID extends string | number> ? ID : never
   >(r: IOrchaMikroOrmRepository<T, E, IdType>, models: ICreateEntity<T>[]): Promise<void> {
     for (const m of models) {
-      await this.create(r, m);
+      await this.createOne(r, m);
     }
   }
 
-  async update<
+  async updateOne<
     T extends IOrchaModel<IdType>,
     E extends IOrchaMikroOrmEntity<T>,
     IdType extends string | number = T extends IOrchaModel<infer ID extends string | number> ? ID : never
@@ -69,7 +69,7 @@ export class OrchaMikroOrmTransactional implements OrchaDbTransactionalPort {
     this.forked.persist(entities);
   }
 
-  async delete<
+  async deleteOne<
     T extends IOrchaModel<IdType>,
     E extends IOrchaMikroOrmEntity<T>,
     IdType extends string | number = T extends IOrchaModel<infer ID extends string | number> ? ID : never

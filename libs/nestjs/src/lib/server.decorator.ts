@@ -59,28 +59,26 @@ function transform(val: string) {
   }
 }
 
-const validationPipeOptions: ValidationPipeOptions = {
+const defaultValidationPipeOptions: ValidationPipeOptions = {
   transform: true,
   exceptionFactory: (validationErrors: ValidationError[] = []) => {
     const errorStr = validationErrors
       .map((err) => {
-        let constraints: Record<string, string> = {};
-        const recurse = (e: ValidationError) => {
-          constraints = { ...constraints, ...e.constraints };
-          if (!e.children) {
+        const errors: string[] = [];
+        const recurse = ({ constraints, children }: ValidationError) => {
+          if (constraints) {
+            for (const constraint of Object.values(constraints)) {
+              errors.push(constraint);
+            }
+          }
+          if (!children) {
             return;
           }
-          for (const child of e.children) {
+          for (const child of children) {
             recurse(child);
           }
         };
         recurse(err);
-        const errors: string[] = [];
-        if (constraints) {
-          for (const constraint of Object.values(constraints)) {
-            errors.push(constraint);
-          }
-        }
         return errors;
       })
       .filter((v) => v.length > 0)
@@ -121,10 +119,17 @@ const validationPipeOptions: ValidationPipeOptions = {
  * }
  * ```
  */
-export function ServerOperation(): MethodDecorator {
+export function ServerOperation(options?: { dtoValidationPipe?: ValidationPipe }): MethodDecorator {
   return function <T>(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) {
     Body(ORCHA_TOKEN)(target, propertyKey, 0);
-    Body(ORCHA_DTO, { transform }, new ValidationPipe(validationPipeOptions))(target, propertyKey, 1);
+
+    Body(
+      ORCHA_DTO,
+      { transform },
+      options?.dtoValidationPipe
+        ? options.dtoValidationPipe
+        : new ValidationPipe(defaultValidationPipeOptions)
+    )(target, propertyKey, 1);
 
     UploadedFiles()(target, propertyKey, 2);
     UseInterceptors(FilesInterceptor(ORCHA_FILES))(target, propertyKey, descriptor);

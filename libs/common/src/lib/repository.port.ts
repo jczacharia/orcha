@@ -45,7 +45,7 @@ export abstract class OrchaBaseRepositoryPort<
 export abstract class OrchaDbTransactionalPort {
   abstract runInTransaction(fn: (t: OrchaDbTransactionalPort) => Promise<void>): Promise<void>;
 
-  abstract create<
+  abstract createOne<
     T extends IOrchaModel<IdType>,
     IdType extends string | number = T extends IOrchaModel<infer ID> ? ID : never
   >(repo: OrchaBaseRepositoryPort<T, IdType>, model: ICreateEntity<T>): Promise<void>;
@@ -55,7 +55,7 @@ export abstract class OrchaDbTransactionalPort {
     IdType extends string | number = T extends IOrchaModel<infer ID> ? ID : never
   >(repo: OrchaBaseRepositoryPort<T, IdType>, models: ICreateEntity<T>[]): Promise<void>;
 
-  abstract update<
+  abstract updateOne<
     T extends IOrchaModel<IdType>,
     IdType extends string | number = T extends IOrchaModel<infer ID> ? ID : never
   >(repo: OrchaBaseRepositoryPort<T, IdType>, id: IdType, model: ICreateEntity<T>): Promise<void>;
@@ -68,7 +68,7 @@ export abstract class OrchaDbTransactionalPort {
     models: { id: IdType; changes: ICreateEntity<T> }[]
   ): Promise<void>;
 
-  abstract delete<
+  abstract deleteOne<
     T extends IOrchaModel<IdType>,
     IdType extends string | number = T extends IOrchaModel<infer ID> ? ID : never
   >(repo: OrchaBaseRepositoryPort<T, IdType>, id: IdType): Promise<void>;
