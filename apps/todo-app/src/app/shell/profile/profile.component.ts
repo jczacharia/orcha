@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, ElementRef, ViewChild } from '@angular/core';
+import { EntireProfile } from '@todo-example-app-lib/shared';
 import { AppFacade } from '../../domain/app.facade';
 import { UserController } from '../../domain/user/user.controller';
 
@@ -33,7 +34,7 @@ function parseOneImageFile(event: Event) {
 export class ProfileComponent {
   @ViewChild('profilePicInp') profilePicInp!: ElementRef<HTMLInputElement>;
 
-  readonly profile$ = this.user.getProfile();
+  readonly profile$ = this.user.getProfile({ query: EntireProfile });
 
   constructor(private user: UserController, private app: AppFacade) {}
 

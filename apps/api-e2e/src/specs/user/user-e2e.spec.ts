@@ -80,8 +80,17 @@ describe('User Controller Integration Tests', () => {
   describe('getProfile', () => {
     it('should get user data', async () => {
       auth = await userOrcha.signUp('', credentials);
-      const { body } = await userOrcha.getProfile(auth.body.data.token);
-      expect(body.data.email).toBe(credentials.email);
+      const { body } = await userOrcha.getProfile(auth.body.data.token, { query: { email: true } });
+      expect(body.data).toMatchObject({ email: credentials.email });
+    });
+    it('should forbid unauthorized query keys', async () => {
+      auth = await userOrcha.signUp('', credentials);
+      const { error } = await userOrcha.getProfile(auth.body.data.token, {
+        query: { dateCreated: true, firstName: true, email: true },
+      });
+      expect(error).toBe(
+        'Validation failed: Unauthorized Orcha Query key(s): dateCreated, firstName'
+      );
     });
   });
 });

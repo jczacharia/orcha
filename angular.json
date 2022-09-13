@@ -6,6 +6,7 @@
     "api": "apps/api",
     "api-e2e": "apps/api-e2e",
     "common": "libs/common",
+    "docs": "apps/docs",
     "mikro-orm": "libs/mikro-orm",
     "nestjs": "libs/nestjs",
     "testing": "libs/testing",

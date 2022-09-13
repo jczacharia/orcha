@@ -1,11 +1,11 @@
 import 'multer';
 
-import { IOperation, IController, IParser, IQuery } from '@orcha/common';
+import { IController, IOperation, IParser, IQuery } from '@orcha/common';
 
 /**
  * Implements a Server Operation from an `IOperation`.
  */
-export type IServerOperation<T, Q extends IQuery<T>, D = null, F extends File | File[] | null = null> = (
+export type IServerOperation<T, Q extends IQuery<T>, D = null, F extends File[] | null = null> = (
   token: string,
   ...args: D extends null
     ? F extends null

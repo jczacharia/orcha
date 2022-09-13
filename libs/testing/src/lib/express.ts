@@ -3,10 +3,10 @@
 import { Type } from '@angular/core';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import {
-  ClientOperation,
   ClientController,
-  IOperation,
+  ClientOperation,
   IController,
+  IOperation,
   IParser,
   IQuery,
   ORCHA,
@@ -14,8 +14,8 @@ import {
   ORCHA_DTO,
   ORCHA_FILES,
   ORCHA_TOKEN,
+  __ORCHA_CONTROLLER_NAME,
   __ORCHA_OPERATIONS,
-  __ORCHA_CONTROLLER_NAME
 } from '@orcha/common';
 import 'multer';
 import * as request from 'supertest';

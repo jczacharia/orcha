@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 /**
  * Implements a Client Operation from an `IOperation`.
  */
-export type IClientOperation<T, Q extends IQuery<T>, D = null, F extends File | File[] | null = null> = (
+export type IClientOperation<T, Q extends IQuery<T>, D = null, F extends File[] | null = null> = (
   ...args: D extends null
     ? F extends null
       ? []

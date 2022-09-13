@@ -1,6 +1,7 @@
-import { IServerController, ServerOperation, ServerController } from '@orcha/nestjs';
+import { IServerController, ServerController, ServerOperation } from '@orcha/nestjs';
 import { UserService } from '@todo-example-app-lib/server';
 import {
+  GetProfileDto,
   IUserController,
   LoginDto,
   SignUpDto,
@@ -22,8 +23,8 @@ export class UserController implements IServerController<IUserController> {
   }
 
   @ServerOperation()
-  getProfile(token: string) {
-    return this.user.getProfile(token);
+  getProfile(token: string, dto: GetProfileDto) {
+    return this.user.getProfile(token, dto.query);
   }
 
   @ServerOperation()

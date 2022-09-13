@@ -6,8 +6,6 @@ import { Module } from '@nestjs/common';
 import { OrchaNestModule } from '@orcha/nestjs';
 import { DomainModule } from '../../../api/src/app/domain/domain.module';
 
-jest.setTimeout(20000);
-
 @Module({
   imports: [
     DomainModule,

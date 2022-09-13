@@ -1,105 +1,76 @@
+<h1 align="center">OrchaJS - A Typescript-Native Client-Server Facilitator</h1>
+<p align="center">
+  <i>OrchaJS is a framework to safely, securely, and efficiently build scalable web apps requiring real-world, highly relational domain modeling and essential features such as user authentication, file uploading, pagination, and real-time updates. All while providing an unprecedented developer experience.</i>
+</p>
 
+<hr>
 
-# Orcha
+## Features
 
-This project was generated using [Nx](https://nx.dev).
+- ✅ Type-safety between Client and Server
+- ✅ Easy querying of highly-relational data
+- ✅ Secure Endpoints and Queries
+- ✅ Build-in pagination
+- ✅ Singular and Multiple File Uploads
+- ✅ Integration Testing
+- ✅ Customizable User Authentication
 
-<p style="text-align: center;"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="450"></p>
+### Limitations
 
-🔎 **Smart, Fast and Extensible Build System**
+Since OrchaJS is written in Typescript, this means that only Typescript libraries and frameworks can be used.
+Also, since OrchaJS is platform-agnostic, any library or framework can be used but a proper driver will have
+to be created if there is currently not one written for it. The current compatible technologies are (but not
+limited to):
 
-## Quick Start & Documentation
+- Angular (Client)
+- NestJS (Server)
+- MikroORM (ORM)
 
-[Nx Documentation](https://nx.dev/angular)
+However, the essence of this framework is to share code between the frontend and backend thusly allowing for a
+robust code-base and auspicious developer-experience.
 
-[10-minute video showing all Nx features](https://nx.dev/getting-started/intro)
+#### Creating an Orcha Query:
 
-[Interactive Tutorial](https://nx.dev/react-tutorial/01-create-application)
+<img width="100%" height="100%" src="https://i.imgur.com/RO9kd1T.gif">
 
-## Adding capabilities to your workspace
+# Todo Example App
 
-Nx supports many plugins which add capabilities for developing different types of applications and different tools.
+## Steps to get setup:
 
-These capabilities include generating applications, libraries, etc as well as the devtools to test, and build projects as well.
+1. Clone repository:
 
-Below are our core plugins:
+   ```sh
+   git clone https://github.com/jczacharia/orcha
+   ```
 
-- [Angular](https://angular.io)
-  - `ng add @nrwl/angular`
-- [React](https://reactjs.org)
-  - `ng add @nrwl/react`
-- Web (no framework frontends)
-  - `ng add @nrwl/web`
-- [Nest](https://nestjs.com)
-  - `ng add @nrwl/nest`
-- [Express](https://expressjs.com)
-  - `ng add @nrwl/express`
-- [Node](https://nodejs.org)
-  - `ng add @nrwl/node`
+2. Install Dependencies:
 
-There are also many [community plugins](https://nx.dev/community) you could add.
+   ```sh
+   cd orcha && yarn
+   ```
 
-## Generate an application
+3. Have a PostgreSQL instance running on `localhost:5432` (Environment variables found here:
+   `libs/todo-example-app/shared/domain/src/lib/environments/environment.ts`)
 
-Run `ng g @nrwl/angular:app my-app` to generate an application.
+   - Username: `postgres`
+   - Password: `1Qazxsw2`
+   - DB Name: `orcha-todo-example-app`
+   - e2e (Integration Testing) DB Name: `orcha-todo-example-app-e2e`
 
-> You can use any of the plugins above to generate applications as well.
+   (Though these can be changed.)
 
-When using Nx, you can create multiple applications and libraries in the same workspace.
+4. Open 2 terminals:
 
-## Generate a library
+5. In Terminal 1, run the client (Angular):
 
-Run `ng g @nrwl/angular:lib my-lib` to generate a library.
+   ```sh
+   npx nx s todo-app
+   ```
 
-> You can also use any of the plugins above to generate libraries as well.
+6. In Terminal 2 run the server (Nestjs):
 
-Libraries are shareable across libraries and applications. They can be imported from `@orcha/mylib`.
+   ```sh
+   npx nx s api
+   ```
 
-## Development server
-
-Run `ng serve my-app` for a dev server. Navigate to http://localhost:4200/. The app will automatically reload if you change any of the source files.
-
-## Code scaffolding
-
-Run `ng g component my-component --project=my-app` to generate a new component.
-
-## Build
-
-Run `ng build my-app` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
-
-## Running unit tests
-
-Run `ng test my-app` to execute the unit tests via [Jest](https://jestjs.io).
-
-Run `nx affected:test` to execute the unit tests affected by a change.
-
-## Running end-to-end tests
-
-Run `ng e2e my-app` to execute the end-to-end tests via [Cypress](https://www.cypress.io).
-
-Run `nx affected:e2e` to execute the end-to-end tests affected by a change.
-
-## Understand your workspace
-
-Run `nx graph` to see a diagram of the dependencies of your projects.
-
-## Further help
-
-Visit the [Nx Documentation](https://nx.dev/angular) to learn more.
-
-
-
-
-
-
-## ☁ Nx Cloud
-
-### Distributed Computation Caching & Distributed Task Execution
-
-<p style="text-align: center;"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-cloud-card.png"></p>
-
-Nx Cloud pairs with Nx in order to enable you to build and test code more rapidly, by up to 10 times. Even teams that are new to Nx can connect to Nx Cloud and start saving time instantly.
-
-Teams using Nx gain the advantage of building full-stack applications with their preferred framework alongside Nx’s advanced code generation and project dependency graph, plus a unified experience for both frontend and backend developers.
-
-Visit [Nx Cloud](https://nx.app/) to learn more.
+7. Visit: http://localhost:4200

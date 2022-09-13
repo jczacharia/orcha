@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { fetch, pessimisticUpdate } from '@nrwl/angular';
 import { OrchaAuthTokenLocalStorage } from '@orcha/angular';
+import { IParser, IParserSerialized } from '@orcha/common';
+import { EntireProfile, User } from '@todo-example-app-lib/shared';
 import { filter, map, of, tap } from 'rxjs';
 import * as UserActions from './user.actions';
 import { UserController } from './user.controller';
@@ -53,9 +55,11 @@ export class UserEffects {
       ofType(UserActions.getProfile),
       fetch({
         run: () =>
-          this._user.getProfile().pipe(
+          this._user.getProfile({ query: EntireProfile }).pipe(
             map(({ data: user }) => {
-              return UserActions.getProfileSuccess({ user });
+              return UserActions.getProfileSuccess({
+                user: user as IParserSerialized<User, typeof EntireProfile>,
+              });
             })
           ),
         onError: (action, error) => {
