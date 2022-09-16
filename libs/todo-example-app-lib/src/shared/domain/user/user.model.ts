@@ -4,16 +4,16 @@ import { Todo } from '../todo';
 
 export interface User extends IOrchaModel<string> {
   firstName: string | null;
-  middleName: string | undefined;
-  lastName: string | undefined;
-  phone: string | undefined;
+  middleName: string | null;
+  lastName: string | null;
+  phone: string | null;
 
   email: string;
   passwordHash: string;
   salt: string;
   dateCreated: Date;
   dateUpdated: Date;
-  dateLastLoggedIn: Date | undefined;
+  dateLastLoggedIn: Date | null;
   todos: IOneToMany<Todo, 'user'>;
   tags: IOneToMany<Tag, 'user'>;
 

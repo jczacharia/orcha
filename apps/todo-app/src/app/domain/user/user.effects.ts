@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { fetch, pessimisticUpdate } from '@nrwl/angular';
 import { OrchaAuthTokenLocalStorage } from '@orcha/angular';
-import { IParser, IParserSerialized } from '@orcha/common';
+import { IParserSerialized } from '@orcha/common';
 import { EntireProfile, User } from '@todo-example-app-lib/shared';
 import { filter, map, of, tap } from 'rxjs';
 import * as UserActions from './user.actions';
@@ -55,7 +55,7 @@ export class UserEffects {
       ofType(UserActions.getProfile),
       fetch({
         run: () =>
-          this._user.getProfile({ query: EntireProfile }).pipe(
+          this._user.getProfile().pipe(
             map(({ data: user }) => {
               return UserActions.getProfileSuccess({
                 user: user as IParserSerialized<User, typeof EntireProfile>,
@@ -88,7 +88,7 @@ export class UserEffects {
       ofType(UserActions.updateProfilePic),
       pessimisticUpdate({
         run: ({ file }) =>
-          this._user.updateProfilePic(null, [file]).pipe(
+          this._user.updateProfilePic(file).pipe(
             map((event) => {
               switch (event.type) {
                 case HttpEventType.UploadProgress:

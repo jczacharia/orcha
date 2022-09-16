@@ -1,9 +1,9 @@
-import { createMikroOrmRelationsArray } from './relations.transform';
+import { createMikroOrmPopulateArray } from './populate-transform';
 
-describe('relations transformer', () => {
+describe('populate transformer', () => {
   it('1', () => {
     expect(
-      createMikroOrmRelationsArray({
+      createMikroOrmPopulateArray({
         rootProp1: true,
         rootProp2: true,
         d: {
@@ -18,20 +18,17 @@ describe('relations transformer', () => {
           3: {},
         },
       } as any)
-    ).toStrictEqual({
-      populate: ['d', 'd.1', 'c', 'c.1', 'c.2', 'c.3'],
-      fields: ['rootProp1', 'rootProp2', 'd.dProp1', 'c.1.c1Prop'],
-    });
+    ).toStrictEqual(['d', 'd.1', 'c', 'c.1', 'c.2', 'c.3']);
   });
   it('2', () => {
     expect(
-      createMikroOrmRelationsArray({
+      createMikroOrmPopulateArray({
         d: {},
         c: {
           1: {},
           2: {},
         },
       } as any)
-    ).toStrictEqual(['d', 'c', 'c.1', 'c.2'].sort());
+    ).toStrictEqual(['d', 'c', 'c.1', 'c.2']);
   });
 });

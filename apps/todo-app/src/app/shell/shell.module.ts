@@ -8,11 +8,19 @@ import { AppGuard } from './app.guard';
 import { LoginGuard } from './login.guard';
 import { LoginComponent } from './login/login.component';
 import { ProfileComponent } from './profile/profile.component';
+import { QueryProfileComponent } from './query-profile/query-profile.component';
 import { SignUpComponent } from './sign-up/sign-up.component';
 import { TodosComponent } from './todos/todos.component';
 
 @NgModule({
-  declarations: [AppShellComponent, LoginComponent, SignUpComponent, TodosComponent, ProfileComponent],
+  declarations: [
+    AppShellComponent,
+    LoginComponent,
+    SignUpComponent,
+    TodosComponent,
+    ProfileComponent,
+    QueryProfileComponent,
+  ],
   providers: [AppGuard, LoginGuard],
   imports: [
     CommonModule,
@@ -42,6 +50,10 @@ import { TodosComponent } from './todos/todos.component';
           {
             path: 'profile',
             component: ProfileComponent,
+          },
+          {
+            path: 'query',
+            component: QueryProfileComponent,
           },
           { path: '**', pathMatch: 'full', redirectTo: 'todos' },
         ],

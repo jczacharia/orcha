@@ -1,26 +1,34 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-types */
+import 'multer';
+
 import { Type } from '@angular/core';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import {
   ClientController,
   ClientOperation,
   IController,
-  IOperation,
-  IParser,
+  IExactQuery,
+  IOperationEvent,
+  IOperationFilesUpload,
+  IOperationFileUpload,
+  IOperationPaginate,
+  IOperationQuery,
+  IOperationSimple,
+  IPaginateQuery,
+  IPagination,
+  IParserSerialized,
   IQuery,
   ORCHA,
+  OrchaMetadata,
+  OrchaOperationType,
+  OrchaProps,
   OrchaResponse,
-  ORCHA_DTO,
-  ORCHA_FILES,
-  ORCHA_TOKEN,
-  __ORCHA_CONTROLLER_NAME,
-  __ORCHA_OPERATIONS,
 } from '@orcha/common';
-import 'multer';
-import * as request from 'supertest';
+import { Observable } from 'rxjs';
+import * as supertest from 'supertest';
 
-type ITestResponse<T> = Omit<request.Response, 'body'> & {
+type ITestResponse<T> = Omit<supertest.Response, 'body'> & {
   body: T;
   statusCode: HttpStatus;
   error?: any;
@@ -62,20 +70,59 @@ export const TestOperation = ClientOperation;
  */
 export const TestController = ClientController;
 
-export type ITestOperation<T, Q extends IQuery<T>, D = null, F extends File[] | null = null> = (
+export type ITestOperationSimple<T, Q extends IQuery<T>, D extends Record<string, any> | null = null> = (
   token: string,
-  ...args: D extends null
-    ? F extends null
-      ? []
-      : [dto: null, files: F]
-    : F extends null
-    ? [dto: D]
-    : [dto: D, files: F]
-) => Promise<ITestResponse<OrchaResponse<IParser<T, Q>>>>;
+  ...args: D extends null ? [] : [dto: D]
+) => Promise<ITestResponse<OrchaResponse<IParserSerialized<T, Q>>>>;
 
+export type ITestOperationFileUpload<T, Q extends IQuery<T>, D extends Record<string, any> | null = null> = (
+  token: string,
+  file: File,
+  ...args: D extends null ? [] : [dto: D]
+) => Promise<ITestResponse<OrchaResponse<IParserSerialized<T, Q>>>>;
+
+export type ITestOperationFilesUpload<T, Q extends IQuery<T>, D extends Record<string, any> | null = null> = (
+  token: string,
+  files: File[],
+  ...args: D extends null ? [] : [dto: D]
+) => Promise<ITestResponse<OrchaResponse<IParserSerialized<T, Q>>>>;
+
+export type ITestOperationPaginate<T, Q extends IQuery<T>, D extends Record<string, any> | null = null> = (
+  token: string,
+  paginate: IPaginateQuery,
+  ...args: D extends null ? [] : [dto: D]
+) => Promise<ITestResponse<OrchaResponse<IPagination<IParserSerialized<T, Q>>>>>;
+
+export type ITestOperationEventSubscriber<
+  T,
+  Q extends IQuery<T>,
+  D extends Record<string, string | number> | null = null
+> = (token: string, ...args: D extends null ? [] : [dto: D]) => Observable<IParserSerialized<T, Q>>;
+
+export type ITestOperationQuery<T, D extends Record<string, string | number> | null = null> = <
+  Q extends IQuery<T>
+>(
+  token: string,
+  query: IExactQuery<T, Q>,
+  ...args: D extends null ? [] : [dto: D]
+) => Promise<ITestResponse<OrchaResponse<IParserSerialized<T, Q>>>>;
+
+/**
+ * Implements a Client Controller from an `IController`.
+ */
 export type ITestController<O extends IController> = {
-  [K in keyof O]: O[K] extends IOperation<infer T, infer Q, infer D, infer F>
-    ? ITestOperation<T, Q, D, F>
+  [K in keyof O]: O[K] extends IOperationSimple<infer T, infer Q, infer D>
+    ? ITestOperationSimple<T, Q, D>
+    : O[K] extends IOperationFileUpload<infer T, infer Q, infer D>
+    ? ITestOperationFileUpload<T, Q, D>
+    : O[K] extends IOperationFilesUpload<infer T, infer Q, infer D>
+    ? ITestOperationFilesUpload<T, Q, D>
+    : O[K] extends IOperationPaginate<infer T, infer Q, infer D>
+    ? ITestOperationPaginate<T, Q, D>
+    : O[K] extends IOperationEvent<infer T, infer Q, infer D>
+    ? ITestOperationEventSubscriber<T, Q, D>
+    : O[K] extends IOperationQuery<infer T, infer D>
+    ? ITestOperationQuery<T, D>
     : never;
 };
 
@@ -86,36 +133,122 @@ export function createNestjsTestController<O extends Type<IController>>(
   app: INestApplication,
   controller: O
 ): ITestController<InstanceType<O>> {
-  const name = controller.prototype[__ORCHA_CONTROLLER_NAME];
-  const operations = controller.prototype[__ORCHA_OPERATIONS];
-  const opsKeys = Object.keys(operations);
+  const controllerName = controller.prototype[OrchaMetadata.CONTROLLER_NAME];
+  const controllerMethods = controller.prototype[OrchaMetadata.CONTROLLER_METHODS];
+  const controllerMethodEntries = Object.entries(controllerMethods) as [string, OrchaOperationType][];
 
-  if (!name) {
+  if (!controllerName) {
     throw new Error(
-      `No controller controller name found for controller with names of "${opsKeys.join(
+      `No controller controller name found for controller with names of "${controllerMethodEntries.join(
         ', '
       )}"\nDid you remember to add @TestController(<name here>)?`
     );
   }
 
-  for (const operation of opsKeys) {
-    const testOperation = async (token: string, dto: Record<keyof unknown, unknown>, files: File[]) => {
-      const req = request.default(app.getHttpServer()).post(`/${ORCHA}/${name}/${operation}`);
+  for (const [methodName, type] of controllerMethodEntries) {
+    const url = `/${ORCHA}/${controllerName}/${methodName}`;
 
-      req.field(ORCHA_TOKEN, token ?? '');
+    switch (type) {
+      case 'simple':
+        {
+          controllerMethods[methodName] = createTestOperationSimple(app, url);
+        }
+        break;
 
-      if (dto) {
-        req.field(ORCHA_DTO, JSON.stringify(dto));
-      }
+      case 'file-upload':
+        {
+          // controllerMethods[methodName] = createTestOperationFileUpload(app, url);
+        }
+        break;
 
-      if (files) {
-        files.forEach((file) => req.attach(ORCHA_FILES, Buffer.from('dummy'), file.name));
-      }
+      case 'files-upload':
+        {
+          // controllerMethods[methodName] = createTestOperationFilesUpload(app, url);
+        }
+        break;
 
-      const res = await req;
-      return res.error ? { ...res, error: res.body.message } : res;
-    };
-    operations[operation] = testOperation;
+      case 'paginate':
+        {
+          controllerMethods[methodName] = createTestOperationPaginate(app, url);
+        }
+        break;
+
+      case 'event':
+        {
+          // controllerMethods[methodName] = createTestOperationEventSubscriber(app, url);
+        }
+        break;
+
+      case 'query':
+        {
+          controllerMethods[methodName] = createTestOperationQuery(app, url);
+        }
+        break;
+    }
   }
-  return operations;
+  return controllerMethods;
+}
+
+function createTestOperationSimple<T, Q extends IQuery<T>, D extends Record<string, any>>(
+  app: INestApplication,
+  url: string
+): ITestOperationSimple<T, Q, D> {
+  return async (token: string, dto?: D) => {
+    const req = supertest
+      .default(app.getHttpServer())
+      .post(url)
+      .set(OrchaProps.TOKEN, token || '');
+
+    const body = dto ? { [OrchaProps.DTO]: JSON.stringify(dto) } : {};
+
+    req.send(body);
+    const res = await req;
+    return (res.error ? { ...res, error: res.body.message } : res) as ITestResponse<
+      OrchaResponse<IParserSerialized<T, Q>>
+    >;
+  };
+}
+
+function createTestOperationPaginate<T, Q extends IQuery<T>, D extends Record<string, any>>(
+  app: INestApplication,
+  url: string
+): ITestOperationPaginate<T, Q, D> {
+  return async (token: string, paginate: IPaginateQuery, dto?: D) => {
+    const req = supertest
+      .default(app.getHttpServer())
+      .post(url)
+      .set(OrchaProps.TOKEN, token || '');
+
+    const body = dto
+      ? { [OrchaProps.DTO]: JSON.stringify(dto), [OrchaProps.PAGINATE]: paginate }
+      : { [OrchaProps.PAGINATE]: paginate };
+
+    req.send(body);
+    const res = await req;
+    return (res.error ? { ...res, error: res.body.message } : res) as ITestResponse<
+      OrchaResponse<IPagination<IParserSerialized<T, Q>>>
+    >;
+  };
+}
+
+function createTestOperationQuery<T, D extends Record<string, any>>(
+  app: INestApplication,
+  url: string
+): ITestOperationQuery<T, D> {
+  return async <Q extends IQuery<T>>(token: string, query: IExactQuery<T, Q>, dto?: D) => {
+    const req = supertest
+      .default(app.getHttpServer())
+      .post(url)
+      .set(OrchaProps.TOKEN, token || '');
+
+    const body = dto
+      ? { [OrchaProps.DTO]: JSON.stringify(dto), [OrchaProps.QUERY]: query }
+      : { [OrchaProps.QUERY]: query };
+
+    req.send(body);
+    const res = await req;
+    return (res.error ? { ...res, error: res.body.message } : res) as ITestResponse<
+      OrchaResponse<IParserSerialized<T, Q>>
+    >;
+  };
 }

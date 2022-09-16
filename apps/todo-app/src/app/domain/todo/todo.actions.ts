@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { IPaginate, ServerOperationError } from '@orcha/common';
+import { IPaginateQuery, ServerOperationError } from '@orcha/common';
 import { UpdateTodoDto } from '@todo-example-app-lib/shared';
 import { TodoStoreModel } from './todo.reducer';
 
@@ -114,7 +114,7 @@ export const untagTodoError = createAction(
    |_| \__,_\__, |_|_||_\__,_|\__\___|
             |___/                     
 */
-export const paginateTodos = createAction('[Todos] Paginate Todos', props<{ paginate: IPaginate }>());
+export const paginateTodos = createAction('[Todos] Paginate Todos', props<{ paginate: IPaginateQuery }>());
 
 export const paginateTodosSuccess = createAction(
   '[Todos] Paginate Todos Success',

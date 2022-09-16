@@ -1,4 +1,4 @@
-import { IPaginate, IPagination } from './pagination';
+import { IPaginateQuery, IPagination } from './pagination';
 import { IParser } from './parser';
 import { IExactQuery, IQuery } from './query';
 import { ICreateEntity, IOrchaModel, IUpdateEntity } from './relations';
@@ -13,7 +13,7 @@ export abstract class OrchaBaseRepositoryPort<
   abstract findAll<Q extends IQuery<T>>(query: IExactQuery<T, Q>): Promise<IParser<T[], Q>>;
 
   abstract paginateAll<Q extends IQuery<T>>(
-    paginate: IPaginate,
+    paginate: IPaginateQuery,
     query: IExactQuery<T, Q>
   ): Promise<IPagination<IParser<T, Q>>>;
 

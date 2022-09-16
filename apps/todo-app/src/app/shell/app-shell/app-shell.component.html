@@ -4,5 +4,6 @@
 <div class="tabs">
   <div (click)="todos()" [style.background]="activeRoute.includes('todos') ? '#ccc' : ''">Todos</div>
   <div (click)="profile()" [style.background]="activeRoute.includes('profile') ? '#ccc' : ''">Profile</div>
+  <div (click)="query()" [style.background]="activeRoute.includes('query') ? '#ccc' : ''">Query</div>
 </div>
 <router-outlet></router-outlet>

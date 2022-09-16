@@ -1,4 +1,4 @@
-import { IPaginate, OrchaDbTransactionalPort } from '@orcha/common';
+import { IPaginateQuery, OrchaDbTransactionalPort } from '@orcha/common';
 import { nanoid } from 'nanoid';
 import {
   CreateTodoDto,
@@ -43,7 +43,6 @@ export class TodoService {
         dateUpdated: new Date(),
         done: false,
         user: user.id,
-        taggedTodos: [],
       },
       { user: {} }
     );
@@ -189,7 +188,7 @@ export class TodoService {
     return this.todoRepo.findOneOrFail(taggedTodo.todo.id, TodoQueryModel);
   }
 
-  async paginateAll(token: string, paginate: IPaginate) {
+  async paginateAll(token: string, paginate: IPaginateQuery) {
     await this.user.verifyUserToken(token, {});
     return this.todoRepo.paginateAll(paginate, TodoQueryModel);
   }

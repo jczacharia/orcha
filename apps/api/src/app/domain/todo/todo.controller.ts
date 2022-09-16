@@ -1,4 +1,4 @@
-import { IPaginate } from '@orcha/common';
+import { IPaginateQuery } from '@orcha/common';
 import { IServerController, ServerController, ServerOperation } from '@orcha/nestjs';
 import { TodoService } from '@todo-example-app-lib/server';
 import {
@@ -46,7 +46,7 @@ export class TodoController implements IServerController<ITodoController> {
   }
 
   @ServerOperation()
-  paginateAll(token: string, paginate: IPaginate) {
+  paginateAll(token: string, paginate: IPaginateQuery) {
     return this.todo.paginateAll(token, paginate);
   }
 }

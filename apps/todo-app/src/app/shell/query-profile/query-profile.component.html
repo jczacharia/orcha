@@ -1,0 +1,15 @@
+<h2>Query User Profile:</h2>
+<div class="flex">
+  <div class="item">
+    <div>
+      <textarea [formControl]="queryCtrl" rows="30" cols="50"></textarea>
+      <div>
+        <button (click)="send()">Run Query</button>
+      </div>
+    </div>
+  </div>
+  <div class="item">
+    <b>Result:</b>
+    <pre>{{ res | json }}</pre>
+  </div>
+</div>

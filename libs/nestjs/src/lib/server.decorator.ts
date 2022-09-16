@@ -1,43 +1,50 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-types */
 import {
-  BadRequestException,
   Body,
   Controller,
+  createParamDecorator,
+  ExecutionContext,
   Post,
+  Query,
+  Sse,
+  UploadedFile,
   UploadedFiles,
   UseInterceptors,
-  ValidationError,
   ValidationPipe,
-  ValidationPipeOptions,
 } from '@nestjs/common';
-import { FilesInterceptor } from '@nestjs/platform-express';
-import { ORCHA, ORCHA_DTO, ORCHA_FILES, ORCHA_TOKEN } from '@orcha/common';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { IExactQuery, IOrchaModel, IQuery, ORCHA, OrchaOperationType, OrchaProps } from '@orcha/common';
+import { defaultValidationPipeOptions } from './default-validation.pipe-options';
+import { QueryValidationPipe } from './query-validation.pipe';
 
 /**
  * Decorates a NestJS class (Controller) of Operations to receive inbound requests and produce responses.
  *
  * @example
  * ```ts
+ *
+ * // User Controller
+ *
  * @ServerController('user')
  * export class UserController implements IServerController<IUserController> {
  *   constructor(private readonly _user: UserService) {}
  *
  *   // `/orcha/user/login`
- *   @ServerOperation({ validateQuery: LoginQueryModel })
- *   login(query: IQuery<{ token: string }>, _: string, { id, password }: LoginDto) {
- *     return this._user.login(id, password, query);
+ *   @ServerOperation({ type: 'query', validateQuery: LoginQueryModel })
+ *   login(token: string, { id, password }: LoginDto) {
+ *     return this._user.login(id, password);
  *   }
  *
  *   // `/orcha/user/signUp`
- *   @ServerOperation({ validateQuery: SignUpQueryModel })
- *   signUp(query: IQuery<{ token: string }>, _: string, { id, password }: SignUpDto) {
- *     return this._user.signUp(id, password, query);
+ *   @ServerOperation()
+ *   signUp(_: string, { id, password }: SignUpDto) {
+ *     return this._user.signUp(id, password);
  *   }
  *
  *   // `/orcha/user/getProfile`
- *   @ServerOperation({ validateQuery: EntireProfile })
- *   getProfile(query: IQuery<User>, token: string) {
+ *   @ServerOperation()
+ *   queryProfile(token: string) {
  *     return this._user.verifyUserToken(token, query);
  *   }
  * }
@@ -54,86 +61,90 @@ export function ServerController(name: string | number): ClassDecorator {
 function transform(val: string) {
   try {
     return JSON.parse(val);
-  } catch (error) {
+  } catch (_) {
     return val;
   }
 }
 
-const defaultValidationPipeOptions: ValidationPipeOptions = {
-  transform: true,
-  exceptionFactory: (validationErrors: ValidationError[] = []) => {
-    const errorStr = validationErrors
-      .map((err) => {
-        const errors: string[] = [];
-        const recurse = ({ constraints, children }: ValidationError) => {
-          if (constraints) {
-            for (const constraint of Object.values(constraints)) {
-              errors.push(constraint);
-            }
-          }
-          if (!children) {
-            return;
-          }
-          for (const child of children) {
-            recurse(child);
-          }
-        };
-        recurse(err);
-        return errors;
-      })
-      .filter((v) => v.length > 0)
-      .flat()
-      .join(', ');
-    return new BadRequestException(`Validation failed: ${errorStr}`);
-  },
-};
-
 /**
- * Maps an Controllers method to an Controller endpoint.
+ * Decorates a class function with an HTTP endpoint.
  *
- * @note It is highly advised to use the `validateQuery` option in `options` for endpoint security.
- *
- * @example
- * ```ts
- * @ServerController('user')
- * export class UserController implements IServerController<IUserController> {
- *   constructor(private readonly _user: UserService) {}
- *
- *   // `/orcha/user/login`
- *   @ServerOperation()
- *   login(query: IQuery<{ token: string }>, _: string, { id, password }: LoginDto) {
- *     return this._user.login(id, password, query);
- *   }
- *
- *   // `/orcha/user/signUp`
- *   @ServerOperation()
- *   signUp(query: IQuery<{ token: string }>, _: string, { id, password }: SignUpDto) {
- *     return this._user.signUp(id, password, query);
- *   }
- *
- *   // `/orcha/user/getProfile`
- *   @ServerOperation()
- *   getProfile(query: IQuery<User>, token: string) {
- *     return this._user.verifyUserToken(token, query);
- *   }
- * }
- * ```
+ * `options.type` defaults to `SIMPLE`
  */
-export function ServerOperation(options?: { dtoValidationPipe?: ValidationPipe }): MethodDecorator {
+export function ServerOperation<T extends IOrchaModel<any>>(options?: {
+  /**
+   * The type of Operation. Defaults to `SIMPLE`
+   */
+  type?: OrchaOperationType;
+  /**
+   * Used to override the default validation pipe for the DTO
+   */
+  dtoValidationPipe?: ValidationPipe;
+  /**
+   * Only works for `OperationType.QUERY`
+   *
+   * Validates the query object. If query object has extra fields in any of its objects,
+   * compared to `validateQuery`, an unauthorized exception will be thrown.
+   *
+   * @remarks
+   * It is recommended that you use this feature to prevent unauthorized access to data.
+   */
+  validateQuery?: IExactQuery<T, IQuery<T>>;
+}): MethodDecorator {
   return function <T>(target: Object, propertyKey: string | symbol, descriptor: TypedPropertyDescriptor<T>) {
-    Body(ORCHA_TOKEN)(target, propertyKey, 0);
+    // Get token from headers
+    createParamDecorator((_, ctx: ExecutionContext) => {
+      const request = ctx.switchToHttp().getRequest();
+      const token: string = request.headers[OrchaProps.TOKEN];
+      return token || '';
+    })()(target, propertyKey, 0);
 
-    Body(
-      ORCHA_DTO,
-      { transform },
-      options?.dtoValidationPipe
-        ? options.dtoValidationPipe
-        : new ValidationPipe(defaultValidationPipeOptions)
-    )(target, propertyKey, 1);
+    const validationPipe = options?.dtoValidationPipe
+      ? options.dtoValidationPipe
+      : new ValidationPipe(defaultValidationPipeOptions);
 
-    UploadedFiles()(target, propertyKey, 2);
-    UseInterceptors(FilesInterceptor(ORCHA_FILES))(target, propertyKey, descriptor);
+    switch (options?.type) {
+      case 'query':
+        {
+          Post(propertyKey as string)(target, propertyKey, descriptor);
+          Body(
+            OrchaProps.QUERY,
+            { transform },
+            ...(options?.validateQuery ? [new QueryValidationPipe(options.validateQuery)] : [])
+          )(target, propertyKey, 1);
+          Body(OrchaProps.DTO, { transform }, validationPipe)(target, propertyKey, 2);
+        }
+        break;
 
-    Post(propertyKey as string)(target, propertyKey, descriptor);
+      case 'paginate':
+        Post(propertyKey as string)(target, propertyKey, descriptor);
+        Body(OrchaProps.PAGINATE, { transform })(target, propertyKey, 1);
+        Body(OrchaProps.DTO, { transform }, validationPipe)(target, propertyKey, 2);
+        break;
+
+      case 'file-upload':
+        Post(propertyKey as string)(target, propertyKey, descriptor);
+        UseInterceptors(FileInterceptor(OrchaProps.FILE))(target, propertyKey, descriptor);
+        UploadedFile()(target, propertyKey, 1);
+        Body(OrchaProps.DTO, { transform }, validationPipe)(target, propertyKey, 2);
+        break;
+
+      case 'files-upload':
+        Post(propertyKey as string)(target, propertyKey, descriptor);
+        UseInterceptors(FilesInterceptor(OrchaProps.FILES))(target, propertyKey, descriptor);
+        UploadedFiles()(target, propertyKey, 1);
+        Body(OrchaProps.DTO, { transform }, validationPipe)(target, propertyKey, 2);
+        break;
+
+      case 'event':
+        Sse(propertyKey as string)(target, propertyKey, descriptor);
+        Query({ transform }, validationPipe)(target, propertyKey, 1);
+        break;
+
+      default:
+        Post(propertyKey as string)(target, propertyKey, descriptor);
+        Body(OrchaProps.DTO, { transform }, validationPipe)(target, propertyKey, 1);
+        break;
+    }
   };
 }

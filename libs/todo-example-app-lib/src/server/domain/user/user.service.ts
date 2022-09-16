@@ -43,8 +43,6 @@ export class UserService {
         email,
         passwordHash,
         salt,
-        tags: [],
-        todos: [],
       },
       {}
     );
@@ -65,7 +63,11 @@ export class UserService {
     );
   }
 
-  async getProfile(token: string, query: IQuery<User>) {
+  async getProfile(token: string) {
+    return this.verifyUserToken(token, EntireProfile);
+  }
+
+  async queryProfile(token: string, query: IQuery<User>) {
     return this.verifyUserToken(token, query);
   }
 

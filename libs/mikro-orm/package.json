@@ -1,8 +1,8 @@
 {
   "name": "@orcha/mikro-orm",
-  "version": "0.8.12",
+  "version": "0.10.2",
   "peerDependencies": {
     "@mikro-orm/core": "^5.3.0",
-    "@orcha/common": "0.8.12"
+    "@orcha/common": "0.10.2"
   }
 }

@@ -1,10 +1,5 @@
 import { INestApplication } from '@nestjs/common';
-import {
-  createNestjsTestController,
-  ITestController,
-  TestOperation,
-  TestController,
-} from '@orcha/testing';
+import { createNestjsTestController, ITestController, TestController, TestOperation } from '@orcha/testing';
 import { ITodoController, TODO_CONTROLLER_NAME } from '@todo-example-app-lib/shared';
 
 @TestController(TODO_CONTROLLER_NAME)

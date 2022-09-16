@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, ElementRef, ViewChild } from '@angular/core';
-import { EntireProfile } from '@todo-example-app-lib/shared';
 import { AppFacade } from '../../domain/app.facade';
 import { UserController } from '../../domain/user/user.controller';
 
@@ -34,9 +33,17 @@ function parseOneImageFile(event: Event) {
 export class ProfileComponent {
   @ViewChild('profilePicInp') profilePicInp!: ElementRef<HTMLInputElement>;
 
-  readonly profile$ = this.user.getProfile({ query: EntireProfile });
+  readonly profile$ = this.user.getProfile();
 
-  constructor(private user: UserController, private app: AppFacade) {}
+  constructor(private user: UserController, private app: AppFacade) {
+    this.user.event({ dtoData: 'DERP' }).subscribe((e) => {
+      console.log(e);
+    });
+
+    this.user.queryProfile({ dateCreated: true }).subscribe((e) => {
+      console.log(e.data);
+    });
+  }
 
   updateProfilePicBtnClicked() {
     this.profilePicInp.nativeElement.click();

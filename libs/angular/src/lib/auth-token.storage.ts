@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@angular/core';
-import { ORCHA_TOKEN_LOCAL_STORAGE_KEY } from './orcha.module';
+import { ORCHA_TOKEN_LOCAL_STORAGE_KEY } from './tokens';
 
 /**
  * Class to set your Orcha auth token used in each HTTP request.

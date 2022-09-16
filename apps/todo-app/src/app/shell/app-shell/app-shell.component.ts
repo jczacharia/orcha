@@ -52,4 +52,8 @@ export class AppShellComponent extends RxJSBaseClass implements OnInit {
   profile() {
     this.router.navigate(['profile']);
   }
+
+  query() {
+    this.router.navigate(['query']);
+  }
 }

@@ -1,6 +1,6 @@
 import * as cp from 'child_process';
 
-cp.execSync(`nx run-many --target build --prod --projects=common,nestjs,angular,mikro-orm,testing`, {
+cp.execSync(`nx run-many --target=build --parallel --prod --projects=common,nestjs,angular,mikro-orm,testing`, {
   stdio: 'inherit',
 });
 

@@ -1,28 +1,21 @@
 import 'reflect-metadata';
 
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpEventType } from '@angular/common/http';
-import { InjectionToken, Injector, ModuleWithProviders, NgModule, Provider, Type } from '@angular/core';
-import {
-  IController,
-  ORCHA,
-  ORCHA_DTO,
-  ORCHA_FILES,
-  ORCHA_TOKEN,
-  __ORCHA_OPERATIONS,
-  __ORCHA_CONTROLLER_NAME,
-} from '@orcha/common';
-import { filter, map } from 'rxjs';
+import { Injector, ModuleWithProviders, NgModule, Provider, Type } from '@angular/core';
+import { IController, ORCHA, OrchaMetadata, OrchaOperationType } from '@orcha/common';
 import { OrchaAuthTokenLocalStorage } from './auth-token.storage';
-import { IClientOperation } from './client';
+import {
+  createOperationEventSubscriber,
+  createOperationFilesUpload,
+  createOperationFileUpload,
+  createOperationPaginate,
+  createOperationQuery,
+  createOperationSimple,
+} from './operation-types';
+import { ORCHA_API_URL, ORCHA_TOKEN_LOCAL_STORAGE_KEY, ORCHA_TOKEN_RETRIEVER } from './tokens';
 
-export const ORCHA_TOKEN_LOCAL_STORAGE_KEY = new InjectionToken<string>('ORCHA_TOKEN_LOCAL_STORAGE_KEY');
-
-const ORCHA_API_URL = new InjectionToken<string>('ORCHA_API_URL');
-const ORCHA_TOKEN_RETRIEVER = new InjectionToken<() => string>('ORCHA_TOKEN_RETRIEVER');
-
-export function __getAuthTokenFactory(storage: OrchaAuthTokenLocalStorage) {
-  const getToken = () => storage.getToken();
+export function authTokenFactory(storage: OrchaAuthTokenLocalStorage) {
+  const getToken = () => storage.getToken() || '';
   return getToken;
 }
 
@@ -69,7 +62,7 @@ export class OrchaModule {
         {
           provide: ORCHA_TOKEN_RETRIEVER,
           deps: [OrchaAuthTokenLocalStorage],
-          useFactory: __getAuthTokenFactory,
+          useFactory: authTokenFactory,
         },
       ],
     };
@@ -78,90 +71,67 @@ export class OrchaModule {
   /**
    * Creates an Orcha feature by grouping relevant controllers.
    */
-  static forFeature({
-    controllers,
-  }: {
-    controllers?: Type<IController>[];
-  }): ModuleWithProviders<OrchaFeatureModule> {
-    const ors: Provider[] =
-      controllers?.map(
-        (o): Provider => ({
-          provide: o,
-          useFactory: (injector: Injector) => OrchaModule.createController(injector, o),
+  static forFeature(options: { controllers?: Type<IController>[] }): ModuleWithProviders<OrchaFeatureModule> {
+    const controllers =
+      options.controllers?.map(
+        (controller): Provider => ({
+          provide: controller,
           deps: [Injector],
+          useFactory: (injector: Injector) => OrchaModule.createController(controller, injector),
         })
       ) ?? [];
 
     return {
       ngModule: OrchaFeatureModule,
-      providers: ors,
+      providers: controllers,
     };
   }
 
-  static createController(injector: Injector, controller: Type<IController>) {
-    const name = controller.prototype[__ORCHA_CONTROLLER_NAME];
-    const operations = controller.prototype[__ORCHA_OPERATIONS];
-    const opsKeys = Object.keys(operations);
+  static createController(controller: Type<IController>, injector: Injector) {
+    const controllerName = controller.prototype[OrchaMetadata.CONTROLLER_NAME];
+    const controllerMethods = controller.prototype[OrchaMetadata.CONTROLLER_METHODS];
+    const controllerMethodEntries = Object.entries(controllerMethods) as [string, OrchaOperationType][];
 
-    if (!name) {
+    if (!controllerName) {
       throw new Error(
-        `No name found for controller with controller names of "${opsKeys.join(
+        `No name found for controller with controller names of "${controllerMethodEntries.join(
           ', '
-        )}"\nDid you remember to add @ClientController(<name here>)?`
+        )}"\nDid you remember to add @ClientController(<controller name here>)?`
       );
     }
 
     const apiUrl = injector.get(ORCHA_API_URL);
-    const http = injector.get(HttpClient);
-    for (const funcName of opsKeys) {
-      const clientOperation: IClientOperation<
-        Record<string, unknown>,
-        any,
-        Record<string, unknown>,
-        File[]
-      > = (dto: Record<string, unknown>, files: File[]) => {
-        const body = new FormData();
 
-        const token = injector.get(ORCHA_TOKEN_RETRIEVER)();
-        body.set(ORCHA_TOKEN, token);
+    for (const [methodName, type] of controllerMethodEntries) {
+      const url = `${apiUrl}/${ORCHA}/${controllerName}/${methodName}`;
 
-        if (dto) {
-          body.set(ORCHA_DTO, JSON.stringify(dto));
-        }
+      switch (type) {
+        case 'simple':
+          controllerMethods[methodName] = createOperationSimple(url, injector);
+          break;
 
-        if (files) {
-          files.forEach((file) => body.append(ORCHA_FILES, file, file.name));
-        }
+        case 'file-upload':
+          controllerMethods[methodName] = createOperationFileUpload(url, injector);
+          break;
 
-        const url = `${apiUrl}/${ORCHA}/${name}/${funcName}`;
-        return (
-          http
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            .post<any>(url, body, { reportProgress: true, observe: 'events' })
-            .pipe(
-              filter((event) => {
-                if (files) {
-                  return true;
-                }
-                return event.type === HttpEventType.Response;
-              }),
-              map((event) => {
-                switch (event.type) {
-                  case HttpEventType.UploadProgress:
-                    return { ...event, progress: Math.round((100 * event.loaded) / (event.total ?? 1)) };
-                  case HttpEventType.Response:
-                    if (files) {
-                      return event;
-                    }
-                    return event.body;
-                }
-              }),
-              filter((e) => !!e)
-            )
-        );
-      };
-      operations[funcName] = clientOperation;
+        case 'files-upload':
+          controllerMethods[methodName] = createOperationFilesUpload(url, injector);
+          break;
+
+        case 'paginate':
+          controllerMethods[methodName] = createOperationPaginate(url, injector);
+          break;
+
+        case 'event':
+          controllerMethods[methodName] = createOperationEventSubscriber(url, injector);
+          break;
+
+        case 'query':
+          controllerMethods[methodName] = createOperationQuery(url, injector);
+          break;
+      }
     }
-    return operations;
+
+    return controllerMethods;
   }
 }

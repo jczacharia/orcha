@@ -1,33 +1,43 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import { Injectable, PipeTransform, UnauthorizedException } from '@nestjs/common';
-import { IQueryModel, ORCHA_ID } from '@orcha/common';
+import { ORCHA_ID } from '@orcha/common';
+
+type QueryModel = Record<string, any>;
 
 @Injectable()
 export class QueryValidationPipe implements PipeTransform<unknown> {
-  query: IQueryModel;
+  query: { [k: string]: true };
 
-  constructor(query: IQueryModel) {
+  constructor(query: QueryModel) {
     this.query = query;
   }
 
   async transform(value: unknown): Promise<unknown> {
-    const recurse = (val: IQueryModel, query: IQueryModel) => {
+    const unAuthKeys: string[] = [];
+
+    const recurse = (val: QueryModel, query: QueryModel) => {
       for (const k of Object.keys(val)) {
         if (k === ORCHA_ID) {
           continue;
         }
 
-        const incoming = val[k as keyof IQueryModel];
-        const comparison = query[k as keyof IQueryModel];
+        const incoming = val[k as keyof QueryModel];
+        const comparison = query[k as keyof QueryModel];
         if (!!comparison !== !!incoming) {
-          throw new UnauthorizedException(`Unauthorized query key "${k}".`);
+          unAuthKeys.push(k);
         } else if (typeof incoming === 'object') {
-          recurse(incoming as IQueryModel, comparison as IQueryModel);
+          recurse(incoming as QueryModel, comparison as QueryModel);
         }
       }
     };
 
-    recurse(value as IQueryModel, this.query);
+    recurse(value as QueryModel, this.query);
+
+    if (unAuthKeys.length > 1) {
+      throw new UnauthorizedException(
+        `Validation failed: Unauthorized Orcha Query key(s): ${unAuthKeys.join(', ')}`
+      );
+    }
 
     return value;
   }

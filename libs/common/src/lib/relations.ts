@@ -23,11 +23,11 @@ export type IOrchaModel<IdType extends string | number> = { [ORCHA_ID]: IdType }
  * @example
  * ```ts
  * interface User extends IOrchaModel<string> {
- *   privateData: IOneToOne<'user', UserPrivate>;
+ *   privateData: IOneToOne<UserPrivate, 'user'>;
  * }
  *
  * interface UserPrivate extends IOrchaModel<string> {
- *   user: IOneToOne<'privateData', User>;
+ *   user: IOneToOne<User, 'privateData'>;
  * }
  * ```
  */
@@ -41,11 +41,11 @@ export type IOneToOne<Relation, SelfKey extends keyof Relation> = {
  * @example
  * ```ts
  * interface User extends IOrchaModel<string> {
- *   posts: IOneToMany<'user', Post>;
+ *   posts: IOneToMany<Post, 'user'>;
  * }
  *
  * interface Post extends IOrchaModel<string> {
- *   user: IManyToOne<'posts', User>;
+ *   user: IManyToOne<User, 'posts'>;
  * }
  * ```
  */
@@ -59,11 +59,11 @@ export type IOneToMany<Relation, SelfKey extends keyof Relation> = {
  * @example
  * ```ts
  * interface Post extends IOrchaModel<string> {
- *   user: IManyToOne<'posts', User>;
+ *   user: IManyToOne<User, 'posts'>;
  * }
  *
  * interface User extends IOrchaModel<string> {
- *   posts: IOneToMany<'user', Post>;
+ *   posts: IOneToMany<Post, 'user'>;
  * }
  * ```
  */
@@ -72,12 +72,31 @@ export type IManyToOne<Relation, SelfKey extends keyof Relation> = {
 };
 
 /**
+ * Creates a Many-to-Many relationship with another entity.
+ *
+ * @example
+ * ```ts
+ * interface Todo extends IOrchaModel<string> {
+ *   tags: IManyToMany<Tag, 'todos>;
+ * }
+ *
+ * interface Tag extends IOrchaModel<string> {
+ *   todos: IManyToMany<Todo, 'tags'>;
+ * }
+ * ```
+ */
+export type IManyToMany<Relation, SelfKey extends keyof Relation> = {
+  [K in keyof Relation]: Relation[K];
+}[];
+
+/**
  * Utility type for any relation.
  */
 export type IAnyRelation<Relation, SelfKey extends keyof Relation> =
   | IOneToOne<Relation, SelfKey>
   | IOneToMany<Relation, SelfKey>
-  | IManyToOne<Relation, SelfKey>;
+  | IManyToOne<Relation, SelfKey>
+  | IManyToMany<Relation, SelfKey>;
 
 /**
  * Filter an entity to only have its fields (no relations).
@@ -110,29 +129,21 @@ export type IRelations<T> = {
  */
 export type ICreateEntity<T> = Omit<
   {
-    [K in keyof IProps<T> as null extends T[K] ? K : undefined extends T[K] ? K : never]?: T[K] | null;
+    [K in keyof IProps<T> as null extends T[K] ? K : never]?: T[K] | null;
   } & {
-    [K in keyof IProps<T> as null extends T[K] ? never : undefined extends T[K] ? never : K]: T[K];
+    [K in keyof IProps<T> as null extends T[K] ? never : K]: T[K];
   } & {
-    [K in keyof IRelations<T> as null extends T[K]
-      ? K
-      : undefined extends T[K]
-      ? K
-      : never]?: CreateEntityRelations<T[K], T> | null;
-  } & {
-    [K in keyof IRelations<T> as null extends T[K]
-      ? never
-      : undefined extends T[K]
-      ? never
-      : K]: CreateEntityRelations<T[K], T>;
-  },
+    [K in keyof IRelations<T> as null extends T[K] ? K : never]?: CreateEntityRelations<T[K], T> | null;
+  } & UndefinedToOptional<{
+      [K in keyof IRelations<T> as null extends T[K] ? never : K]: CreateEntityRelations<T[K], T>;
+    }>,
   typeof ORCHA_VIEW
 > &
   (T extends IOrchaModel<infer ID> ? { [ORCHA_ID]: ID } : { [ORCHA_ID]: string | number });
 
 type CreateEntityRelations<T, R> = T extends Array<infer A>
   ? A extends IOrchaModel<infer Id>
-    ? (Id | ICreateEntity<OmitParentRelations<A, R>>)[]
+    ? (Id | ICreateEntity<OmitParentRelations<A, R>>)[] | undefined
     : never
   : T extends IOrchaModel<infer Id>
   ? Id | ICreateEntity<OmitParentRelations<T, R>>
@@ -140,6 +151,12 @@ type CreateEntityRelations<T, R> = T extends Array<infer A>
 
 type OmitParentRelations<T, R> = {
   [K in keyof T as T[K] extends IAnyRelation<R, infer _> ? never : K]: T[K];
+};
+
+type UndefinedToOptional<T> = {
+  [K in keyof T as undefined extends T[K] ? K : never]?: T[K];
+} & {
+  [K in keyof T as undefined extends T[K] ? never : K]: T[K];
 };
 
 /**

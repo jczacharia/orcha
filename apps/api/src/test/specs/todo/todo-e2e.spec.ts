@@ -56,19 +56,23 @@ describe('Todo Controller Integration Tests', () => {
       expect(todo.data.content).toBe('content');
       expect(todo.data.done).toBe(false);
     });
-    // });
-    // describe('read', () => {
-    //   it('should get no todos at system init', async () => {
-    //     const { body: todos } = await todoOrcha.read( auth.body.data.token);
-    //     expect(todos.length).toBe(0);
-    //   });
-    //   it('should get my todo items', async () => {
-    //     await todoOrcha.create( auth.body.data.token, { content: 'content' });
-    //     const { body: todos } = await todoOrcha.read( auth.body.data.token);
-    //     expect(todos.length).toBe(1);
-    //     expect(todos[0].content).toBe('content');
-    //     expect(todos[0].user.id).toBe(credentials.id);
-    //   });
+  });
+  describe('read', () => {
+    it('should get no todos at system init', async () => {
+      const {
+        body: { data: todos },
+      } = await todoOrcha.getMine(auth.body.data.token);
+      expect(todos.length).toBe(0);
+    });
+    it('should get my todo items', async () => {
+      await todoOrcha.create(auth.body.data.token, { content: 'content' });
+      const {
+        body: { data: todos },
+      } = await todoOrcha.getMine(auth.body.data.token);
+      expect(todos.length).toBe(1);
+      expect(todos[0].content).toBe('content');
+      expect(todos[0].user.id).toBe(userId);
+    });
   });
   describe('update', () => {
     it('should not update if owned by another user', async () => {
@@ -135,15 +139,6 @@ describe('Todo Controller Integration Tests', () => {
       } = await todoOrcha.create(auth.body.data.token, {
         content: 'new content',
       });
-      // console.log(
-      //   await todoRepo['_repo'].findOneOrFail(
-      //     { id: todo.id },
-      //     {
-      //       fields: ['user', 'user.id', 'taggedTodos', 'taggedTodos.id'],
-      //       strategy: LoadStrategy.JOINED,
-      //     }
-      //   )
-      // );
       const {
         body: { data: deletedTodo },
       } = await todoOrcha.delete(auth.body.data.token, {

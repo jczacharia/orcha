@@ -1,20 +1,12 @@
 import { ORCHA_ID } from './constants';
-import { IPagination } from './pagination';
 import { IAnyRelation } from './relations';
-
-/**
- * Describes the fundamental type for an Orcha Query.
- */
-export type IQueryModel = { [k: string]: true | IQueryModel };
 
 /**
  * Create a primitive Orcha Query from a model.
  */
-export type IQuery<T> = T extends IPagination<infer P> ? IQueryArray<P> : IQueryArray<T>;
+export type IQuery<T> = T extends Array<infer A> ? IQueryUndefined<A> : IQueryUndefined<T>;
 
-type IQueryArray<T> = T extends Array<infer A> ? IQueryUndefined<A> : IQueryUndefined<T>;
-
-type IQueryUndefined<T> = T extends undefined
+export type IQueryUndefined<T> = T extends undefined
   ? IQueryObject<NonNullable<T>> | undefined
   : T extends null
   ? IQueryObject<NonNullable<T>> | null
@@ -25,7 +17,7 @@ export type IQueryObject<T> = {
     ? NonNullable<T[K]> extends IAnyRelation<infer R, infer RK>
       ? Required<T> extends Required<Omit<R, RK>>
         ? true
-        : IQueryArray<T[K]>
+        : IQuery<T[K]>
       : true
     : true;
 };
@@ -35,6 +27,6 @@ export type IQueryObject<T> = {
  */
 export type IExactQuery<T, Q> = T extends Array<infer A> ? IExactQueryObject<A, Q> : IExactQueryObject<T, Q>;
 
-type IExactQueryObject<T, Q> = Q & {
+export type IExactQueryObject<T, Q> = Q & {
   [K in keyof Q]: K extends keyof Omit<T, typeof ORCHA_ID> ? IExactQuery<T[K], Q[K]> : never;
 };

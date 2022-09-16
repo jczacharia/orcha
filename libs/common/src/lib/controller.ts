@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ORCHA_DTO, ORCHA_FILES, ORCHA_TOKEN } from './constants';
+import { OrchaMetadata, OrchaOperationType } from './constants';
 import { IQuery } from './query';
 
 /**
@@ -59,10 +59,32 @@ import { IQuery } from './query';
  * }
  * ```
  */
-export interface IOperation<T, Q extends IQuery<T>, D = null, F extends File[] | null = null> {
-  [ORCHA_TOKEN]: string;
-  [ORCHA_DTO]: D | null;
-  [ORCHA_FILES]: F;
+export interface IOperationSimple<T, Q extends IQuery<T>, D extends Record<string, any> | null = null> {
+  [OrchaMetadata.OPERATION_TYPE_KEY]: 'simple';
+}
+
+export interface IOperationQuery<T, D extends Record<string, any> | null = null> {
+  [OrchaMetadata.OPERATION_TYPE_KEY]: 'query';
+}
+
+export interface IOperationPaginate<T, Q extends IQuery<T>, D extends Record<string, any> | null = null> {
+  [OrchaMetadata.OPERATION_TYPE_KEY]: 'paginate';
+}
+
+export interface IOperationFileUpload<T, Q extends IQuery<T>, D extends Record<string, any> | null = null> {
+  [OrchaMetadata.OPERATION_TYPE_KEY]: 'file-upload';
+}
+
+export interface IOperationFilesUpload<T, Q extends IQuery<T>, D extends Record<string, any> | null = null> {
+  [OrchaMetadata.OPERATION_TYPE_KEY]: 'files-upload';
+}
+
+export interface IOperationEvent<
+  T,
+  Q extends IQuery<T>,
+  D extends Record<string, string | number> | null = null
+> {
+  [OrchaMetadata.OPERATION_TYPE_KEY]: 'event';
 }
 
 /**
@@ -81,4 +103,4 @@ export interface IOperation<T, Q extends IQuery<T>, D = null, F extends File[] |
  * }
  * ```
  */
-export type IController = Record<keyof unknown, IOperation<unknown, any>>;
+export type IController = Record<keyof unknown, IOperationSimple<unknown, any>>;

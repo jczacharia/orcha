@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import { ORCHA_ID } from './constants';
-import { IPagination } from './pagination';
 import { IOrchaModel } from './relations';
 import { RecursivelyConvertDatesToStrings } from './util';
 
@@ -30,26 +29,25 @@ import { RecursivelyConvertDatesToStrings } from './util';
  * type IUserModel = IParser<User, typeof UserQueryModel>;
  * ```
  */
-export type IParser<T, Q> = T extends IPagination<infer P>
-  ? IPagination<IParseUndefined<P, Q>>
-  : T extends Array<infer A>
-  ? IParseUndefined<A, Q>[]
-  : IParseUndefined<T, Q>;
+export type IParser<T, Q> = T extends Array<infer A> ? IParserUndefined<A, Q>[] : IParserUndefined<T, Q>;
 
-export type IParseUndefined<T, Q> = T extends undefined
-  ? IParseArray<NonNullable<T>, Q> | undefined
+export type IParserUndefined<T, Q> = T extends undefined
+  ? IParserArray<NonNullable<T>, Q> | undefined
   : T extends null
-  ? IParseArray<NonNullable<T>, Q> | null
-  : IParseArray<T, Q>;
+  ? IParserArray<NonNullable<T>, Q> | null
+  : IParserArray<T, Q>;
 
-export type IParseArray<T, Q> = T extends Array<infer A> ? IParserObject<A, Q>[] : IParserObject<T, Q>;
+export type IParserArray<T, Q> = T extends Array<infer A> ? IParserObject<A, Q>[] : IParserObject<T, Q>;
 
 export type IParserObject<C, Q> = {
   [K in keyof Q as K extends keyof C ? K : never]: K extends keyof C
     ? Q[K] extends true
       ? C[K]
-      : IParseUndefined<C[K], Q[K]>
+      : IParserUndefined<C[K], Q[K]>
     : never;
 } & (C extends IOrchaModel<infer ID> ? { [ORCHA_ID]: ID } : {});
 
+/**
+ * Serialized Parser. Basically only converts Dates to strings.
+ */
 export type IParserSerialized<T, Q> = RecursivelyConvertDatesToStrings<IParser<T, Q>>;

@@ -11,18 +11,16 @@ import {
   ICreateEntity,
   IExactQuery,
   IOrchaModel,
-  IPaginate,
+  IPaginateQuery,
   IPagination,
   IParser,
-  IParseUndefined,
   IQuery,
   IUpdateEntity,
   OrchaBaseRepositoryPort,
   parseQuery,
 } from '@orcha/common';
 import { IOrchaMikroOrmEntity } from './mikro-orm-orcha-entity';
-import { createMikroOrmPopulateArray } from './populate';
-
+import { createMikroOrmPopulateArray } from './populate-transform';
 /**
  * Inherits all repository functionalities required to perform CRUD operations on an entity.
  */
@@ -101,7 +99,7 @@ export abstract class IOrchaMikroOrmRepository<
   async updateMany<Q extends IQuery<T>>(
     models: { id: IdType; changes: IUpdateEntity<T> }[],
     query: IExactQuery<T, Q>
-  ): Promise<IParseUndefined<T, Q>[]> {
+  ): Promise<IParser<T[], Q>> {
     const populate = createMikroOrmPopulateArray(query);
     const entities = await this.repo.find({ id: { $in: models.map((m) => m.id) } } as FilterQuery<E>, {
       populate,
@@ -135,7 +133,7 @@ export abstract class IOrchaMikroOrmRepository<
   }
 
   async paginateAll<Q extends IQuery<T>>(
-    paginate: IPaginate,
+    paginate: IPaginateQuery,
     query: IExactQuery<T, Q>
   ): Promise<IPagination<IParser<T, Q>>> {
     const populate = createMikroOrmPopulateArray(query as IExactQuery<T, Q>);

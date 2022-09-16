@@ -1,10 +1,9 @@
-/* eslint-disable @nrwl/nx/enforce-module-boundaries */
 import 'reflect-metadata';
 
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { OrchaNestModule } from '@orcha/nestjs';
-import { DomainModule } from '../../../api/src/app/domain/domain.module';
+import { DomainModule } from '../../app/domain/domain.module';
 
 @Module({
   imports: [

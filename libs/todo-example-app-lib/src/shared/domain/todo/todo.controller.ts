@@ -1,4 +1,4 @@
-import { IOperation, IPaginate, IPagination } from '@orcha/common';
+import { IOperationSimple, IOperationPaginate } from '@orcha/common';
 import { CreateTodoDto, DeleteTodoDto, TagDto, UnTagDto, UpdateTodoDto } from './todo.dtos';
 import { Todo } from './todo.model';
 import { TodoQueryModel } from './todo.queries';
@@ -6,11 +6,11 @@ import { TodoQueryModel } from './todo.queries';
 export const TODO_CONTROLLER_NAME = 'todo';
 
 export interface ITodoController {
-  getMine: IOperation<Todo[], typeof TodoQueryModel>;
-  create: IOperation<Todo, typeof TodoQueryModel, CreateTodoDto>;
-  update: IOperation<Todo, typeof TodoQueryModel, UpdateTodoDto>;
-  delete: IOperation<{ deletedId: Todo['id'] }, { deletedId: true }, DeleteTodoDto>;
-  tag: IOperation<Todo, typeof TodoQueryModel, TagDto>;
-  untag: IOperation<Todo, typeof TodoQueryModel, UnTagDto>;
-  paginateAll: IOperation<IPagination<Todo>, typeof TodoQueryModel, IPaginate>;
+  getMine: IOperationSimple<Todo[], typeof TodoQueryModel>;
+  create: IOperationSimple<Todo, typeof TodoQueryModel, CreateTodoDto>;
+  update: IOperationSimple<Todo, typeof TodoQueryModel, UpdateTodoDto>;
+  delete: IOperationSimple<{ deletedId: Todo['id'] }, { deletedId: true }, DeleteTodoDto>;
+  tag: IOperationSimple<Todo, typeof TodoQueryModel, TagDto>;
+  untag: IOperationSimple<Todo, typeof TodoQueryModel, UnTagDto>;
+  paginateAll: IOperationPaginate<Todo, typeof TodoQueryModel>;
 }

@@ -1,12 +1,12 @@
 {
   "name": "orcha",
-  "version": "0.8.12",
+  "version": "0.10.2",
   "license": "MIT",
   "scripts": {
     "ng": "nx",
     "postinstall": "node ./decorate-angular-cli.js && ngcc --properties es2020 browser module main",
     "start": "nx serve",
-    "test": "nx test",
+    "test": "nx run-many --target=test --all --parallel --exclude=api && nx test api --runInBand",
     "build": "ts-node ./tools/scripts/build.ts",
     "deploy": "npm run build && npm run deploy:angular && npm run deploy:common && npm run deploy:nestjs && npm run deploy:testing && npm run deploy:mikro-orm",
     "deploy:angular": "cd dist/libs/angular && npm publish --access public",

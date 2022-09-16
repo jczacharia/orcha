@@ -2,7 +2,7 @@ import {
   ICreateEntity,
   IExactQuery,
   IOrchaModel,
-  IPaginate,
+  IPaginateQuery,
   IPagination,
   IParser,
   IQuery,
@@ -117,7 +117,7 @@ export class TestOrchaBaseRepositoryAdapter<
   }
 
   async paginateAll<Q extends IQuery<T>>(
-    paginate: IPaginate,
+    paginate: IPaginateQuery,
     query: IExactQuery<T, Q>
   ): Promise<IPagination<IParser<T, Q>>> {
     const entities = [...this.entities.values()].slice(paginate.offset, paginate.limit);

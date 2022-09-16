@@ -9,7 +9,7 @@ export type IPagination<E> = {
 /**
  * Required fields for pagination information.
  */
-export interface IPaginate {
+export interface IPaginateQuery {
   /**
    * Starts at 0.
    */

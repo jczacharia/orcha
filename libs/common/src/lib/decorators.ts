@@ -1,11 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/ban-types */
-
-import {
-  __ORCHA_OPERATIONS,
-  __ORCHA_CONTROLLER_NAME,
-  __ORCHA_CONTROLLER_PLACEHOLDER,
-} from './constants';
+import { OrchaMetadata, OrchaOperationType } from './constants';
 
 /**
  * Decorates an Angular class (Controller) of Operations under a single parent endpoint.
@@ -27,8 +20,9 @@ import {
  * @param name Name of the Controller.
  */
 export function ClientController(name: string): ClassDecorator {
+  // eslint-disable-next-line @typescript-eslint/ban-types
   return function (target: Function) {
-    target.prototype[__ORCHA_CONTROLLER_NAME] = name;
+    target.prototype[OrchaMetadata.CONTROLLER_NAME] = name;
   };
 }
 
@@ -49,12 +43,11 @@ export function ClientController(name: string): ClassDecorator {
  * }
  * ```
  */
-export function ClientOperation(): PropertyDecorator {
+export function ClientOperation(options?: { type?: OrchaOperationType }): PropertyDecorator {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return function (target: any, propertyKey: string | symbol) {
-    const controller = target[__ORCHA_OPERATIONS];
-    if (!controller) {
-      target[__ORCHA_OPERATIONS] = {};
-    }
-    target[__ORCHA_OPERATIONS][propertyKey] = __ORCHA_CONTROLLER_PLACEHOLDER;
+    const controller = target[OrchaMetadata.CONTROLLER_METHODS];
+    if (!controller) target[OrchaMetadata.CONTROLLER_METHODS] = {};
+    target[OrchaMetadata.CONTROLLER_METHODS][propertyKey] = options?.type ?? 'simple';
   };
 }
