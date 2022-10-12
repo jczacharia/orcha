@@ -43,6 +43,8 @@ export class UserService {
         email,
         passwordHash,
         salt,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        viewNumOfTodos: undefined!,
       },
       {}
     );

@@ -45,7 +45,7 @@ export class TodoController implements IServerController<ITodoController> {
     return this.todo.untag(token, dto);
   }
 
-  @ServerOperation()
+  @ServerOperation({ type: 'paginate' })
   paginateAll(token: string, paginate: IPaginateQuery) {
     return this.todo.paginateAll(token, paginate);
   }

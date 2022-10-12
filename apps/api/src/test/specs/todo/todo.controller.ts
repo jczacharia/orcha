@@ -16,7 +16,7 @@ class TodoController implements ITestController<ITodoController> {
   tag!: ITestController<ITodoController>['tag'];
   @TestOperation()
   untag!: ITestController<ITodoController>['untag'];
-  @TestOperation()
+  @TestOperation({ type: 'paginate' })
   paginateAll!: ITestController<ITodoController>['paginateAll'];
 }
 

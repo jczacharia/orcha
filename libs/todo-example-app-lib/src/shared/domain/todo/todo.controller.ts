@@ -12,5 +12,5 @@ export interface ITodoController {
   delete: IOperationSimple<{ deletedId: Todo['id'] }, { deletedId: true }, DeleteTodoDto>;
   tag: IOperationSimple<Todo, typeof TodoQueryModel, TagDto>;
   untag: IOperationSimple<Todo, typeof TodoQueryModel, UnTagDto>;
-  paginateAll: IOperationPaginate<Todo, typeof TodoQueryModel>;
+  paginateAll: IOperationPaginate<Todo, typeof TodoQueryModel, null, { extra: string }>;
 }

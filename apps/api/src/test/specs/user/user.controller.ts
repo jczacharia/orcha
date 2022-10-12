@@ -16,6 +16,8 @@ class UserController implements ITestController<IUserController> {
   event!: ITestController<IUserController>['event'];
   @TestOperation({ type: 'query' })
   queryProfile!: ITestController<IUserController>['queryProfile'];
+  @TestOperation({ type: 'file-download' })
+  fileDownload!: ITestController<IUserController>['fileDownload'];
 }
 
 export function createUserController(app: INestApplication) {

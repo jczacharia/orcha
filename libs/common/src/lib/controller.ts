@@ -67,7 +67,12 @@ export interface IOperationQuery<T, D extends Record<string, any> | null = null>
   [OrchaMetadata.OPERATION_TYPE_KEY]: 'query';
 }
 
-export interface IOperationPaginate<T, Q extends IQuery<T>, D extends Record<string, any> | null = null> {
+export interface IOperationPaginate<
+  T,
+  Q extends IQuery<T>,
+  D extends Record<string, any> | null = null,
+  Extra extends Record<string, any> = object
+> {
   [OrchaMetadata.OPERATION_TYPE_KEY]: 'paginate';
 }
 
@@ -85,6 +90,10 @@ export interface IOperationEvent<
   D extends Record<string, string | number> | null = null
 > {
   [OrchaMetadata.OPERATION_TYPE_KEY]: 'event';
+}
+
+export interface IOperationFileDownload<D extends Record<string, any> | null = null> {
+  [OrchaMetadata.OPERATION_TYPE_KEY]: 'file-download';
 }
 
 /**

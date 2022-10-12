@@ -49,6 +49,12 @@ export class ProfileComponent {
     this.profilePicInp.nativeElement.click();
   }
 
+  fileDownload() {
+    this.user.fileDownload().subscribe((e) => {
+      console.log(e);
+    });
+  }
+
   updateProfilePic(event: Event) {
     let file: File | undefined;
     try {

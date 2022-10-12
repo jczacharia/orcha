@@ -1,5 +1,5 @@
 import { IClientController } from '@orcha/angular';
-import { ClientOperation, ClientController } from '@orcha/common';
+import { ClientController, ClientOperation } from '@orcha/common';
 import { ITodoController, TODO_CONTROLLER_NAME } from '@todo-example-app-lib/shared';
 
 @ClientController(TODO_CONTROLLER_NAME)
@@ -16,6 +16,6 @@ export class TodoController implements IClientController<ITodoController> {
   tag!: IClientController<ITodoController>['tag'];
   @ClientOperation()
   untag!: IClientController<ITodoController>['untag'];
-  @ClientOperation()
+  @ClientOperation({ type: 'paginate' })
   paginateAll!: IClientController<ITodoController>['paginateAll'];
 }

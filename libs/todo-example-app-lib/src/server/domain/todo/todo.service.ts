@@ -43,6 +43,8 @@ export class TodoService {
         dateUpdated: new Date(),
         done: false,
         user: user.id,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        viewNumOfTaggedTodos: undefined!,
       },
       { user: {} }
     );
@@ -190,6 +192,6 @@ export class TodoService {
 
   async paginateAll(token: string, paginate: IPaginateQuery) {
     await this.user.verifyUserToken(token, {});
-    return this.todoRepo.paginateAll(paginate, TodoQueryModel);
+    return { ...(await this.todoRepo.paginateAll(paginate, TodoQueryModel)), extra: 'extra' };
   }
 }

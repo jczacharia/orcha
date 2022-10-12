@@ -1,5 +1,4 @@
-import { Collection, Entity, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
-import { ORCHA_VIEW } from '@orcha/common';
+import { Collection, Entity, Formula, OneToMany, PrimaryKey, Property } from '@mikro-orm/core';
 import { IOrchaMikroOrmEntity } from '@orcha/mikro-orm';
 import { User } from '@todo-example-app-lib/shared';
 import { TagEntity } from '../tag/tag.entity';
@@ -40,10 +39,8 @@ export class UserEntity implements IOrchaMikroOrmEntity<User> {
   @Property({ columnType: 'timestamp with time zone', nullable: true })
   dateLastLoggedIn!: Date;
 
-  @Property({ name: ORCHA_VIEW })
-  async [ORCHA_VIEW]() {
-    return { numOfTodos: await this.todos.loadCount() };
-  }
+  @Formula((alias) => `(SELECT COUNT(*) FROM todo_entity WHERE ${alias}.id = todo_entity.user_id)::int`)
+  viewNumOfTodos!: number;
 
   @OneToMany(() => TodoEntity, (e) => e.user)
   todos = new Collection<TodoEntity>(this);

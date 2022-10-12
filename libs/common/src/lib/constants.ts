@@ -1,6 +1,5 @@
 export const ORCHA = 'orcha' as const;
 export const ORCHA_ID = 'id' as const;
-export const ORCHA_VIEW = '__view' as const;
 
 export enum OrchaProps {
   DTO = 'dto',
@@ -18,4 +17,11 @@ export enum OrchaMetadata {
   OPERATION_TYPE_KEY = 'type',
 }
 
-export type OrchaOperationType = 'simple' | 'paginate' | 'query' | 'file-upload' | 'files-upload' | 'event';
+export type OrchaOperationType =
+  | 'simple'
+  | 'paginate'
+  | 'query'
+  | 'file-upload'
+  | 'files-upload'
+  | 'event'
+  | 'file-download';

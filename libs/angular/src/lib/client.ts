@@ -4,6 +4,7 @@ import {
   IController,
   IExactQuery,
   IOperationEvent,
+  IOperationFileDownload,
   IOperationFilesUpload,
   IOperationFileUpload,
   IOperationPaginate,
@@ -42,10 +43,15 @@ export type IClientOperationFilesUpload<
   ...args: D extends null ? [] : [dto: D]
 ) => Observable<HttpEvent<OrchaResponse<IParserSerialized<T, Q>>>>;
 
-export type IClientOperationPaginate<T, Q extends IQuery<T>, D extends Record<string, any> | null = null> = (
+export type IClientOperationPaginate<
+  T,
+  Q extends IQuery<T>,
+  D extends Record<string, any> | null = null,
+  Extra extends Record<string, any> = object
+> = (
   paginate: IPaginateQuery,
   ...args: D extends null ? [] : [dto: D]
-) => Observable<OrchaResponse<IPagination<IParserSerialized<T, Q>>>>;
+) => Observable<OrchaResponse<Extra & IPagination<IParserSerialized<T, Q>>>>;
 
 export type IClientOperationEvent<
   T,
@@ -60,6 +66,10 @@ export type IClientOperationQuery<T, D extends Record<string, string | number> |
   ...args: D extends null ? [] : [dto: D]
 ) => Observable<OrchaResponse<IParserSerialized<T, Q>>>;
 
+export type IClientOperationFileDownload<D extends Record<string, any> | null = null> = (
+  ...args: D extends null ? [] : [dto: D]
+) => Observable<unknown>;
+
 /**
  * Implements a Client Controller from an `IController`.
  */
@@ -70,11 +80,13 @@ export type IClientController<O extends IController> = {
     ? IClientOperationFileUpload<T, Q, D>
     : O[K] extends IOperationFilesUpload<infer T, infer Q, infer D>
     ? IClientOperationFilesUpload<T, Q, D>
-    : O[K] extends IOperationPaginate<infer T, infer Q, infer D>
-    ? IClientOperationPaginate<T, Q, D>
+    : O[K] extends IOperationPaginate<infer T, infer Q, infer D, infer E>
+    ? IClientOperationPaginate<T, Q, D, E>
     : O[K] extends IOperationEvent<infer T, infer Q, infer D>
     ? IClientOperationEvent<T, Q, D>
     : O[K] extends IOperationQuery<infer T, infer D>
     ? IClientOperationQuery<T, D>
+    : O[K] extends IOperationFileDownload<infer D>
+    ? IClientOperationFileDownload<D>
     : never;
 };

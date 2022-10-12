@@ -1,7 +1,7 @@
 /**
  * Describes the response schema for a pagination-based Operation.
  */
-export type IPagination<E> = {
+export type IPagination<E, Extra extends Record<string, any> = object> = Extra & {
   items: E[];
   count: number;
 };

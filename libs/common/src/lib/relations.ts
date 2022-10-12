@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { ORCHA_ID, ORCHA_VIEW } from './constants';
+import { ORCHA_ID } from './constants';
 
 /**
  * Extends your entity model with the Orcha `id` key.
@@ -127,18 +127,15 @@ export type IRelations<T> = {
 /**
  * Utility type when creating an entity to a repository function.
  */
-export type ICreateEntity<T> = Omit<
-  {
-    [K in keyof IProps<T> as null extends T[K] ? K : never]?: T[K] | null;
-  } & {
-    [K in keyof IProps<T> as null extends T[K] ? never : K]: T[K];
-  } & {
-    [K in keyof IRelations<T> as null extends T[K] ? K : never]?: CreateEntityRelations<T[K], T> | null;
-  } & UndefinedToOptional<{
-      [K in keyof IRelations<T> as null extends T[K] ? never : K]: CreateEntityRelations<T[K], T>;
-    }>,
-  typeof ORCHA_VIEW
-> &
+export type ICreateEntity<T> = {
+  [K in keyof IProps<T> as null extends T[K] ? K : never]?: T[K] | null;
+} & {
+  [K in keyof IProps<T> as null extends T[K] ? never : K]: T[K];
+} & {
+  [K in keyof IRelations<T> as null extends T[K] ? K : never]?: CreateEntityRelations<T[K], T> | null;
+} & UndefinedToOptional<{
+    [K in keyof IRelations<T> as null extends T[K] ? never : K]: CreateEntityRelations<T[K], T>;
+  }> &
   (T extends IOrchaModel<infer ID> ? { [ORCHA_ID]: ID } : { [ORCHA_ID]: string | number });
 
 type CreateEntityRelations<T, R> = T extends Array<infer A>

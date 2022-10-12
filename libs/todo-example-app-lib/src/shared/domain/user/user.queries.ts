@@ -1,4 +1,4 @@
-import { createQuery, ORCHA_VIEW } from '@orcha/common';
+import { createQuery } from '@orcha/common';
 import { User } from './user.model';
 
 export const EntireProfile = createQuery<User>()({
@@ -9,7 +9,7 @@ export const EntireProfile = createQuery<User>()({
   middleName: true,
   lastName: true,
   phone: true,
-  [ORCHA_VIEW]: true,
+  viewNumOfTodos: true,
   tags: {
     name: true,
     dateCreated: true,
@@ -24,7 +24,7 @@ export const EntireProfile = createQuery<User>()({
     done: true,
     dateCreated: true,
     dateUpdated: true,
-    [ORCHA_VIEW]: true,
+    viewNumOfTaggedTodos: true,
     taggedTodos: {
       dateLinked: true,
       tag: {},

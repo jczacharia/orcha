@@ -1,3 +1,4 @@
+import { StreamableFile } from '@nestjs/common';
 import { IQuery } from '@orcha/common';
 import { IServerController, ServerController, ServerOperation } from '@orcha/nestjs';
 import { UserService } from '@todo-example-app-lib/server';
@@ -9,6 +10,9 @@ import {
   User,
   USER_CONTROLLER_NAME,
 } from '@todo-example-app-lib/shared';
+import type { Response } from 'express';
+import { createReadStream } from 'fs';
+import { join } from 'path';
 import { interval, map, take } from 'rxjs';
 
 @ServerController(USER_CONTROLLER_NAME)
@@ -48,5 +52,20 @@ export class UserController implements IServerController<IUserController> {
   @ServerOperation<User>({ type: 'query', validateQuery: EntireProfile })
   queryProfile(token: string, query: IQuery<User>) {
     return this.user.queryProfile(token, query);
+  }
+
+  @ServerOperation({ type: 'file-download' })
+  async fileDownload(token: string, res: Response) {
+    await this.user.verifyUserToken(token, {});
+
+    const fileName = 'package.json';
+
+    const file = createReadStream(join(process.cwd(), fileName));
+    res.set({
+      'Content-Type': 'octet/stream',
+      'Content-Disposition': `attachment; filename="${fileName}"`,
+      'Access-Control-Expose-Headers': 'Content-Disposition',
+    });
+    return new StreamableFile(file);
   }
 }

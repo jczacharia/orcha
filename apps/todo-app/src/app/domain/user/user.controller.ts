@@ -16,4 +16,6 @@ export class UserController implements IClientController<IUserController> {
   event!: IClientController<IUserController>['event'];
   @ClientOperation({ type: 'query' })
   queryProfile!: IClientController<IUserController>['queryProfile'];
+  @ClientOperation({ type: 'file-download' })
+  fileDownload!: IClientController<IUserController>['fileDownload'];
 }

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { DOCUMENT } from '@angular/common';
 import { HttpClient, HttpEventType, HttpParams } from '@angular/common/http';
 import { Injector } from '@angular/core';
 import {
@@ -10,9 +11,10 @@ import {
   OrchaProps,
   OrchaResponse,
 } from '@orcha/common';
-import { filter, map, Subject } from 'rxjs';
+import { filter, map, Subject, tap } from 'rxjs';
 import {
   IClientOperationEvent,
+  IClientOperationFileDownload,
   IClientOperationFilesUpload,
   IClientOperationFileUpload,
   IClientOperationPaginate,
@@ -171,5 +173,40 @@ export function createOperationEventSubscriber<
 
     source.stream();
     return subject.asObservable();
+  };
+}
+
+export function createOperationFileDownload<D extends Record<string, string | number>>(
+  url: string,
+  injector: Injector
+): IClientOperationFileDownload<D> {
+  return (dto?: D) => {
+    const token = injector.get(ORCHA_TOKEN_RETRIEVER)();
+
+    const body = dto ? { [OrchaProps.DTO]: dto } : {};
+
+    const doc = injector.get(DOCUMENT);
+
+    return injector
+      .get(HttpClient)
+      .post(url, body, {
+        headers: { [OrchaProps.TOKEN]: token },
+        observe: 'response',
+        responseType: 'blob',
+      })
+      .pipe(
+        tap((data) => {
+          const disposition = data.headers.get('Content-Disposition');
+          const filename = disposition?.match(/attachment; filename="(.+)"/);
+          if (data.body) {
+            const element = doc.createElement('a');
+            element.href = URL.createObjectURL(data.body);
+            element.download = filename?.[1] ?? 'file';
+            doc.body.appendChild(element);
+            element.click();
+            doc.body.removeChild(element);
+          }
+        })
+      );
   };
 }

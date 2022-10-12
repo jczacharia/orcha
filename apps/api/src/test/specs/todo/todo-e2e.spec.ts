@@ -300,6 +300,7 @@ describe('Todo Controller Integration Tests', () => {
       await todoOrcha.create(auth.body.data.token, { content: 'content3' });
       const { body } = await todoOrcha.paginateAll(auth.body.data.token, { offset: 0, limit: 1 });
       expect(body.data.items.length).toBe(1);
+      expect(body.data.extra).toBe('extra');
       const {
         body: { data: body2 },
       } = await todoOrcha.paginateAll(auth.body.data.token, { offset: 0, limit: 2 });

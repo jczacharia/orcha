@@ -10,6 +10,7 @@ import {
   IController,
   IExactQuery,
   IOperationEvent,
+  IOperationFileDownload,
   IOperationFilesUpload,
   IOperationFileUpload,
   IOperationPaginate,
@@ -87,11 +88,16 @@ export type ITestOperationFilesUpload<T, Q extends IQuery<T>, D extends Record<s
   ...args: D extends null ? [] : [dto: D]
 ) => Promise<ITestResponse<OrchaResponse<IParserSerialized<T, Q>>>>;
 
-export type ITestOperationPaginate<T, Q extends IQuery<T>, D extends Record<string, any> | null = null> = (
+export type ITestOperationPaginate<
+  T,
+  Q extends IQuery<T>,
+  D extends Record<string, any> | null = null,
+  Extra extends Record<string, any> = object
+> = (
   token: string,
   paginate: IPaginateQuery,
   ...args: D extends null ? [] : [dto: D]
-) => Promise<ITestResponse<OrchaResponse<IPagination<IParserSerialized<T, Q>>>>>;
+) => Promise<ITestResponse<OrchaResponse<Extra & IPagination<IParserSerialized<T, Q>>>>>;
 
 export type ITestOperationEventSubscriber<
   T,
@@ -107,6 +113,11 @@ export type ITestOperationQuery<T, D extends Record<string, string | number> | n
   ...args: D extends null ? [] : [dto: D]
 ) => Promise<ITestResponse<OrchaResponse<IParserSerialized<T, Q>>>>;
 
+export type ITestOperationFileDownload<D extends Record<string, any> | null = null> = (
+  token: string,
+  ...args: D extends null ? [] : [dto: D]
+) => Promise<ITestResponse<OrchaResponse<File>>>;
+
 /**
  * Implements a Client Controller from an `IController`.
  */
@@ -117,12 +128,14 @@ export type ITestController<O extends IController> = {
     ? ITestOperationFileUpload<T, Q, D>
     : O[K] extends IOperationFilesUpload<infer T, infer Q, infer D>
     ? ITestOperationFilesUpload<T, Q, D>
-    : O[K] extends IOperationPaginate<infer T, infer Q, infer D>
-    ? ITestOperationPaginate<T, Q, D>
+    : O[K] extends IOperationPaginate<infer T, infer Q, infer D, infer E>
+    ? ITestOperationPaginate<T, Q, D, E>
     : O[K] extends IOperationEvent<infer T, infer Q, infer D>
     ? ITestOperationEventSubscriber<T, Q, D>
     : O[K] extends IOperationQuery<infer T, infer D>
     ? ITestOperationQuery<T, D>
+    : O[K] extends IOperationFileDownload<infer D>
+    ? ITestOperationFileDownload<D>
     : never;
 };
 

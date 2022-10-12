@@ -7,6 +7,7 @@ import {
   ExecutionContext,
   Post,
   Query,
+  Res,
   Sse,
   UploadedFile,
   UploadedFiles,
@@ -139,6 +140,12 @@ export function ServerOperation<T extends IOrchaModel<any>>(options?: {
       case 'event':
         Sse(propertyKey as string)(target, propertyKey, descriptor);
         Query({ transform }, validationPipe)(target, propertyKey, 1);
+        break;
+
+      case 'file-download':
+        Post(propertyKey as string)(target, propertyKey, descriptor);
+        Res({ passthrough: true })(target, propertyKey, 1);
+        Body(OrchaProps.DTO, { transform }, validationPipe)(target, propertyKey, 2);
         break;
 
       default:

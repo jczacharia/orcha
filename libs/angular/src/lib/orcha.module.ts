@@ -6,6 +6,7 @@ import { IController, ORCHA, OrchaMetadata, OrchaOperationType } from '@orcha/co
 import { OrchaAuthTokenLocalStorage } from './auth-token.storage';
 import {
   createOperationEventSubscriber,
+  createOperationFileDownload,
   createOperationFilesUpload,
   createOperationFileUpload,
   createOperationPaginate,
@@ -128,6 +129,10 @@ export class OrchaModule {
 
         case 'query':
           controllerMethods[methodName] = createOperationQuery(url, injector);
+          break;
+
+        case 'file-download':
+          controllerMethods[methodName] = createOperationFileDownload(url, injector);
           break;
       }
     }

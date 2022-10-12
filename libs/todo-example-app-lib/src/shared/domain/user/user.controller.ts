@@ -1,4 +1,10 @@
-import { IOperationEvent, IOperationFileUpload, IOperationQuery, IOperationSimple } from '@orcha/common';
+import {
+  IOperationEvent,
+  IOperationFileDownload,
+  IOperationFileUpload,
+  IOperationQuery,
+  IOperationSimple,
+} from '@orcha/common';
 import { LoginDto, SignUpDto } from './user.dtos';
 import { User } from './user.model';
 import { EntireProfile } from './user.queries';
@@ -12,4 +18,5 @@ export interface IUserController {
   updateProfilePic: IOperationFileUpload<User, typeof EntireProfile>;
   event: IOperationEvent<{ rtn: string }, { rtn: true }, { dtoData: string }>;
   queryProfile: IOperationQuery<User>;
+  fileDownload: IOperationFileDownload;
 }
