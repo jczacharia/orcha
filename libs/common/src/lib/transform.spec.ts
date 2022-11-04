@@ -14,7 +14,6 @@ describe('parseQuery', () => {
     reporter: {
       id: 'NZWDHtzf0wGjXmtF94ykq',
       allowedSnf: [],
-      promise: Promise.resolve('p'),
       snfPermissionsType: 'selected',
       dateCreated: '2022-08-23T17:52:38.572Z',
       user: {
@@ -264,8 +263,8 @@ describe('parseQuery', () => {
     client: { allowedCases: { case: {}, viewOrEdit: true } },
   });
 
-  it('parse', async () => {
-    expect(await parseQuery<any, any>(data, UserForAdminQueryModel)).toStrictEqual({
+  it('parse', () => {
+    expect(parseQuery<any, any>(data, UserForAdminQueryModel)).toStrictEqual({
       id: '5hslucwJtLmsuKp1CaHhC',
       email: 'a@a.com',
       role: 'client',
@@ -278,7 +277,6 @@ describe('parseQuery', () => {
         id: 'NZWDHtzf0wGjXmtF94ykq',
         allowedSnf: [],
         snfPermissionsType: 'selected',
-        promise: 'p',
       },
       client: {
         id: 'oeK5FNLjtrPxKhmR9qG_0',

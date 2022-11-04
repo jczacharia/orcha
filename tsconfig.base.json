@@ -23,7 +23,7 @@
     "esModuleInterop": true,
     "target": "es2015",
     "module": "esnext",
-    "lib": ["es2019", "dom"],
+    "lib": ["esnext", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",

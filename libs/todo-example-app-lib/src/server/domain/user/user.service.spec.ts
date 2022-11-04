@@ -1,4 +1,4 @@
-import { IExactQuery, IParser, IQuery, parseQuery } from '@orcha/common';
+import { IExactQuery, IParser, IQuery } from '@orcha/common';
 import { TestOrchaBaseRepositoryAdapter } from '@orcha/testing';
 import { FirebaseScrypt } from 'firebase-scrypt';
 import { nanoid } from 'nanoid';
@@ -78,26 +78,26 @@ class TestUserRepo extends TestOrchaBaseRepositoryAdapter<User> implements UserR
     email: string,
     query: IExactQuery<User, Q>
   ): Promise<IParser<User, Q> | null> {
-    let foundUser: User | null = null;
-    for (const user of this.entities.values()) {
+    let foundUserId: string | null = null;
+    for (const user of await this.findAll({ email: true })) {
       if (user.email === email) {
-        foundUser = user;
+        foundUserId = user.id;
         break;
       }
     }
-    if (!foundUser) {
+    if (!foundUserId) {
       return null;
     }
-    return parseQuery(foundUser, query);
+    return this.findOne(foundUserId, query);
   }
 
   async findByEmailOrFail<Q extends IQuery<User>>(
     email: string,
     query: IExactQuery<User, Q>
   ): Promise<IParser<User, Q>> {
-    for (const user of this.entities.values()) {
+    for (const user of await this.findAll({ email: true })) {
       if (user.email === email) {
-        return parseQuery(user, query);
+        return this.findOneOrFail(user.id, query);
       }
     }
     throw new Error(`User with email "${email}" not found.`);

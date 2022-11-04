@@ -46,7 +46,7 @@ export class TodoService {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         viewNumOfTaggedTodos: undefined!,
       },
-      { user: {} }
+      { content: true, user: { email: true } }
     );
     return this.todoRepo.findOneOrFail(newTodo.id, TodoQueryModel);
   }

@@ -6,8 +6,7 @@ import { IExactQuery, IQuery } from './query';
  * Manually parse an Orcha Query.
  *
  * This will recursively go through all `entities` and remove values that are not specified in the query.
- * The object returned is a new object instance.
- * This function is async so any values in `T` that are `instanceof Promise` will be resolved.
+ * The object returned is the same object instance.
  *
  * @example
  * ```ts
@@ -16,14 +15,14 @@ import { IExactQuery, IQuery } from './query';
  *     name: true,
  *   },
  * });
- * const parsed = await parseQuery([
+ * const parsed = parseQuery([
  *   {
  *     id: 1,
  *     extraField: 'field',
  *     data: {
  *       name: 'James',
  *       initial: 'J',
- *       comments: 
+ *       comments:
  *     },
  *   },
  *   {
@@ -55,47 +54,41 @@ import { IExactQuery, IQuery } from './query';
  *
  * @param query Reference Query.
  * @param entities Objects to parse.
- * @returns A parsed objected based on the query. The object returned is a new object instance.
+ * @returns A parsed objected based on the query. The object returned is the same object instance.
  */
-export async function parseQuery<T, Q extends IQuery<T>>(
-  entities: T,
-  query: IExactQuery<T, Q>
-): Promise<IParser<T, Q>>;
-export async function parseQuery<T, Q extends IQuery<T>>(
-  entities: T[],
-  query: IExactQuery<T, Q>
-): Promise<IParser<T[], Q>>;
-export async function parseQuery<T, Q extends IQuery<T>>(entities: T | T[], query: IExactQuery<T, Q>) {
+export function parseQuery<T, Q extends IQuery<T>>(entities: T, query: IExactQuery<T, Q>): IParser<T, Q>;
+export function parseQuery<T, Q extends IQuery<T>>(entities: T[], query: IExactQuery<T, Q>): IParser<T[], Q>;
+export function parseQuery<T, Q extends IQuery<T>>(entities: T | T[], query: IExactQuery<T, Q>) {
   if (!entities) {
     return null;
   }
 
-  if (Array.isArray(query)) {
-    query = query[0];
-  }
-
-  const remove = async (e: T) => {
-    const obj: any = {};
-
-    const qKeys = Object.keys(query) as (keyof T)[];
-    for (const k of Object.keys(e) as (keyof T)[]) {
-      if (k === ORCHA_ID || qKeys.includes(k)) {
-        obj[k] = e[k] instanceof Promise ? await e[k] : e[k];
+  const remove = (e: any) => {
+    const qKeys = Object.keys(query);
+    const objKeys = Object.keys(e);
+    for (let i = 0; i < objKeys.length; i++) {
+      const k = objKeys[i];
+      if (k !== ORCHA_ID && !qKeys.includes(k)) {
+        delete e[k];
       }
     }
 
-    for (const [k, q] of Object.entries(query as object)) {
+    const entries = Object.entries(query);
+    for (let i = 0; i < entries.length; i++) {
+      const [k, q] = entries[i];
       if (typeof q === 'object') {
-        obj[k] = await parseQuery(obj[k], q);
+        parseQuery(e[k], q);
       }
     }
-
-    return obj;
   };
 
   if (Array.isArray(entities)) {
-    return Promise.all(entities.map((e) => remove(e))) as unknown as IParser<T[], Q>;
+    for (let i = 0; i < entities.length; i++) {
+      remove(entities[i]);
+    }
   } else {
-    return remove(entities) as unknown as IParser<T, Q>;
+    remove(entities) as unknown as IParser<T, Q>;
   }
+
+  return entities;
 }

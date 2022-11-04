@@ -11,6 +11,10 @@ import {
   parseQuery,
 } from '@orcha/common';
 
+function clone<T>(a: T): T {
+  return JSON.parse(JSON.stringify(a));
+}
+
 export class TestOrchaBaseRepositoryAdapter<
   T extends IOrchaModel<IdType>,
   IdType extends string | number = T extends IOrchaModel<infer ID> ? ID : never
@@ -23,7 +27,7 @@ export class TestOrchaBaseRepositoryAdapter<
     if (!entity) {
       return null;
     }
-    return parseQuery(entity, query);
+    return parseQuery(clone(entity), query);
   }
 
   async findOneOrFail<Q extends IQuery<T>>(id: IdType, query: IExactQuery<T, Q>): Promise<IParser<T, Q>> {
@@ -31,17 +35,17 @@ export class TestOrchaBaseRepositoryAdapter<
     if (!entity) {
       throw new Error(`Test Entity with ID "${id}" not found.`);
     }
-    return parseQuery(entity, query);
+    return parseQuery(clone(entity), query);
   }
 
   async findMany<Q extends IQuery<T>>(ids: IdType[], query: IExactQuery<T, Q>): Promise<IParser<T[], Q>> {
     const entities = ids.map((id) => this.entities.get(id) as T).filter((e) => e);
-    return parseQuery(entities, query);
+    return parseQuery(clone(entities), query);
   }
 
   async findAll<Q extends IQuery<T>>(query: IExactQuery<T, Q>): Promise<IParser<T[], Q>> {
     const entities = [...this.entities.values()];
-    return parseQuery(entities, query);
+    return parseQuery(clone(entities), query);
   }
 
   async countAll(): Promise<number> {
@@ -54,7 +58,7 @@ export class TestOrchaBaseRepositoryAdapter<
   ): Promise<IParser<T, Q>> {
     model.id;
     this.entities.set(model.id as IdType, model as unknown as T);
-    return parseQuery(model as unknown as T, query);
+    return this.findOneOrFail(model.id, query);
   }
 
   async createMany<Q extends IQuery<T>>(
@@ -62,7 +66,10 @@ export class TestOrchaBaseRepositoryAdapter<
     query: IExactQuery<T, Q>
   ): Promise<IParser<T[], Q>> {
     models.forEach((m) => this.entities.set(m.id as IdType, m as unknown as T));
-    return parseQuery(models as unknown as T[], query);
+    return this.findMany(
+      models.map((m) => m.id),
+      query
+    );
   }
 
   async updateOne<Q extends IQuery<T>>(
@@ -76,23 +83,25 @@ export class TestOrchaBaseRepositoryAdapter<
     }
     const updated = { ...entity, ...changes };
     this.entities.set(id, updated);
-    return parseQuery(updated, query);
+    return this.findOneOrFail(id, query);
   }
 
   async updateMany<Q extends IQuery<T>>(
     models: { id: IdType; changes: IUpdateEntity<T> }[],
     query: IExactQuery<T, Q>
   ): Promise<IParser<T[], Q>> {
-    const entities = models.map(({ id, changes }) => {
+    models.forEach(({ id, changes }) => {
       const entity = this.entities.get(id);
       if (!entity) {
         throw new Error(`Test Entity with ID "${id}" not found.`);
       }
       const updated = { ...entity, ...changes };
       this.entities.set(id, updated);
-      return updated;
     });
-    return parseQuery(entities, query);
+    return this.findMany(
+      models.map((m) => m.id),
+      query
+    );
   }
 
   async deleteOne(id: IdType): Promise<IdType> {
@@ -121,6 +130,6 @@ export class TestOrchaBaseRepositoryAdapter<
     query: IExactQuery<T, Q>
   ): Promise<IPagination<IParser<T, Q>>> {
     const entities = [...this.entities.values()].slice(paginate.offset, paginate.limit);
-    return { items: (await parseQuery(entities, query)) as IParser<T, Q>[], count: this.entities.size };
+    return { items: parseQuery(entities, query) as IParser<T, Q>[], count: this.entities.size };
   }
 }

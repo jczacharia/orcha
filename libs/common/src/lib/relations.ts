@@ -138,7 +138,7 @@ export type ICreateEntity<T> = {
   }> &
   (T extends IOrchaModel<infer ID> ? { [ORCHA_ID]: ID } : { [ORCHA_ID]: string | number });
 
-type CreateEntityRelations<T, R> = T extends Array<infer A>
+export type CreateEntityRelations<T, R> = T extends Array<infer A>
   ? A extends IOrchaModel<infer Id>
     ? (Id | ICreateEntity<OmitParentRelations<A, R>>)[] | undefined
     : never
@@ -146,11 +146,11 @@ type CreateEntityRelations<T, R> = T extends Array<infer A>
   ? Id | ICreateEntity<OmitParentRelations<T, R>>
   : never;
 
-type OmitParentRelations<T, R> = {
+export type OmitParentRelations<T, R> = {
   [K in keyof T as T[K] extends IAnyRelation<R, infer _> ? never : K]: T[K];
 };
 
-type UndefinedToOptional<T> = {
+export type UndefinedToOptional<T> = {
   [K in keyof T as undefined extends T[K] ? K : never]?: T[K];
 } & {
   [K in keyof T as undefined extends T[K] ? never : K]: T[K];
